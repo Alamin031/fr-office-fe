@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -21,7 +22,6 @@ interface Review {
   productImage: string;
   customer: string;
   rating: number;
-  title: string;
   content: string;
   date: string;
   status: "Pending" | "Approved" | "Flagged" | "Rejected";
@@ -34,7 +34,6 @@ const initialReviews: Review[] = [
     productImage: "/placeholder.svg?key=f23k9",
     customer: "John Doe",
     rating: 5,
-    title: "Best phone ever!",
     content:
       "Amazing phone with great camera and performance. The titanium design feels premium.",
     date: "Nov 20, 2024",
@@ -46,7 +45,6 @@ const initialReviews: Review[] = [
     productImage: "/placeholder.svg?key=m9x2v",
     customer: "Jane Smith",
     rating: 4,
-    title: "Great laptop, minor issues",
     content:
       "Overall excellent laptop for daily use. Battery life is incredible. Wish it had more ports.",
     date: "Nov 19, 2024",
@@ -65,9 +63,55 @@ export default function AdminReviewsPage() {
     productImage: "",
     customer: "",
     rating: 5,
-    title: "",
     content: "",
   });
+  const [productSearch, setProductSearch] = useState("");
+  const [productOptions, setProductOptions] = useState<any[]>([]);
+  const [productLoading, setProductLoading] = useState(false);
+  const [productSearchTimeout, setProductSearchTimeout] = useState<any>(null);
+  // Product search handler
+  const handleProductSearch = async (value: string) => {
+    setProductSearch(value);
+    setForm((prev) => ({ ...prev, product: value }));
+    if (productSearchTimeout) clearTimeout(productSearchTimeout);
+    setProductLoading(true);
+    setProductSearchTimeout(
+      setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/products/search?query=${encodeURIComponent(value)}`);
+          const data = await res.json();
+          setProductOptions(data.data || []);
+        } catch {
+          setProductOptions([]);
+        } finally {
+          setProductLoading(false);
+        }
+      }, 400)
+    );
+  };
+
+  // Product select handler
+  const handleProductSelect = (product: any) => {
+    setForm((prev) => ({
+      ...prev,
+      product: product.name,
+      productImage: product.image || (product.images && product.images[0]) || "",
+    }));
+    setProductSearch(product.name);
+  };
+
+  // Image upload handler
+  const handleProductImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        setForm((prev) => ({ ...prev, productImage: event.target!.result as string }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Add Review
   const handleAddReview = () => {
@@ -76,7 +120,6 @@ export default function AdminReviewsPage() {
       productImage: "",
       customer: "",
       rating: 5,
-      title: "",
       content: "",
     });
     setEditMode(false);
@@ -92,7 +135,6 @@ export default function AdminReviewsPage() {
       productImage: review.productImage,
       customer: review.customer,
       rating: review.rating,
-      title: review.title,
       content: review.content,
     });
     setEditMode(true);
@@ -108,7 +150,6 @@ export default function AdminReviewsPage() {
       productImage: review.productImage,
       customer: review.customer,
       rating: review.rating,
-      title: review.title,
       content: review.content,
     });
     setEditMode(false);
@@ -203,7 +244,7 @@ export default function AdminReviewsPage() {
                   <th className="px-4 py-2 text-left">Product</th>
                   <th className="px-4 py-2 text-left">Customer</th>
                   <th className="px-4 py-2 text-left">Rating</th>
-                  <th className="px-4 py-2 text-left">Title</th>
+                  {/* <th className="px-4 py-2 text-left">Title</th> */}
                   <th className="px-4 py-2 text-left">Date</th>
                   <th className="px-4 py-2 text-left">Actions</th>
                 </tr>
@@ -236,7 +277,7 @@ export default function AdminReviewsPage() {
                         ))}
                       </div>
                     </td>
-                    <td className="px-4 py-2">{review.title}</td>
+                    {/* <td className="px-4 py-2">{review.title}</td> */}
                     <td className="px-4 py-2 text-xs text-muted-foreground">
                       {review.date}
                     </td>
@@ -305,26 +346,51 @@ export default function AdminReviewsPage() {
             className="space-y-4 py-2"
           >
             <div className="space-y-2">
-              <Label htmlFor="product">Product Name</Label>
+              <Label htmlFor="product">Product</Label>
               <Input
                 id="product"
                 name="product"
-                value={form.product}
-                onChange={handleFormChange}
+                value={productSearch}
+                onChange={(e) => handleProductSearch(e.target.value)}
                 disabled={viewMode}
+                placeholder="Search product..."
+                autoComplete="off"
                 required
               />
+              {/* Product search dropdown */}
+              {productSearch && productOptions.length > 0 && !viewMode && (
+                <div className="border rounded bg-white shadow absolute z-50 w-full max-h-48 overflow-y-auto">
+                  {productOptions.map((p) => (
+                    <div
+                      key={p.id}
+                      className="px-4 py-2 cursor-pointer hover:bg-accent"
+                      onClick={() => handleProductSelect(p)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <img src={p.image || (p.images && p.images[0]) || "/placeholder.svg"} alt={p.name} className="w-8 h-8 object-cover rounded" />
+                        <span>{p.name}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="productImage">Product Image URL</Label>
+              <Label htmlFor="productImage">Product Image</Label>
+              {form.productImage && (
+                <div className="mb-2">
+                  <img src={form.productImage} alt="Product" className="w-20 h-20 object-cover rounded" />
+                </div>
+              )}
               <Input
                 id="productImage"
                 name="productImage"
-                value={form.productImage}
-                onChange={handleFormChange}
+                type="file"
+                accept="image/*"
+                onChange={handleProductImageUpload}
                 disabled={viewMode}
-                placeholder="/placeholder.svg or image url"
               />
+              <p className="text-xs text-muted-foreground">Upload a product image (optional, overrides selected product image)</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="customer">Customer Name</Label>
@@ -351,17 +417,7 @@ export default function AdminReviewsPage() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                name="title"
-                value={form.title}
-                onChange={handleFormChange}
-                disabled={viewMode}
-                required
-              />
-            </div>
+
             <div className="space-y-2">
               <Label htmlFor="content">Content</Label>
               <Textarea
