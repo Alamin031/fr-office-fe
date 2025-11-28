@@ -8,6 +8,7 @@ export interface Herobanner {
     updatedAt: string
 }
 
+
 export interface CreateHerobannerRequest {
     img: File | string
 }
