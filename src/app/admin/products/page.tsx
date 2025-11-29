@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Plus, Search, Filter, MoreVertical, Edit, Trash2, Eye, Copy } from "lucide-react"
+import { withProtectedRoute } from "../../lib/auth/protected-route"
 import { Card, CardContent } from "../../components/ui/card"
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
@@ -87,7 +88,7 @@ const initialProducts: Product[] = [
   },
 ]
 
-export default function AdminProductsPage() {
+function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>(initialProducts)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [viewOpen, setViewOpen] = useState(false)
@@ -470,3 +471,9 @@ export default function AdminProductsPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(AdminProductsPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+})

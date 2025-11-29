@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Search, Filter, Eye, MoreVertical, Download, Printer, Plus, Mail, X } from "lucide-react"
+import { withProtectedRoute } from "../../lib/auth/protected-route"
 import { Card, CardContent } from "../../components/ui/card"
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
@@ -148,7 +149,7 @@ function getPaymentColor(payment: string) {
   }
 }
 
-export default function AdminOrdersPage() {
+function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>(initialOrders)
   const [viewOpen, setViewOpen] = useState(false)
   const [addDrawerOpen, setAddDrawerOpen] = useState(false)
