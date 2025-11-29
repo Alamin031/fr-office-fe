@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import React, { useEffect, useState, ComponentType } from "react"
 import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/auth-store"
-
+import { useAuthStore } from "@/app/store/auth-store"
 export type UserRole = "user" | "admin" | "management"
 
 export interface User {

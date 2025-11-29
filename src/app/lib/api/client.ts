@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useAuthStore } from "@/app/store/auth-store";
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "axios"
-import { useAuthStore } from "@/store/auth-store"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api"
 

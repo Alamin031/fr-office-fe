@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useOAuth } from "@/lib/oauth/oauth-context"
 import { toast } from "sonner"
+import { useOAuth } from "@/app/lib/oauth"
 
 export default function OAuthCallbackPage({ params }: { params: { provider: string } }) {
   const router = useRouter()

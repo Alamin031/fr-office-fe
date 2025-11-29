@@ -2,4 +2,4 @@
 export * from "./oauth-context"
 
 // Re-export types
-export type { OAuthProvider, OAuthConfig } from "./oauth-context"
+export type { OAuthProviderType, OAuthConfig } from "./oauth-context"

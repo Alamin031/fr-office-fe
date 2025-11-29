@@ -1,9 +1,8 @@
 "use client"
 
 import React, { createContext, useContext, useState, useCallback } from "react"
-import { useAuthStore } from "@/store/auth-store"
-
-export type OAuthProvider = "google" | "facebook"
+import { useAuthStore } from "@/app/store/auth-store"
+export type OAuthProviderType = "google" | "facebook"
 
 export interface OAuthConfig {
   google: {
@@ -21,8 +20,8 @@ export interface OAuthConfig {
 interface OAuthContextType {
   isOAuthLoading: boolean
   oauthError: string | null
-  initiateOAuth: (provider: OAuthProvider) => void
-  handleOAuthCallback: (provider: OAuthProvider, code: string) => Promise<boolean>
+  initiateOAuth: (provider: OAuthProviderType) => void
+  handleOAuthCallback: (provider: OAuthProviderType, code: string) => Promise<boolean>
   clearOAuthError: () => void
 }
 
@@ -67,7 +66,7 @@ export function OAuthProvider({ children }: { children: React.ReactNode }) {
     return btoa(String.fromCharCode(...hashArray)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
   }
 
-  const initiateOAuth = useCallback(async (provider: OAuthProvider) => {
+  const initiateOAuth = useCallback(async (provider: OAuthProviderType) => {
     try {
       setIsOAuthLoading(true)
       setOAuthError(null)
@@ -122,7 +121,7 @@ export function OAuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const handleOAuthCallback = useCallback(
-    async (provider: OAuthProvider, code: string): Promise<boolean> => {
+    async (provider: OAuthProviderType, code: string): Promise<boolean> => {
       try {
         setIsOAuthLoading(true)
         setOAuthError(null)

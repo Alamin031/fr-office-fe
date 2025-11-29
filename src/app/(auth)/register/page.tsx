@@ -41,12 +41,13 @@ export default function RegisterPage() {
     setIsLoading(true)
     setError(null)
     try {
-      await AuthService.register({
+      const authService = new AuthService();
+      await authService.register({
         name: `${form.firstName} ${form.lastName}`,
         email: form.email,
         phone: form.phone,
         password: form.password,
-      })
+      });
       router.push("/account")
     } catch (err: unknown) {
       let message = "Registration failed"

@@ -1,5 +1,7 @@
 // Export all API services
-export { authService } from "./auth"
+export { AuthService } from "./auth.service"
+export { careService } from "./care"
+export { homecategoriesService } from "./homecategories"
 export { usersService } from "./users"
 export { categoriesService } from "./categories"
 export { brandsService } from "./brands"

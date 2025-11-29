@@ -15,7 +15,6 @@ import {
   Shield,
   Loader2,
 } from "lucide-react";
-import { useOAuth } from "@/lib/oauth/oauth-context";
 import { useAuthStore } from "@/app/store/auth-store";
 import AuthService from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
@@ -25,6 +24,7 @@ import { Label } from "../../components/ui/label";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Separator } from "../../components/ui/separator";
 import { User } from "@/app/types";
+import { useOAuth } from "@/app/lib/oauth";
 
 const demoAccounts = [
   {
