@@ -912,3 +912,9 @@ function AdminOrdersPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(AdminOrdersPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+})
