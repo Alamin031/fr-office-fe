@@ -394,23 +394,28 @@ export interface Policy {
   content: string
   type: "privacy" | "terms" | "shipping" | "return" | "refund" | "warranty" | "custom"
   isPublished: boolean
-  order?: number
+  orderIndex?: number
   createdAt: string
   updatedAt: string
 }
 
+
 export interface CreatePolicyRequest {
-  title: string
-  content: string
-  type: Policy["type"]
-  isPublished?: boolean
+  title: string;
+  content: string;
+  type: Policy["type"];
+  isPublished?: boolean;
+  slug?: string;
+  orderIndex?: number;
 }
 
 export interface UpdatePolicyRequest {
-  title?: string
-  content?: string
-  type?: Policy["type"]
-  isPublished?: boolean
+  title?: string;
+  content?: string;
+  type?: Policy["type"];
+  isPublished?: boolean;
+  slug?: string;
+  orderIndex?: number;
 }
 
 // ==================== FAQ Types ====================

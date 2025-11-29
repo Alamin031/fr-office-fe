@@ -113,11 +113,10 @@ export const API_ENDPOINTS = {
   // Policies
   POLICIES_CREATE: '/policies',
   POLICIES_GET: '/policies',
-  POLICIES_SLUG: '/policies/{slug}',
   POLICIES_GET_ONE: '/policies/{id}',
   POLICIES_PUBLISHED: '/policies/published',
-  POLICIES_UPDATE: '/policies/{slug}',
-  POLICIES_DELETE: '/policies/{slug}',
+  POLICIES_UPDATE: '/policies/{id}',
+  POLICIES_DELETE: '/policies/{id}',
 
   // FAQs
   FAQS_CREATE: '/faqs',
