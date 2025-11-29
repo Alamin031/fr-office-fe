@@ -73,6 +73,20 @@ export const API_ENDPOINTS = {
   PRODUCTS_UPDATE: '/products/{id}',
   PRODUCTS_DELETE: '/products/{id}',
 
+  // Product Care Plans
+  PRODUCT_CARE_CREATE: '/products/{productId}/cares',
+  PRODUCT_CARE_LIST: '/products/{productId}/cares',
+  PRODUCT_CARE_UPDATE: '/products/cares/{id}',
+  PRODUCT_CARE_GET: '/products/cares/{id}',
+  PRODUCT_CARE_DELETE: '/products/cares/{id}',
+
+  // Product Notification Requests
+  PRODUCT_NOTIFY_CREATE: '/products/{productId}/notify',
+  PRODUCT_NOTIFY_LIST: '/products/{productId}/notify',
+  PRODUCT_NOTIFY_UPDATE: '/products/notify/{id}',
+  PRODUCT_NOTIFY_GET: '/products/notify/{id}',
+  PRODUCT_NOTIFY_DELETE: '/products/notify/{id}',
+
   // Orders
   ORDERS_CREATE: '/orders',
   ORDERS_GET: '/orders',
@@ -174,4 +188,11 @@ export const API_ENDPOINTS = {
   EMI_BANK_GET: '/emi/bank/{id}',
   EMI_BANK_DELETE: '/emi/bank/{id}',
   EMI_BANKS_GET: '/emi/banks',
+
+  // Homecategory
+  HOMECATEGORY_CREATE: '/homecategory',
+  HOMECATEGORY_LIST: '/homecategory',
+  HOMECATEGORY_GET: '/homecategory/{id}',
+  HOMECATEGORY_UPDATE: '/homecategory/{id}',
+  HOMECATEGORY_DELETE: '/homecategory/{id}',
 };
