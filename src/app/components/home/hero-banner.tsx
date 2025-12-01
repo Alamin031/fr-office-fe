@@ -29,6 +29,7 @@ export function HeroBanner() {
     async function fetchBanners() {
       try {
         const apiBanners: Herobanner[] = await herobannerService.findAll();
+        console.log("Fetched banners:", apiBanners);
         // Map API banners to Banner type (add fallback for missing fields)
         const mapped = apiBanners.map((b) => ({
           id: b.id,
