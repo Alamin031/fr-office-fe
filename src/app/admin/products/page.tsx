@@ -135,23 +135,12 @@ function AdminProductsPage() {
 
   const handleEditClick = (product: UIProduct) => {
     setSelectedProduct(product);
-    setEditFormData({ ...product });
     setEditOpen(true);
   };
 
   const handleDeleteClick = (product: UIProduct) => {
     setSelectedProduct(product);
     setDeleteOpen(true);
-  };
-
-  const handleSaveEdit = () => {
-    if (editFormData) {
-      setProducts(
-        products.map((p) => (p.id === editFormData.id ? editFormData : p))
-      );
-      setEditOpen(false);
-      setEditFormData(null);
-    }
   };
 
   const handleConfirmDelete = () => {
