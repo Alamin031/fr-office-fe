@@ -162,9 +162,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
             {type}: {selectedVariants[type] || "Select"}
           </h3>
           <div className="flex flex-wrap gap-2">
-            {variants.map((variant) => (
+            {variants.map((variant, index) => (
               <button
-                key={variant.id}
+                key={variant.id || variant.value || index}
                 onClick={() => setSelectedVariants((prev) => ({ ...prev, [type]: variant.value }))}
                 className={cn(
                   "flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all",

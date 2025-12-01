@@ -47,6 +47,7 @@ export const API_ENDPOINTS = {
   CATEGORIES_PRODUCTS: '/categories/{slug}/products',
   CATEGORIES_UPDATE: '/categories/{id}',
   CATEGORIES_DELETE: '/categories/{id}',
+  CATEGORIES_GET_ONE: '/categories/{id}',
   // Subcategories
   SUBCATEGORIES_CREATE: '/categories/{categoryId}/subcategories',
   SUBCATEGORIES_GET_ALL: '/categories/{categoryId}/subcategories',

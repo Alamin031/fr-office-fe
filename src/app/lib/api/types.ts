@@ -194,7 +194,7 @@ export interface Product {
   stock?: number;
   thumbnail?: string;
   gallery?: string[];
-  images?: string[];
+  image?: string[];
   variants?: { name: string; price: string; stock: string }[];
   regions?: { name: string; price: string; stock: string }[];
   colors?: { name: string; code: string }[];

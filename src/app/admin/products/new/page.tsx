@@ -124,7 +124,14 @@ export default function NewProductPage() {
   // Fetch categories and brands on mount
   useEffect(() => {
     categoriesService.getAll().then((data) => {
-      setCategories(data.map((c: any) => ({ id: c.id, name: c.name })));
+      setCategories(
+        data.map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          // If you need banner, handle type inconsistency here
+          banner: typeof c.banner === 'string' ? c.banner : undefined,
+        }))
+      );
     });
     brandsService.findAll().then((data) => {
       setBrands(data.map((b: any) => ({ id: b.id, name: b.name })));

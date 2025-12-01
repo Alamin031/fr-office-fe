@@ -2,7 +2,6 @@
 import { apiClient } from "../client"
 import {
   Product,
-  UpdateProductRequest,
   ProductListResponse,
   ProductSearchResponse,
   ProductFilters,

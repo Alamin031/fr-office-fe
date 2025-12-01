@@ -110,7 +110,7 @@ export default async function Page({ params }: CategoryPageProps) {
   // Fetch products for this category from API
   let products: Product[] = [];
   try {
-    const res = await productsService.getAll({ categoryId: slug }, 1, 100);
+    const res = await productsService.getAll({ categoryId: category.id }, 1, 100);
     // Guard access to `items` at runtime and cast to Product[]
     if (
       res &&
