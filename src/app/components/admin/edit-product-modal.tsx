@@ -364,7 +364,7 @@ export function EditProductModal({
           </TabsList>
 
           {/* Basic Tab */}
-          <TabsContent value="basic" className="space-y-4">
+          <TabsContent value="basic" className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="edit-name">Product Name</Label>
               <Input
@@ -383,7 +383,7 @@ export function EditProductModal({
                 placeholder="product-url-slug"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="edit-category">Category</Label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -415,7 +415,7 @@ export function EditProductModal({
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="edit-code">Product Code</Label>
                 <Input
@@ -435,7 +435,7 @@ export function EditProductModal({
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="edit-rating">Review Star Point</Label>
                 <Input
