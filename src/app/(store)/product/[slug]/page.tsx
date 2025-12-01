@@ -12,30 +12,21 @@ interface ProductPageProps {
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  try {
-    const { slug } = await params
+  const { slug } = await params
+  const product = getProductBySlug(slug)
 
-    if (!slug) {
-      return { title: "Product Not Found" }
-    }
+  if (!product) {
+    return { title: "Product Not Found" }
+  }
 
-    const product = getProductBySlug(slug)
-
-    if (!product) {
-      return { title: "Product Not Found" }
-    }
-
-    return {
+  return {
+    title: product.name,
+    description: product.description,
+    openGraph: {
       title: product.name,
       description: product.description,
-      openGraph: {
-        title: product.name,
-        description: product.description,
-        images: product.images,
-      },
-    }
-  } catch (error) {
-    return { title: "Product Not Found" }
+      images: product.images,
+    },
   }
 }
 
