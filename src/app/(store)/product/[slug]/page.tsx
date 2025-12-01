@@ -1,11 +1,11 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
 import { getProductBySlug, getRelatedProducts } from "../../../lib/mock-data"
 import { ProductGallery } from "../../../components/product/product-gallery"
 import { ProductInfo } from "../../../components/product/product-info"
 import { ProductTabs } from "../../../components/product/product-tabs"
 import { ProductSection } from "../../../components/home/product-section"
+import NotFound from "../../../app/not-found"
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>
