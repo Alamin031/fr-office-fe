@@ -18,7 +18,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const product = getProductBySlug(slug)
 
   if (!product) {
-    return { title: "Product Not Found" }
+    return {
+      title: "Product Not Found",
+      description: "The product you are looking for does not exist",
+    }
   }
 
   return {
