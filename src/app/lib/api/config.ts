@@ -65,6 +65,7 @@ export const API_ENDPOINTS = {
   // Products
   PRODUCTS_CREATE: '/products',
   PRODUCTS_GET: '/products',
+  PRODUCTS_GET_ONE: '/products/{id}',
   PRODUCTS_FEATURED: '/products/featured',
   PRODUCTS_NEW: '/products/new',
   PRODUCTS_HOT: '/products/hot',
