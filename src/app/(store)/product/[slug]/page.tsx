@@ -32,6 +32,11 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params
+
+  if (!slug) {
+    notFound()
+  }
+
   const product = getProductBySlug(slug)
 
   if (!product) {
