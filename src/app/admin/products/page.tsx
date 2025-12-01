@@ -365,232 +365,25 @@ function AdminProductsPage() {
       </Card>
 
       {/* View Modal */}
-      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>View Product</DialogTitle>
-            <DialogDescription>
-              Product details and information
-            </DialogDescription>
-          </DialogHeader>
-          {selectedProduct && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div className="rounded-lg bg-muted p-4">
-                  <Image
-                    src={selectedProduct.image || "/placeholder.svg"}
-                    alt={selectedProduct.name}
-                    width={200}
-                    height={200}
-                    className="h-48 w-full object-cover rounded"
-                  />
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">
-                      Product Name
-                    </Label>
-                    <p className="mt-1 font-medium text-base">
-                      {selectedProduct.name}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">
-                      SKU
-                    </Label>
-                    <p className="mt-1 font-medium text-base">
-                      {selectedProduct.sku}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">
-                      Category
-                    </Label>
-                    <p className="mt-1 font-medium text-base">
-                      {selectedProduct.category}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">
-                      Price
-                    </Label>
-                    <p className="mt-1 font-medium text-base">
-                      {formatPrice(selectedProduct.price ?? 0)}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">
-                      Stock
-                    </Label>
-                    <p className="mt-1 font-medium text-base">
-                      {selectedProduct.stock}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">
-                      Status
-                    </Label>
-                    <div className="mt-1">
-                      <Badge
-                        variant="secondary"
-                        className={
-                          selectedProduct.status === "Active"
-                            ? "bg-green-500/10 text-green-600"
-                            : selectedProduct.status === "Low Stock"
-                            ? "bg-yellow-500/10 text-yellow-600"
-                            : selectedProduct.status === "Out of Stock"
-                            ? "bg-red-500/10 text-red-600"
-                            : "bg-gray-500/10 text-gray-600"
-                        }
-                      >
-                        {selectedProduct.status}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {selectedProduct.description && (
-                <div>
-                  <Label className="text-muted-foreground text-xs uppercase">
-                    Description
-                  </Label>
-                  <p className="mt-2 text-sm">{selectedProduct.description}</p>
-                </div>
-              )}
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setViewOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ViewProductModal
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+        product={selectedProduct}
+      />
 
       {/* Edit Modal */}
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Product</DialogTitle>
-            <DialogDescription>Update product information</DialogDescription>
-          </DialogHeader>
-          {editFormData && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="edit-name">Product Name</Label>
-                <Input
-                  id="edit-name"
-                  value={editFormData.name}
-                  onChange={(e) =>
-                    setEditFormData({ ...editFormData, name: e.target.value })
-                  }
-                  placeholder="Enter product name"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-sku">SKU</Label>
-                  <Input
-                    id="edit-sku"
-                    value={editFormData.sku}
-                    onChange={(e) =>
-                      setEditFormData({ ...editFormData, sku: e.target.value })
-                    }
-                    placeholder="Enter SKU"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-category">Category</Label>
-                  <Input
-                    id="edit-category"
-                    value={editFormData.category}
-                    onChange={(e) =>
-                      setEditFormData({
-                        ...editFormData,
-                        category: e.target.value,
-                      })
-                    }
-                    placeholder="Enter category"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-price">Price</Label>
-                  <Input
-                    id="edit-price"
-                    type="number"
-                    value={editFormData.price}
-                    onChange={(e) =>
-                      setEditFormData({
-                        ...editFormData,
-                        price: Number(e.target.value),
-                      })
-                    }
-                    placeholder="Enter price"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-stock">Stock</Label>
-                  <Input
-                    id="edit-stock"
-                    type="number"
-                    value={editFormData.stock}
-                    onChange={(e) =>
-                      setEditFormData({
-                        ...editFormData,
-                        stock: Number(e.target.value),
-                      })
-                    }
-                    placeholder="Enter stock quantity"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-status">Status</Label>
-                <Select
-                  value={editFormData.status}
-                  onValueChange={(value) =>
-                    setEditFormData({ ...editFormData, status: value })
-                  }
-                >
-                  <SelectTrigger id="edit-status">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Low Stock">Low Stock</SelectItem>
-                    <SelectItem value="Out of Stock">Out of Stock</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                    <SelectItem value="Unknown">Unknown</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-description">Description</Label>
-                <Textarea
-                  id="edit-description"
-                  value={editFormData.description || ""}
-                  onChange={(e) =>
-                    setEditFormData({
-                      ...editFormData,
-                      description: e.target.value,
-                    })
-                  }
-                  placeholder="Enter product description"
-                  rows={4}
-                />
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveEdit}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditProductModal
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        product={selectedProduct}
+        onSuccess={(updatedProduct) => {
+          setProducts(
+            products.map((p) =>
+              p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
+            )
+          );
+        }}
+      />
 
       {/* Delete Confirmation Modal */}
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
