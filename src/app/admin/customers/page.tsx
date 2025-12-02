@@ -141,8 +141,7 @@ export default function AdminCustomersPage() {
   const handleSaveEdit = () => {
     if (editFormData) {
       setCustomers(customers.map((c) => (c.id === editFormData.id ? editFormData : c)))
-      setEditOpen(false)
-      setEditFormData(null)
+      handleCloseEdit(false)
     }
   }
 
