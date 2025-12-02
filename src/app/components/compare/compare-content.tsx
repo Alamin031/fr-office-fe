@@ -95,7 +95,7 @@ export function CompareContent() {
               <td className="border-b border-border p-4 font-medium">Brand</td>
               {items.map((product) => (
                 <td key={product.id} className="border-b border-border p-4 text-center">
-                  {product.brand.name}
+                  {product.brand ? product.brand.name : "N/A"}
                 </td>
               ))}
             </tr>
