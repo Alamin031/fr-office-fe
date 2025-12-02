@@ -141,18 +141,30 @@ export function Navbar() {
               Categories
               <ChevronDown className={cn("h-4 w-4 transition-transform", isMegaMenuOpen && "rotate-180")} />
             </button>
-            {categories.slice(0, 4).map((category) => (
-              <Link
-                key={category.slug}
-                href={`/category/${category.slug}`}
-                className={cn(
-                  "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent",
-                  pathname === `/category/${category.slug}` && "bg-accent",
-                )}
-              >
-                {category.name}
-              </Link>
-            ))}
+            {categories
+              .sort((a, b) => {
+                const priorityA = a.priority ? Number(a.priority) : Infinity
+                const priorityB = b.priority ? Number(b.priority) : Infinity
+                return priorityA - priorityB
+              })
+              .slice(0, 3)
+              .map((category) => (
+                <Link
+                  key={category.slug}
+                  href={`/category/${category.slug}`}
+                  className={cn(
+                    "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent",
+                    pathname === `/category/${category.slug}` && "bg-accent",
+                  )}
+                >
+                  {category.name}
+                </Link>
+              ))}
+            <Link href="/all-products" className="hidden sm:inline-flex">
+              <Button variant="ghost" size="sm" className="text-sm font-medium">
+                All Products
+              </Button>
+            </Link>
           </nav>
 
           {/* Search - Desktop */}
