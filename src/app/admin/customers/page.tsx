@@ -16,6 +16,7 @@ import { Textarea } from "../../components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../../components/ui/alert-dialog"
 import { formatPrice } from "../../lib/utils/format"
+import { withProtectedRoute } from "../../lib/auth/protected-route"
 import "./modal-styles.css"
 
 interface Customer {
@@ -100,7 +101,7 @@ const initialCustomers: Customer[] = [
   },
 ]
 
-export default function AdminCustomersPage() {
+function AdminCustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>(initialCustomers)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
   const [viewOpen, setViewOpen] = useState(false)
@@ -630,3 +631,9 @@ export default function AdminCustomersPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(AdminCustomersPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+})
