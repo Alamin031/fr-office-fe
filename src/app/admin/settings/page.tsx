@@ -236,3 +236,9 @@ function AdminSettingsPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(AdminSettingsPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+});
