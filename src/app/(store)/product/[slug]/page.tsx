@@ -2,7 +2,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type {Metadata} from 'next';
 import {productsService} from '../../../lib/api/services/products';
-import {categoriesService} from '../../../lib/api/services/categories';
 import {ProductGallery} from '../../../components/product/product-gallery';
 import {ProductInfo} from '../../../components/product/product-info';
 import {ProductTabs} from '../../../components/product/product-tabs';
