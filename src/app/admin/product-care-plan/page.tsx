@@ -656,3 +656,9 @@ function ProductCarePlanPage() {
     </div>
   );
 }
+
+export default withProtectedRoute(ProductCarePlanPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+});
