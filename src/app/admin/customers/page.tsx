@@ -408,14 +408,14 @@ export default function AdminCustomersPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
-                <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Member Since</Label>
-                <p className="mt-2 font-semibold text-slate-900 dark:text-slate-50">{selectedCustomer.joinDate}</p>
+              <div className="rounded-lg border border-slate-200 bg-white p-4">
+                <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Member Since</Label>
+                <p className="mt-2 font-semibold text-slate-900">{selectedCustomer.joinDate}</p>
               </div>
             </div>
           )}
           <DialogFooter className="mt-6 flex gap-3">
-            <Button variant="outline" onClick={() => setViewOpen(false)} className="border-slate-200 dark:border-slate-700">
+            <Button variant="outline" onClick={() => setViewOpen(false)} className="border-slate-200">
               Close
             </Button>
           </DialogFooter>
