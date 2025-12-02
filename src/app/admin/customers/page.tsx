@@ -331,7 +331,7 @@ export default function AdminCustomersPage() {
 
       {/* View Profile Modal */}
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="modal-animate max-w-2xl border-0 bg-gradient-to-br from-slate-50 to-slate-100 shadow-2xl dark:from-slate-900 dark:to-slate-800">
+        <DialogContent className="modal-animate max-w-2xl border-0 bg-white shadow-2xl">
           <DialogHeader className="space-y-1">
             <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent dark:from-slate-50 dark:to-slate-300">Customer Profile</DialogTitle>
             <DialogDescription className="text-slate-600 dark:text-slate-400">View customer details and order history</DialogDescription>
