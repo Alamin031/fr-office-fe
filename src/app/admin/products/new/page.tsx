@@ -27,8 +27,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import { withProtectedRoute } from "../../../lib/auth/protected-route";
 
-export default function NewProductPage() {
+function NewProductPage() {
   // Handle publish product
   const handlePublish = async () => {
     setIsSubmitting(true);
@@ -1142,3 +1143,9 @@ export default function NewProductPage() {
     </div>
   );
 }
+
+export default withProtectedRoute(NewProductPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+});
