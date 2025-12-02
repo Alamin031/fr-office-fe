@@ -1,7 +1,10 @@
+"use client"
+
 import { CreditCard, Gift, Plus, Clock } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 import { formatPrice } from "../../../lib/utils/format"
+import { withProtectedRoute } from "../../../lib/auth/protected-route"
 
 const transactions = [
   { id: "1", type: "credit", description: "Cashback on order #ORD-2024-001", amount: 250, date: "Nov 20, 2024" },
@@ -15,7 +18,7 @@ const coupons = [
   { code: "FLAT500", discount: "₹500 off", validity: "Nov 30, 2024", minOrder: 4999 },
 ]
 
-export default function WalletPage() {
+function WalletPage() {
   return (
     <div className="space-y-6">
       <div>
@@ -126,3 +129,7 @@ export default function WalletPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(WalletPage, {
+  requiredRoles: ["user"],
+})

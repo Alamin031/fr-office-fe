@@ -199,3 +199,7 @@ function AddressesPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(AddressesPage, {
+  requiredRoles: ["user"],
+})

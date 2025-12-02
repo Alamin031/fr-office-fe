@@ -17,8 +17,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../../components/ui/alert-dialog"
+import { withProtectedRoute } from "../../../lib/auth/protected-route"
 
-export default function SettingsPage() {
+function SettingsPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
 
@@ -155,3 +156,7 @@ export default function SettingsPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(SettingsPage, {
+  requiredRoles: ["user"],
+})

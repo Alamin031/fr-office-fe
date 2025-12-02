@@ -8,8 +8,9 @@ import { Button } from "../../../components/ui/button"
 import { useWishlistStore } from "../../../store/wishlist-store"
 import { useCartStore } from "../../../store/cart-store"
 import { formatPrice } from "../../../lib/utils/format"
+import { withProtectedRoute } from "../../../lib/auth/protected-route"
 
-export default function WishlistPage() {
+function WishlistPage() {
   const { items, removeItem, clearWishlist } = useWishlistStore()
   const addToCart = useCartStore((state) => state.addItem)
 
@@ -101,3 +102,7 @@ export default function WishlistPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(WishlistPage, {
+  requiredRoles: ["user"],
+})

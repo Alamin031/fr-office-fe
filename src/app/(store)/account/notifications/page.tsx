@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui
 import { Button } from "../../../components/ui/button"
 import { Switch } from "../../../components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
+import { withProtectedRoute } from "../../../lib/auth/protected-route"
 
 const notifications = [
   {
@@ -58,7 +59,7 @@ const notificationSettings = [
   { id: "newsletter", label: "Newsletter", description: "Weekly updates on new products", enabled: false },
 ]
 
-export default function NotificationsPage() {
+function NotificationsPage() {
   const [notifs, setNotifs] = useState(notifications)
   const [settings, setSettings] = useState(notificationSettings)
 
@@ -193,3 +194,7 @@ export default function NotificationsPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(NotificationsPage, {
+  requiredRoles: ["user"],
+})
