@@ -387,23 +387,23 @@ export default function AdminCustomersPage() {
                 </div>
               </div>
 
-              <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
-                <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-50">
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md">
+                <h3 className="flex items-center gap-2 font-bold text-slate-900">
                   <span className="h-1 w-1 rounded-full bg-purple-500"></span>
                   Order Summary
                 </h3>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 p-3 dark:from-blue-900/30 dark:to-blue-800/30">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300">Total Orders</Label>
-                    <p className="mt-2 text-2xl font-bold text-blue-900 dark:text-blue-200">{selectedCustomer.orders}</p>
+                  <div className="rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 p-3 border border-blue-200">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-blue-700">Total Orders</Label>
+                    <p className="mt-2 text-2xl font-bold text-blue-900">{selectedCustomer.orders}</p>
                   </div>
-                  <div className="rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 p-3 dark:from-purple-900/30 dark:to-purple-800/30">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-purple-700 dark:text-purple-300">Total Spent</Label>
-                    <p className="mt-2 text-2xl font-bold text-purple-900 dark:text-purple-200">{formatPrice(selectedCustomer.totalSpent)}</p>
+                  <div className="rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 p-3 border border-purple-200">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-purple-700">Total Spent</Label>
+                    <p className="mt-2 text-2xl font-bold text-purple-900">{formatPrice(selectedCustomer.totalSpent)}</p>
                   </div>
-                  <div className="rounded-lg bg-gradient-to-br from-emerald-50 to-emerald-100 p-3 dark:from-emerald-900/30 dark:to-emerald-800/30">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">Last Order</Label>
-                    <p className="mt-2 font-bold text-emerald-900 dark:text-emerald-200">{selectedCustomer.lastOrder}</p>
+                  <div className="rounded-lg bg-gradient-to-br from-emerald-50 to-emerald-100 p-3 border border-emerald-200">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Last Order</Label>
+                    <p className="mt-2 font-bold text-emerald-900">{selectedCustomer.lastOrder}</p>
                   </div>
                 </div>
               </div>
