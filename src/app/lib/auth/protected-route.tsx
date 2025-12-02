@@ -98,6 +98,17 @@ export function withProtectedRoute<P extends object>(
       isHydrated,
     ]);
 
+    // Debug log for hydration/auth state
+    useEffect(() => {
+      if (isHydrated) {
+        console.log("[DEBUG] AuthStore hydrated:", {
+          user,
+          token,
+          isAuthenticated,
+        });
+      }
+    }, [isHydrated, user, token, isAuthenticated]);
+
     if (!isHydrated) {
       // Optionally show a loader or nothing until hydrated
       return null;
