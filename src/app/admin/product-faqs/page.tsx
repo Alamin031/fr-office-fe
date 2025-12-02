@@ -644,3 +644,9 @@ function ProductFAQsPage() {
     </div>
   );
 }
+
+export default withProtectedRoute(ProductFAQsPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+});
