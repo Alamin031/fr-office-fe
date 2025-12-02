@@ -61,24 +61,28 @@ export function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Categories</h3>
             <div className="space-y-1">
-              {megaMenuData.categories.map((category) => (
-                <Link
-                  key={category.slug}
-                  href={`/category/${category.slug}`}
-                  onClick={onClose}
-                  className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent"
-                >
-                  <div className="relative h-10 w-10 overflow-hidden rounded-lg bg-muted">
-                    <Image
-                      src={category.image || "/placeholder.svg"}
-                      alt={category.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <span className="text-sm font-medium">{category.name}</span>
-                </Link>
-              ))}
+              {categories.length > 0 ? (
+                categories.map((category) => (
+                  <Link
+                    key={category.slug}
+                    href={`/category/${category.slug}`}
+                    onClick={onClose}
+                    className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent"
+                  >
+                    <div className="relative h-10 w-10 overflow-hidden rounded-lg bg-muted">
+                      <Image
+                        src={category.image || "/placeholder.svg"}
+                        alt={category.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <span className="text-sm font-medium">{category.name}</span>
+                  </Link>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">Loading categories...</p>
+              )}
             </div>
           </div>
 
@@ -86,24 +90,28 @@ export function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Top Brands</h3>
             <div className="grid grid-cols-2 gap-2">
-              {megaMenuData.brands.map((brand) => (
-                <Link
-                  key={brand.slug}
-                  href={`/brand/${brand.slug}`}
-                  onClick={onClose}
-                  className="flex items-center gap-2 rounded-lg p-2 transition-colors hover:bg-accent"
-                >
-                  <div className="relative h-8 w-8 overflow-hidden rounded bg-muted">
-                    <Image
-                      src={brand.logo || "/placeholder.svg"}
-                      alt={brand.name}
-                      fill
-                      className="object-contain p-1"
-                    />
-                  </div>
-                  <span className="text-sm font-medium">{brand.name}</span>
-                </Link>
-              ))}
+              {brands.length > 0 ? (
+                brands.slice(0, 6).map((brand) => (
+                  <Link
+                    key={brand.slug}
+                    href={`/brand/${brand.slug}`}
+                    onClick={onClose}
+                    className="flex items-center gap-2 rounded-lg p-2 transition-colors hover:bg-accent"
+                  >
+                    <div className="relative h-8 w-8 overflow-hidden rounded bg-muted">
+                      <Image
+                        src={brand.logo || "/placeholder.svg"}
+                        alt={brand.name}
+                        fill
+                        className="object-contain p-1"
+                      />
+                    </div>
+                    <span className="text-sm font-medium">{brand.name}</span>
+                  </Link>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">Loading brands...</p>
+              )}
             </div>
             <Link
               href="/brands"
@@ -119,7 +127,7 @@ export function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Trending Now</h3>
             <div className="space-y-1">
-              {megaMenuData.trending.map((item) => (
+              {trendingData.map((item) => (
                 <Link
                   key={item.slug}
                   href={`/product/${item.slug}`}
@@ -136,7 +144,7 @@ export function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[oklch(0.55_0.2_25)]">Hot Deals</h3>
             <div className="space-y-2">
-              {megaMenuData.deals.map((deal) => (
+              {dealsData.map((deal) => (
                 <Link
                   key={deal.slug}
                   href={`/deals/${deal.slug}`}
