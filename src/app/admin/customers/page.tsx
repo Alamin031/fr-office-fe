@@ -16,6 +16,7 @@ import { Textarea } from "../../components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../../components/ui/alert-dialog"
 import { formatPrice } from "../../lib/utils/format"
+import "./modal-styles.css"
 
 interface Customer {
   id: string
@@ -140,15 +141,14 @@ export default function AdminCustomersPage() {
   const handleSaveEdit = () => {
     if (editFormData) {
       setCustomers(customers.map((c) => (c.id === editFormData.id ? editFormData : c)))
-      setEditOpen(false)
-      setEditFormData(null)
+      handleCloseEdit(false)
     }
   }
 
   const handleSendEmail = () => {
     if (selectedCustomer && emailFormData.subject && emailFormData.message) {
       alert(`Email sent to ${selectedCustomer.email}\n\nSubject: ${emailFormData.subject}`)
-      setEmailOpen(false)
+      handleCloseEmail(false)
     }
   }
 
@@ -157,14 +157,50 @@ export default function AdminCustomersPage() {
       setCustomers(
         customers.map((c) => (c.id === selectedCustomer.id ? { ...c, status: "Blocked" } : c))
       )
-      setBlockOpen(false)
+      handleCloseBlock(false)
     }
   }
 
   const handleConfirmDelete = () => {
     if (selectedCustomer) {
       setCustomers(customers.filter((c) => c.id !== selectedCustomer.id))
-      setDeleteOpen(false)
+      handleCloseDelete(false)
+    }
+  }
+
+  const handleCloseView = (open: boolean) => {
+    setViewOpen(open)
+    if (!open) {
+      setSelectedCustomer(null)
+    }
+  }
+
+  const handleCloseEdit = (open: boolean) => {
+    setEditOpen(open)
+    if (!open) {
+      setSelectedCustomer(null)
+      setEditFormData(null)
+    }
+  }
+
+  const handleCloseEmail = (open: boolean) => {
+    setEmailOpen(open)
+    if (!open) {
+      setSelectedCustomer(null)
+      setEmailFormData({ subject: "", message: "" })
+    }
+  }
+
+  const handleCloseBlock = (open: boolean) => {
+    setBlockOpen(open)
+    if (!open) {
+      setSelectedCustomer(null)
+    }
+  }
+
+  const handleCloseDelete = (open: boolean) => {
+    setDeleteOpen(open)
+    if (!open) {
       setSelectedCustomer(null)
     }
   }
@@ -329,16 +365,16 @@ export default function AdminCustomersPage() {
       </Card>
 
       {/* View Profile Modal */}
-      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Customer Profile</DialogTitle>
-            <DialogDescription>View customer details and order history</DialogDescription>
+      <Dialog open={viewOpen} onOpenChange={handleCloseView}>
+        <DialogContent className="modal-animate max-w-2xl border-0 bg-white shadow-2xl">
+          <DialogHeader className="space-y-1">
+            <DialogTitle className="text-2xl font-bold text-slate-900">Customer Profile</DialogTitle>
+            <DialogDescription className="text-slate-600">View customer details and order history</DialogDescription>
           </DialogHeader>
           {selectedCustomer && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="h-20 w-20 overflow-hidden rounded-full bg-muted">
+            <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-4">
+              <div className="flex items-center gap-4 rounded-xl bg-slate-50 p-4 shadow-sm border border-slate-200">
+                <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-slate-200 bg-gradient-to-br from-blue-100 to-purple-100 shadow-md">
                   <Image
                     src={selectedCustomer.avatar || "/placeholder.svg"}
                     alt={selectedCustomer.name}
@@ -347,68 +383,74 @@ export default function AdminCustomersPage() {
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div>
-                  <h2 className="text-2xl font-semibold">{selectedCustomer.name}</h2>
-                  <p className="text-muted-foreground">{selectedCustomer.email}</p>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-slate-900">{selectedCustomer.name}</h2>
+                  <p className="mt-1 text-sm text-slate-600">{selectedCustomer.email}</p>
                   <Badge
                     variant="secondary"
-                    className={
+                    className={`mt-2 border-0 font-semibold ${
                       selectedCustomer.status === "Active"
-                        ? "bg-green-500/10 text-green-600 mt-2"
+                        ? "bg-emerald-100 text-emerald-700"
                         : selectedCustomer.status === "Inactive"
-                          ? "bg-yellow-500/10 text-yellow-600 mt-2"
-                          : "bg-red-500/10 text-red-600 mt-2"
-                    }
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-red-100 text-red-700"
+                    }`}
                   >
                     {selectedCustomer.status}
                   </Badge>
                 </div>
               </div>
 
-              <div className="space-y-4 rounded-lg border border-border p-4">
-                <h3 className="font-semibold">Contact Information</h3>
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md">
+                <h3 className="flex items-center gap-2 font-bold text-slate-900">
+                  <span className="h-1 w-1 rounded-full bg-blue-500"></span>
+                  Contact Information
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Phone</Label>
-                    <p className="mt-1 font-medium">{selectedCustomer.phone}</p>
+                  <div className="rounded-lg bg-slate-50 p-3 border border-slate-100">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Phone</Label>
+                    <p className="mt-2 font-semibold text-slate-900">{selectedCustomer.phone}</p>
                   </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Email</Label>
-                    <p className="mt-1 font-medium text-sm">{selectedCustomer.email}</p>
+                  <div className="rounded-lg bg-slate-50 p-3 border border-slate-100">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Email</Label>
+                    <p className="mt-2 truncate font-semibold text-slate-900">{selectedCustomer.email}</p>
                   </div>
-                  <div className="col-span-2">
-                    <Label className="text-muted-foreground text-xs uppercase">Address</Label>
-                    <p className="mt-1 font-medium text-sm">{selectedCustomer.address}</p>
+                  <div className="col-span-2 rounded-lg bg-slate-50 p-3 border border-slate-100">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Address</Label>
+                    <p className="mt-2 font-semibold text-slate-900">{selectedCustomer.address}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4 rounded-lg border border-border p-4">
-                <h3 className="font-semibold">Order Summary</h3>
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md">
+                <h3 className="flex items-center gap-2 font-bold text-slate-900">
+                  <span className="h-1 w-1 rounded-full bg-purple-500"></span>
+                  Order Summary
+                </h3>
                 <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Total Orders</Label>
-                    <p className="mt-1 text-2xl font-bold">{selectedCustomer.orders}</p>
+                  <div className="rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 p-3 border border-blue-200">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-blue-700">Total Orders</Label>
+                    <p className="mt-2 text-2xl font-bold text-blue-900">{selectedCustomer.orders}</p>
                   </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Total Spent</Label>
-                    <p className="mt-1 text-2xl font-bold">{formatPrice(selectedCustomer.totalSpent)}</p>
+                  <div className="rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 p-3 border border-purple-200">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-purple-700">Total Spent</Label>
+                    <p className="mt-2 text-2xl font-bold text-purple-900">{formatPrice(selectedCustomer.totalSpent)}</p>
                   </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Last Order</Label>
-                    <p className="mt-1 font-medium">{selectedCustomer.lastOrder}</p>
+                  <div className="rounded-lg bg-gradient-to-br from-emerald-50 to-emerald-100 p-3 border border-emerald-200">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Last Order</Label>
+                    <p className="mt-2 font-bold text-emerald-900">{selectedCustomer.lastOrder}</p>
                   </div>
                 </div>
               </div>
 
-              <div>
-                <Label className="text-muted-foreground text-xs uppercase">Member Since</Label>
-                <p className="mt-1 font-medium">{selectedCustomer.joinDate}</p>
+              <div className="rounded-lg border border-slate-200 bg-white p-4">
+                <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Member Since</Label>
+                <p className="mt-2 font-semibold text-slate-900">{selectedCustomer.joinDate}</p>
               </div>
             </div>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setViewOpen(false)}>
+          <DialogFooter className="mt-6 flex gap-3">
+            <Button variant="outline" onClick={() => handleCloseView(false)} className="border-slate-200">
               Close
             </Button>
           </DialogFooter>
@@ -416,60 +458,64 @@ export default function AdminCustomersPage() {
       </Dialog>
 
       {/* Edit Customer Modal */}
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Customer</DialogTitle>
-            <DialogDescription>Update customer information</DialogDescription>
+      <Dialog open={editOpen} onOpenChange={handleCloseEdit}>
+        <DialogContent className="modal-animate max-w-2xl border-0 bg-white shadow-2xl">
+          <DialogHeader className="space-y-1">
+            <DialogTitle className="text-2xl font-bold text-slate-900">Edit Customer</DialogTitle>
+            <DialogDescription className="text-slate-600">Update customer information</DialogDescription>
           </DialogHeader>
           {editFormData && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="edit-name">Full Name</Label>
+            <div className="space-y-5 max-h-[60vh] overflow-y-auto pr-4">
+              <div className="space-y-2.5">
+                <Label htmlFor="edit-name" className="text-sm font-semibold text-slate-700">Full Name</Label>
                 <Input
                   id="edit-name"
                   value={editFormData.name}
                   onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
                   placeholder="Enter full name"
+                  className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-email">Email</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="edit-email" className="text-sm font-semibold text-slate-700">Email</Label>
                   <Input
                     id="edit-email"
                     type="email"
                     value={editFormData.email}
                     onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
                     placeholder="Enter email"
+                    className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-phone">Phone</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="edit-phone" className="text-sm font-semibold text-slate-700">Phone</Label>
                   <Input
                     id="edit-phone"
                     value={editFormData.phone}
                     onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
                     placeholder="Enter phone"
+                    className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-address">Address</Label>
+              <div className="space-y-2.5">
+                <Label htmlFor="edit-address" className="text-sm font-semibold text-slate-700">Address</Label>
                 <Input
                   id="edit-address"
                   value={editFormData.address}
                   onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
                   placeholder="Enter address"
+                  className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-status">Status</Label>
+              <div className="space-y-2.5">
+                <Label htmlFor="edit-status" className="text-sm font-semibold text-slate-700">Status</Label>
                 <Select value={editFormData.status} onValueChange={(value) => setEditFormData({ ...editFormData, status: value })}>
-                  <SelectTrigger id="edit-status">
+                  <SelectTrigger id="edit-status" className="input-enhance border-slate-200 bg-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="border-slate-200 bg-white">
                     <SelectItem value="Active">Active</SelectItem>
                     <SelectItem value="Inactive">Inactive</SelectItem>
                     <SelectItem value="Blocked">Blocked</SelectItem>
@@ -478,80 +524,86 @@ export default function AdminCustomersPage() {
               </div>
             </div>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditOpen(false)}>
+          <DialogFooter className="mt-6 flex gap-3">
+            <Button variant="outline" onClick={() => handleCloseEdit(false)} className="border-slate-200">
               Cancel
             </Button>
-            <Button onClick={handleSaveEdit}>Save Changes</Button>
+            <Button onClick={handleSaveEdit} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Send Email Drawer */}
-      <Sheet open={emailOpen} onOpenChange={setEmailOpen}>
-        <SheetContent side="right" className="w-full sm:w-[500px]">
-          <SheetHeader>
-            <SheetTitle>Send Email</SheetTitle>
-            <SheetDescription>
-              Send an email to {selectedCustomer?.name}
-            </SheetDescription>
-          </SheetHeader>
+      <Sheet open={emailOpen} onOpenChange={handleCloseEmail}>
+        <SheetContent side="right" className="drawer-animate w-full border-l border-slate-200 bg-white p-0 shadow-2xl sm:w-[500px]">
+          <div className="flex h-full flex-col">
+            <SheetHeader className="border-b border-slate-200 bg-slate-50 px-6 py-5">
+              <SheetTitle className="text-2xl font-bold text-slate-900">Send Email</SheetTitle>
+              <SheetDescription className="text-slate-600">
+                Send an email to <span className="font-semibold text-slate-900">{selectedCustomer?.name}</span>
+              </SheetDescription>
+            </SheetHeader>
 
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="email-to">To</Label>
-              <Input
-                id="email-to"
-                value={selectedCustomer?.email}
-                disabled
-                className="bg-muted"
-              />
+            <div className="flex-1 overflow-y-auto px-6 py-6">
+              <div className="space-y-5">
+                <div className="space-y-2.5">
+                  <Label htmlFor="email-to" className="text-sm font-semibold text-slate-700">To</Label>
+                  <Input
+                    id="email-to"
+                    value={selectedCustomer?.email}
+                    disabled
+                    className="border-slate-200 bg-slate-100 text-slate-600"
+                  />
+                </div>
+                <div className="space-y-2.5">
+                  <Label htmlFor="email-subject" className="text-sm font-semibold text-slate-700">Subject</Label>
+                  <Input
+                    id="email-subject"
+                    value={emailFormData.subject}
+                    onChange={(e) => setEmailFormData({ ...emailFormData, subject: e.target.value })}
+                    placeholder="Enter email subject"
+                    className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
+                  />
+                </div>
+                <div className="space-y-2.5">
+                  <Label htmlFor="email-message" className="text-sm font-semibold text-slate-700">Message</Label>
+                  <Textarea
+                    id="email-message"
+                    value={emailFormData.message}
+                    onChange={(e) => setEmailFormData({ ...emailFormData, message: e.target.value })}
+                    placeholder="Enter your message"
+                    rows={8}
+                    className="input-enhance resize-none border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
+                  />
+                </div>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email-subject">Subject</Label>
-              <Input
-                id="email-subject"
-                value={emailFormData.subject}
-                onChange={(e) => setEmailFormData({ ...emailFormData, subject: e.target.value })}
-                placeholder="Enter email subject"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email-message">Message</Label>
-              <Textarea
-                id="email-message"
-                value={emailFormData.message}
-                onChange={(e) => setEmailFormData({ ...emailFormData, message: e.target.value })}
-                placeholder="Enter your message"
-                rows={6}
-              />
-            </div>
+
+            <SheetFooter className="border-t border-slate-200 bg-slate-50 px-6 py-4">
+              <Button variant="outline" onClick={() => handleCloseEmail(false)} className="border-slate-200">
+                Cancel
+              </Button>
+              <Button onClick={handleSendEmail} className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+                <Send className="h-4 w-4" />
+                Send Email
+              </Button>
+            </SheetFooter>
           </div>
-
-          <SheetFooter>
-            <Button variant="outline" onClick={() => setEmailOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSendEmail} className="gap-2">
-              <Send className="h-4 w-4" />
-              Send Email
-            </Button>
-          </SheetFooter>
         </SheetContent>
       </Sheet>
 
       {/* Block Customer Modal */}
-      <AlertDialog open={blockOpen} onOpenChange={setBlockOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Block Customer</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to block <span className="font-semibold">{selectedCustomer?.name}</span>? They will not be able to place orders or access their account.
+      <AlertDialog open={blockOpen} onOpenChange={handleCloseBlock}>
+        <AlertDialogContent className="alert-animate border-0 bg-white shadow-2xl">
+          <AlertDialogHeader className="space-y-2">
+            <AlertDialogTitle className="text-xl font-bold text-slate-900">Block Customer</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
+              Are you sure you want to block <span className="font-bold text-amber-600">{selectedCustomer?.name}</span>? They will not be able to place orders or access their account.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleBlockCustomer} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogFooter className="mt-6 flex gap-3">
+            <AlertDialogCancel className="border-slate-200">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBlockCustomer} className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800">
               Block Customer
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -559,17 +611,17 @@ export default function AdminCustomersPage() {
       </AlertDialog>
 
       {/* Delete Customer Modal */}
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Customer</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <span className="font-semibold">{selectedCustomer?.name}</span>? This action cannot be undone.
+      <AlertDialog open={deleteOpen} onOpenChange={handleCloseDelete}>
+        <AlertDialogContent className="alert-animate border-0 bg-white shadow-2xl">
+          <AlertDialogHeader className="space-y-2">
+            <AlertDialogTitle className="text-xl font-bold text-slate-900">Delete Customer</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
+              Are you sure you want to delete <span className="font-bold text-red-600">{selectedCustomer?.name}</span>? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogFooter className="mt-6 flex gap-3">
+            <AlertDialogCancel className="border-slate-200">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

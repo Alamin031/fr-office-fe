@@ -22,8 +22,9 @@ import { Label } from "../../components/ui/label";
 import { Plus } from "lucide-react";
 import brandsService from "../../lib/api/services/brands";
 import { Brand } from "@/app/types";
+import { withProtectedRoute } from "../../lib/auth/protected-route";
 
-export default function BrandPage() {
+function BrandPage() {
   const [brands, setBrands] = useState<Brand[] | null>(null);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -429,3 +430,9 @@ export default function BrandPage() {
     </div>
   );
 }
+
+export default withProtectedRoute(BrandPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+})

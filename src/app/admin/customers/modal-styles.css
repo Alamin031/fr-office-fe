@@ -1,0 +1,155 @@
+/* Modal Animations */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes drawerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.93) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Apply animations to modals */
+.modal-animate {
+  animation: modalSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.alert-animate {
+  animation: alertSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer-animate {
+  animation: drawerSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Enhanced input styling */
+.input-enhance {
+  transition: all 0.2s ease-in-out;
+}
+
+.input-enhance:focus {
+  outline: none;
+}
+
+.input-enhance::placeholder {
+  color: rgb(148, 163, 184);
+}
+
+.dark .input-enhance::placeholder {
+  color: rgb(100, 116, 139);
+}
+
+/* Backdrop overlay animation */
+[data-state="open"] {
+  animation: backdropFadeIn 0.3s ease-out;
+}
+
+/* Dialog overlay styling */
+div[data-radix-dialog-overlay] {
+  animation: backdropFadeIn 0.3s ease-out;
+}
+
+/* Sheet overlay styling */
+div[data-radix-dialog-overlay] {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Form field transitions */
+div[class*="space-y"] input,
+div[class*="space-y"] textarea,
+div[class*="space-y"] select {
+  transition: all 0.2s ease-in-out;
+}
+
+div[class*="space-y"] input:hover,
+div[class*="space-y"] textarea:hover,
+div[class*="space-y"] select:hover {
+  border-color: rgb(203, 213, 225);
+}
+
+.dark div[class*="space-y"] input:hover,
+.dark div[class*="space-y"] textarea:hover,
+.dark div[class*="space-y"] select:hover {
+  border-color: rgb(71, 85, 105);
+}
+
+/* Button transitions */
+.bg-gradient-to-r {
+  transition: all 0.2s ease-in-out;
+}
+
+.bg-gradient-to-r:active {
+  transform: scale(0.98);
+}
+
+/* Scrollbar styling for modal content */
+.max-h-\[60vh\]::-webkit-scrollbar {
+  width: 6px;
+}
+
+.max-h-\[60vh\]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.max-h-\[60vh\]::-webkit-scrollbar-thumb {
+  background: rgb(203, 213, 225);
+  border-radius: 3px;
+}
+
+.max-h-\[60vh\]::-webkit-scrollbar-thumb:hover {
+  background: rgb(148, 163, 184);
+}
+
+.dark .max-h-\[60vh\]::-webkit-scrollbar-thumb {
+  background: rgb(71, 85, 105);
+}
+
+.dark .max-h-\[60vh\]::-webkit-scrollbar-thumb:hover {
+  background: rgb(100, 116, 139);
+}
+
+/* Smooth state transitions */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  transition: box-shadow 0.2s ease;
+}

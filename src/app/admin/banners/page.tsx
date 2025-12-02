@@ -38,8 +38,9 @@ import {
   herobannerService,
   Herobanner,
 } from "../../lib/api/services/herobanner";
+import { withProtectedRoute } from "../../lib/auth/protected-route";
 
-export default function Page() {
+function Page() {
   const [heroImages, setHeroImages] = useState<Herobanner[]>([]);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -322,3 +323,9 @@ export default function Page() {
     </div>
   );
 }
+
+export default withProtectedRoute(Page, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+})
