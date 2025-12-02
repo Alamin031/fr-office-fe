@@ -331,15 +331,15 @@ export default function AdminCustomersPage() {
 
       {/* View Profile Modal */}
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Customer Profile</DialogTitle>
-            <DialogDescription>View customer details and order history</DialogDescription>
+        <DialogContent className="modal-animate max-w-2xl border-0 bg-gradient-to-br from-slate-50 to-slate-100 shadow-2xl dark:from-slate-900 dark:to-slate-800">
+          <DialogHeader className="space-y-1">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent dark:from-slate-50 dark:to-slate-300">Customer Profile</DialogTitle>
+            <DialogDescription className="text-slate-600 dark:text-slate-400">View customer details and order history</DialogDescription>
           </DialogHeader>
           {selectedCustomer && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="h-20 w-20 overflow-hidden rounded-full bg-muted">
+            <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-4">
+              <div className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm dark:bg-slate-800">
+                <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-slate-200 bg-gradient-to-br from-blue-100 to-purple-100 shadow-md dark:border-slate-600 dark:from-blue-900 dark:to-purple-900">
                   <Image
                     src={selectedCustomer.avatar || "/placeholder.svg"}
                     alt={selectedCustomer.name}
@@ -348,68 +348,74 @@ export default function AdminCustomersPage() {
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div>
-                  <h2 className="text-2xl font-semibold">{selectedCustomer.name}</h2>
-                  <p className="text-muted-foreground">{selectedCustomer.email}</p>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">{selectedCustomer.name}</h2>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{selectedCustomer.email}</p>
                   <Badge
                     variant="secondary"
-                    className={
+                    className={`mt-2 border-0 font-semibold ${
                       selectedCustomer.status === "Active"
-                        ? "bg-green-500/10 text-green-600 mt-2"
+                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
                         : selectedCustomer.status === "Inactive"
-                          ? "bg-yellow-500/10 text-yellow-600 mt-2"
-                          : "bg-red-500/10 text-red-600 mt-2"
-                    }
+                          ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                    }`}
                   >
                     {selectedCustomer.status}
                   </Badge>
                 </div>
               </div>
 
-              <div className="space-y-4 rounded-lg border border-border p-4">
-                <h3 className="font-semibold">Contact Information</h3>
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
+                <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-50">
+                  <span className="h-1 w-1 rounded-full bg-blue-500"></span>
+                  Contact Information
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Phone</Label>
-                    <p className="mt-1 font-medium">{selectedCustomer.phone}</p>
+                  <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-700/50">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Phone</Label>
+                    <p className="mt-2 font-semibold text-slate-900 dark:text-slate-50">{selectedCustomer.phone}</p>
                   </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Email</Label>
-                    <p className="mt-1 font-medium text-sm">{selectedCustomer.email}</p>
+                  <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-700/50">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Email</Label>
+                    <p className="mt-2 truncate font-semibold text-slate-900 dark:text-slate-50">{selectedCustomer.email}</p>
                   </div>
-                  <div className="col-span-2">
-                    <Label className="text-muted-foreground text-xs uppercase">Address</Label>
-                    <p className="mt-1 font-medium text-sm">{selectedCustomer.address}</p>
+                  <div className="col-span-2 rounded-lg bg-slate-50 p-3 dark:bg-slate-700/50">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Address</Label>
+                    <p className="mt-2 font-semibold text-slate-900 dark:text-slate-50">{selectedCustomer.address}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4 rounded-lg border border-border p-4">
-                <h3 className="font-semibold">Order Summary</h3>
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
+                <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-50">
+                  <span className="h-1 w-1 rounded-full bg-purple-500"></span>
+                  Order Summary
+                </h3>
                 <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Total Orders</Label>
-                    <p className="mt-1 text-2xl font-bold">{selectedCustomer.orders}</p>
+                  <div className="rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 p-3 dark:from-blue-900/30 dark:to-blue-800/30">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300">Total Orders</Label>
+                    <p className="mt-2 text-2xl font-bold text-blue-900 dark:text-blue-200">{selectedCustomer.orders}</p>
                   </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Total Spent</Label>
-                    <p className="mt-1 text-2xl font-bold">{formatPrice(selectedCustomer.totalSpent)}</p>
+                  <div className="rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 p-3 dark:from-purple-900/30 dark:to-purple-800/30">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-purple-700 dark:text-purple-300">Total Spent</Label>
+                    <p className="mt-2 text-2xl font-bold text-purple-900 dark:text-purple-200">{formatPrice(selectedCustomer.totalSpent)}</p>
                   </div>
-                  <div>
-                    <Label className="text-muted-foreground text-xs uppercase">Last Order</Label>
-                    <p className="mt-1 font-medium">{selectedCustomer.lastOrder}</p>
+                  <div className="rounded-lg bg-gradient-to-br from-emerald-50 to-emerald-100 p-3 dark:from-emerald-900/30 dark:to-emerald-800/30">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">Last Order</Label>
+                    <p className="mt-2 font-bold text-emerald-900 dark:text-emerald-200">{selectedCustomer.lastOrder}</p>
                   </div>
                 </div>
               </div>
 
-              <div>
-                <Label className="text-muted-foreground text-xs uppercase">Member Since</Label>
-                <p className="mt-1 font-medium">{selectedCustomer.joinDate}</p>
+              <div className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+                <Label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Member Since</Label>
+                <p className="mt-2 font-semibold text-slate-900 dark:text-slate-50">{selectedCustomer.joinDate}</p>
               </div>
             </div>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setViewOpen(false)}>
+          <DialogFooter className="mt-6 flex gap-3">
+            <Button variant="outline" onClick={() => setViewOpen(false)} className="border-slate-200 dark:border-slate-700">
               Close
             </Button>
           </DialogFooter>
