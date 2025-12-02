@@ -7,6 +7,7 @@ import { Badge } from "../../../components/ui/badge"
 import { EditAddressModal } from "../../../components/account/edit-address-modal"
 import { MapPin, Plus, Edit2, Trash2 } from "lucide-react"
 import { Address } from "../../../types"
+import { withProtectedRoute } from "../../../lib/auth/protected-route"
 
 const initialAddresses: Address[] = [
   {
