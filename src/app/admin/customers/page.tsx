@@ -559,16 +559,16 @@ export default function AdminCustomersPage() {
 
       {/* Block Customer Modal */}
       <AlertDialog open={blockOpen} onOpenChange={setBlockOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Block Customer</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to block <span className="font-semibold">{selectedCustomer?.name}</span>? They will not be able to place orders or access their account.
+        <AlertDialogContent className="alert-animate border-0 bg-gradient-to-br from-slate-50 to-slate-100 shadow-2xl dark:from-slate-900 dark:to-slate-800">
+          <AlertDialogHeader className="space-y-2">
+            <AlertDialogTitle className="text-xl font-bold text-slate-900 dark:text-slate-50">Block Customer</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
+              Are you sure you want to block <span className="font-bold text-amber-600 dark:text-amber-400">{selectedCustomer?.name}</span>? They will not be able to place orders or access their account.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleBlockCustomer} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogFooter className="mt-6 flex gap-3">
+            <AlertDialogCancel className="border-slate-200 dark:border-slate-700">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBlockCustomer} className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800">
               Block Customer
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -577,16 +577,16 @@ export default function AdminCustomersPage() {
 
       {/* Delete Customer Modal */}
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Customer</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <span className="font-semibold">{selectedCustomer?.name}</span>? This action cannot be undone.
+        <AlertDialogContent className="alert-animate border-0 bg-gradient-to-br from-slate-50 to-slate-100 shadow-2xl dark:from-slate-900 dark:to-slate-800">
+          <AlertDialogHeader className="space-y-2">
+            <AlertDialogTitle className="text-xl font-bold text-slate-900 dark:text-slate-50">Delete Customer</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
+              Are you sure you want to delete <span className="font-bold text-red-600 dark:text-red-400">{selectedCustomer?.name}</span>? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogFooter className="mt-6 flex gap-3">
+            <AlertDialogCancel className="border-slate-200 dark:border-slate-700">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
