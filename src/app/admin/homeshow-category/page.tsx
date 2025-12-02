@@ -631,3 +631,9 @@ function HomeshowCategoryPage() {
     </div>
   );
 }
+
+export default withProtectedRoute(HomeshowCategoryPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+});
