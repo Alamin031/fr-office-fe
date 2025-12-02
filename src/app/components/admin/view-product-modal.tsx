@@ -264,30 +264,33 @@ export function ViewProductModal({
             </Card>
 
             {/* Variants */}
-            {product.variants && product.variants.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Variants</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {product.variants.map((variant: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-between border rounded p-3"
-                      >
-                        <div className="flex-1">
-                          <p className="font-medium">{variant.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Price: {formatPrice(variant.price)} • Stock: {variant.stock}
-                          </p>
+            {(() => {
+              const variants = parseJSON(product.variants, []);
+              return variants && variants.length > 0 ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Variants</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {variants.map((variant: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between border rounded p-3"
+                        >
+                          <div className="flex-1">
+                            <p className="font-medium">{variant.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Price: {formatPrice(variant.price || 0)} • Stock: {variant.stock || 0}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : null;
+            })()}
           </TabsContent>
 
           {/* Attributes Tab */}
