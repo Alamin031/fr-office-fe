@@ -113,60 +113,62 @@ export default async function ProductPage({params}: ProductPageProps) {
 
   let relatedProducts: Product[] = [];
   try {
-    const response = await productsService.getAll(
-      {categoryId: product.category.id},
-      1,
-      10,
-    );
-    relatedProducts = (response.data || [])
-      .filter(p => p.id !== product.id && typeof p.slug === 'string')
-      .map(p => ({
-        id: p.id,
-        name: p.name ?? '',
-        slug: p.slug ?? '',
-        description: p.description ?? '',
-        price: typeof p.price === 'number' ? p.price : 0,
-        images: Array.isArray(p.image) ? p.image : [],
-        category: p.category
-          ? {
-              ...p.category,
-              slug: p.category.slug ?? '',
-            }
-          : {
-              id: '',
-              name: '',
-              slug: '',
-              createdAt: '',
-              updatedAt: '',
-            },
-        brand: p.brand ?? {id: '', name: '', slug: '', logo: ''},
-        variants: Array.isArray(p.variants)
-          ? p.variants.map((v: any) => ({
-              id: v.id ?? '',
-              name: v.name ?? '',
-              type: v.type ?? '',
-              value: v.value ?? '',
-              priceModifier:
-                typeof v.priceModifier === 'number' ? v.priceModifier : 0,
-              stock: typeof v.stock === 'number' ? v.stock : 0,
-            }))
-          : [],
-        highlights: Array.isArray(p.highlights) ? p.highlights : [],
-        specifications:
-          typeof p.specifications === 'object' && p.specifications !== null
-            ? p.specifications
-            : {},
-        stock: typeof p.stock === 'number' ? p.stock : 0,
-        sku: p.sku ?? '',
-        warranty: p.warranty ?? '',
-        rating: typeof p.rating === 'number' ? p.rating : 0,
-        reviewCount: typeof p.reviewCount === 'number' ? p.reviewCount : 0,
-        isFeatured: p.isFeatured,
-        isNew: p.isNew,
-        createdAt: p.createdAt ?? '',
-        updatedAt: p.updatedAt ?? '',
-      }))
-      .slice(0, 5);
+    if (product.category?.id) {
+      const response = await productsService.getAll(
+        {categoryId: product.category.id},
+        1,
+        10,
+      );
+      relatedProducts = (response.data || [])
+        .filter(p => p.id !== product.id && typeof p.slug === 'string')
+        .map(p => ({
+          id: p.id,
+          name: p.name ?? '',
+          slug: p.slug ?? '',
+          description: p.description ?? '',
+          price: typeof p.price === 'number' ? p.price : 0,
+          images: Array.isArray(p.image) ? p.image : [],
+          category: p.category
+            ? {
+                ...p.category,
+                slug: p.category.slug ?? '',
+              }
+            : {
+                id: '',
+                name: '',
+                slug: '',
+                createdAt: '',
+                updatedAt: '',
+              },
+          brand: p.brand ?? {id: '', name: '', slug: '', logo: ''},
+          variants: Array.isArray(p.variants)
+            ? p.variants.map((v: any) => ({
+                id: v.id ?? '',
+                name: v.name ?? '',
+                type: v.type ?? '',
+                value: v.value ?? '',
+                priceModifier:
+                  typeof v.priceModifier === 'number' ? v.priceModifier : 0,
+                stock: typeof v.stock === 'number' ? v.stock : 0,
+              }))
+            : [],
+          highlights: Array.isArray(p.highlights) ? p.highlights : [],
+          specifications:
+            typeof p.specifications === 'object' && p.specifications !== null
+              ? p.specifications
+              : {},
+          stock: typeof p.stock === 'number' ? p.stock : 0,
+          sku: p.sku ?? '',
+          warranty: p.warranty ?? '',
+          rating: typeof p.rating === 'number' ? p.rating : 0,
+          reviewCount: typeof p.reviewCount === 'number' ? p.reviewCount : 0,
+          isFeatured: p.isFeatured,
+          isNew: p.isNew,
+          createdAt: p.createdAt ?? '',
+          updatedAt: p.updatedAt ?? '',
+        }))
+        .slice(0, 5);
+    }
   } catch {
     relatedProducts = [];
   }
