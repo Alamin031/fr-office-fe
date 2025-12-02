@@ -9,11 +9,11 @@ export const mockBrands: Brand[] = [
 ]
 
 export const mockCategories: Category[] = [
-  { id: "1", name: "Smartphones", slug: "smartphones", productCount: 156 },
-  { id: "2", name: "Laptops", slug: "laptops", productCount: 89 },
-  { id: "3", name: "Tablets", slug: "tablets", productCount: 45 },
-  { id: "4", name: "Audio", slug: "audio", productCount: 234 },
-  { id: "5", name: "Wearables", slug: "wearables", productCount: 78 },
+  { id: "1", name: "Smartphones", slug: "smartphones", productCount: 156, createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  { id: "2", name: "Laptops", slug: "laptops", productCount: 89, createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  { id: "3", name: "Tablets", slug: "tablets", productCount: 45, createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  { id: "4", name: "Audio", slug: "audio", productCount: 234, createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  { id: "5", name: "Wearables", slug: "wearables", productCount: 78, createdAt: "2024-01-01", updatedAt: "2024-01-01" },
 ]
 
 export const mockProducts: Product[] = [

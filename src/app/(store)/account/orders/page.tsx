@@ -142,28 +142,34 @@ function OrderCard({ order }: { order: OrderWithStatus }) {
 
   const handleBuyAgain = (item: (typeof order.items)[0]) => {
     addToCart(
-      {
-        id: item.productId,
-        name: item.name,
-        slug: item.slug,
-        description: "",
-        price: item.price,
-        images: [item.image],
-        category: { id: "1", name: "Electronics", slug: "electronics" },
-        brand: { id: "1", name: "Brand", slug: "brand", logo: "" },
-        variants: [],
-        highlights: [],
-        specifications: {},
-        stock: 10,
-        sku: "",
-        warranty: "",
-        rating: 4.5,
-        reviewCount: 100,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      item.quantity,
-    )
+        {
+          id: item.productId,
+          name: item.name,
+          slug: item.slug,
+          description: "",
+          price: item.price,
+          images: [item.image],
+          category: {
+            id: "1",
+            name: "Electronics",
+            slug: "electronics",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          brand: { id: "1", name: "Brand", slug: "brand", logo: "" },
+          variants: [],
+          highlights: [],
+          specifications: {},
+          stock: 10,
+          sku: "",
+          warranty: "",
+          rating: 4.5,
+          reviewCount: 100,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        item.quantity,
+      )
   }
 
   return (

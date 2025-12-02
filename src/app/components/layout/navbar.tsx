@@ -60,7 +60,12 @@ export function Navbar() {
       try {
         setIsLoadingCategories(true)
         const data = await categoriesService.getAll()
-        setCategories(data)
+        // Normalize API categories to match app Category type (ensure slug is a string)
+        const normalized = data.map((c) => ({
+          ...c,
+          slug: c.slug ?? "",
+        })) as Category[]
+        setCategories(normalized)
       } catch (error) {
         console.error("Error fetching categories:", error)
         setCategories([])
