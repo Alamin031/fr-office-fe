@@ -1,27 +1,27 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Plus, Edit, Trash2, MoreVertical, Eye } from "lucide-react"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { Plus, Edit, Trash2, MoreVertical, Eye } from "lucide-react";
 
-import { Button } from "../../components/ui/button"
-import { Input } from "../../components/ui/input"
-import { Label } from "../../components/ui/label"
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../components/ui/dialog"
+} from "../../components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu"
+} from "../../components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,47 +31,47 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../../components/ui/alert-dialog"
-import categoriesService from "../../lib/api/services/categories"
+} from "../../components/ui/alert-dialog";
+import categoriesService from "../../lib/api/services/categories";
 
 // ===== TYPES =====
 interface Subcategory {
-  id: string
-  name: string
-  categoryId?: string
+  id: string;
+  name: string;
+  categoryId?: string;
 }
 
 interface Category {
-  id: string
-  name: string
-  slug?: string
-  description?: string
-  banner?: string | File
-  priority?: number
-  subcategories?: Subcategory[]
-  createdAt?: string
-  updatedAt?: string
+  id: string;
+  name: string;
+  slug?: string;
+  description?: string;
+  banner?: string | File;
+  priority?: number;
+  subcategories?: Subcategory[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 type AddFormData = {
-  name: string
-  slug: string
-  priority: string
-  subcategories: Subcategory[]
-  banner: string | File
-}
+  name: string;
+  slug: string;
+  priority: string;
+  subcategories: Subcategory[];
+  banner: string | File;
+};
 
 export default function AdminCategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [viewOpen, setViewOpen] = useState(false)
-  const [editOpen, setEditOpen] = useState(false)
-  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-  const [editFormData, setEditFormData] = useState<Category | null>(null)
-
- 
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [editFormData, setEditFormData] = useState<Category | null>(null);
 
   const [addFormData, setAddFormData] = useState<AddFormData>({
     name: "",
@@ -79,7 +79,7 @@ export default function AdminCategoriesPage() {
     priority: "",
     subcategories: [],
     banner: "",
-  })
+  });
 
   // ===== FETCH =====
   const fetchCategories = async () => {
@@ -101,15 +101,15 @@ export default function AdminCategoriesPage() {
 
   // ===== IMAGE HANDLERS =====
   const handleAddBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    setAddFormData((f) => ({ ...f, banner: file || "" }))
-  }
+    const file = e.target.files?.[0];
+    setAddFormData((f) => ({ ...f, banner: file || "" }));
+  };
 
   const handleEditBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file || !editFormData) return
-    setEditFormData({ ...editFormData, banner: file })
-  }
+    const file = e.target.files?.[0];
+    if (!file || !editFormData) return;
+    setEditFormData({ ...editFormData, banner: file });
+  };
 
   // ===== CREATE =====
   const handleCreateCategory = async () => {
@@ -119,9 +119,11 @@ export default function AdminCategoriesPage() {
         slug: addFormData.slug,
         priority: Number(addFormData.priority),
         banner: addFormData.banner,
-      })
+      });
 
-      setCategories((prev) => (Array.isArray(prev) ? [newCat, ...prev] : [newCat]))
+      setCategories((prev) =>
+        Array.isArray(prev) ? [newCat, ...prev] : [newCat]
+      );
 
       setAddFormData({
         name: "",
@@ -129,15 +131,15 @@ export default function AdminCategoriesPage() {
         banner: "",
         priority: "",
         subcategories: [],
-      })
+      });
 
-      setIsAddDialogOpen(false)
+      setIsAddDialogOpen(false);
     } catch (err) {}
-  }
+  };
 
   // ===== UPDATE =====
   const handleSaveEdit = async () => {
-    if (!editFormData) return
+    if (!editFormData) return;
 
     try {
       const updated = await categoriesService.update(editFormData.id, {
@@ -145,34 +147,31 @@ export default function AdminCategoriesPage() {
         slug: editFormData.slug,
         priority: editFormData.priority,
         banner: editFormData.banner,
-      })
+      });
 
       setCategories((cats) =>
         cats.map((c) => (c.id === updated.id ? updated : c))
-      )
+      );
     } catch (err) {}
 
-    setEditOpen(false)
-    setEditFormData(null)
-  }
+    setEditOpen(false);
+    setEditFormData(null);
+  };
 
   // ===== DELETE =====
   const handleConfirmDelete = async () => {
-    if (!selectedCategory) return
+    if (!selectedCategory) return;
 
     try {
-      await categoriesService.delete(selectedCategory.id)
-      setCategories((cats) =>
-        cats.filter((c) => c.id !== selectedCategory.id)
-      )
+      await categoriesService.delete(selectedCategory.id);
+      setCategories((cats) => cats.filter((c) => c.id !== selectedCategory.id));
     } catch (err) {}
 
-    setDeleteOpen(false)
-    setSelectedCategory(null)
-  }
+    setDeleteOpen(false);
+    setSelectedCategory(null);
+  };
 
   // ===== SUBCATEGORY =====
-
 
   return (
     <div className="space-y-6 p-2 sm:p-4">
@@ -191,8 +190,8 @@ export default function AdminCategoriesPage() {
             </DialogHeader>
             <form
               onSubmit={async (e) => {
-                e.preventDefault()
-                await handleCreateCategory()
+                e.preventDefault();
+                await handleCreateCategory();
               }}
               className="space-y-4 py-2"
             >
@@ -202,7 +201,7 @@ export default function AdminCategoriesPage() {
                   id="name"
                   value={addFormData.name}
                   onChange={(e) => {
-                    const name = e.target.value
+                    const name = e.target.value;
                     setAddFormData((f) => ({
                       ...f,
                       name,
@@ -210,7 +209,7 @@ export default function AdminCategoriesPage() {
                         .toLowerCase()
                         .replace(/[^a-z0-9]+/g, "-")
                         .replace(/(^-|-$)/g, ""),
-                    }))
+                    }));
                   }}
                   required
                 />
@@ -237,20 +236,23 @@ export default function AdminCategoriesPage() {
                   accept="image/*"
                   onChange={handleAddBannerChange}
                 />
-                {addFormData.banner && typeof addFormData.banner !== 'string' && (
-                  <img
-                    src={URL.createObjectURL(addFormData.banner)}
-                    alt="Preview"
-                    className="h-16 w-32 object-contain mt-2 rounded border"
-                  />
-                )}
-                {addFormData.banner && typeof addFormData.banner === 'string' && addFormData.banner !== '' && (
-                  <img
-                    src={addFormData.banner}
-                    alt="Preview"
-                    className="h-16 w-32 object-contain mt-2 rounded border"
-                  />
-                )}
+                {addFormData.banner &&
+                  typeof addFormData.banner !== "string" && (
+                    <img
+                      src={URL.createObjectURL(addFormData.banner)}
+                      alt="Preview"
+                      className="h-16 w-32 object-contain mt-2 rounded border"
+                    />
+                  )}
+                {addFormData.banner &&
+                  typeof addFormData.banner === "string" &&
+                  addFormData.banner !== "" && (
+                    <img
+                      src={addFormData.banner}
+                      alt="Preview"
+                      className="h-16 w-32 object-contain mt-2 rounded border"
+                    />
+                  )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="priority">Priority</Label>
@@ -266,7 +268,9 @@ export default function AdminCategoriesPage() {
                   }
                 />
               </div>
-              <Button type="submit" className="w-full">Create</Button>
+              <Button type="submit" className="w-full">
+                Create
+              </Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -277,7 +281,7 @@ export default function AdminCategoriesPage() {
         <table className="min-w-[700px] w-full text-sm">
           <thead>
             <tr className="bg-gray-50">
-              <th className="px-3 py-2 text-left font-semibold">ID</th>
+              {/* <th className="px-3 py-2 text-left font-semibold">ID</th> */}
               <th className="px-3 py-2 text-left font-semibold">Name</th>
               <th className="px-3 py-2 text-left font-semibold">Slug</th>
               <th className="px-3 py-2 text-left font-semibold">Description</th>
@@ -291,24 +295,39 @@ export default function AdminCategoriesPage() {
           <tbody>
             {(Array.isArray(categories) ? categories : []).map((cat) => (
               <tr key={cat.id} className="border-b hover:bg-gray-50">
-                <td className="px-3 py-2 whitespace-nowrap max-w-[120px] truncate">{cat.id}</td>
                 <td className="px-3 py-2 whitespace-nowrap">{cat.name}</td>
                 <td className="px-3 py-2 whitespace-nowrap">{cat.slug}</td>
-                <td className="px-3 py-2 max-w-[200px] truncate">{cat.description || "-"}</td>
+                <td className="px-3 py-2 max-w-[200px] truncate">
+                  {cat.description || "-"}
+                </td>
                 <td className="px-3 py-2 align-middle">
-                  <div className="flex items-center justify-center min-w-[48px] min-h-[48px]">
+                  <div className="flex items-center justify-center min-w-12 min-h-12">
                     <Image
-                      src={typeof cat.banner === "string" && cat.banner ? cat.banner : "/placeholder.svg"}
+                      src={
+                        typeof cat.banner === "string" && cat.banner
+                          ? cat.banner
+                          : "/placeholder.svg"
+                      }
                       alt={cat.name}
                       width={48}
                       height={48}
-                      className="rounded border object-cover bg-gray-100 max-w-[48px] max-h-12 w-auto h-auto"
+                      className="rounded border object-cover bg-gray-100 max-w-12 max-h-12 w-auto h-auto"
                     />
                   </div>
                 </td>
-                <td className="px-3 py-2 whitespace-nowrap">{cat.priority ?? "-"}</td>
-                <td className="px-3 py-2 whitespace-nowrap">{cat.createdAt ? new Date(cat.createdAt).toLocaleString() : "-"}</td>
-                <td className="px-3 py-2 whitespace-nowrap">{cat.updatedAt ? new Date(cat.updatedAt).toLocaleString() : "-"}</td>
+                <td className="px-3 py-2 whitespace-nowrap">
+                  {cat.priority ?? "-"}
+                </td>
+                <td className="px-3 py-2 whitespace-nowrap">
+                  {cat.createdAt
+                    ? new Date(cat.createdAt).toLocaleString()
+                    : "-"}
+                </td>
+                <td className="px-3 py-2 whitespace-nowrap">
+                  {cat.updatedAt
+                    ? new Date(cat.updatedAt).toLocaleString()
+                    : "-"}
+                </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -319,25 +338,25 @@ export default function AdminCategoriesPage() {
                     <DropdownMenuContent>
                       <DropdownMenuItem
                         onClick={() => {
-                          setSelectedCategory(cat)
-                          setViewOpen(true)
+                          setSelectedCategory(cat);
+                          setViewOpen(true);
                         }}
                       >
                         <Eye className="mr-2 h-4 w-4" /> View
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
-                          setSelectedCategory(cat)
-                          setEditFormData(cat)
-                          setEditOpen(true)
+                          setSelectedCategory(cat);
+                          setEditFormData(cat);
+                          setEditOpen(true);
                         }}
                       >
                         <Edit className="mr-2 h-4 w-4" /> Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
-                          setSelectedCategory(cat)
-                          setDeleteOpen(true)
+                          setSelectedCategory(cat);
+                          setDeleteOpen(true);
                         }}
                         className="text-destructive"
                       >
@@ -358,8 +377,8 @@ export default function AdminCategoriesPage() {
           {editFormData && (
             <form
               onSubmit={async (e) => {
-                e.preventDefault()
-                await handleSaveEdit()
+                e.preventDefault();
+                await handleSaveEdit();
               }}
               className="space-y-4 py-2"
             >
@@ -393,33 +412,41 @@ export default function AdminCategoriesPage() {
                   accept="image/*"
                   onChange={handleEditBannerChange}
                 />
-                {editFormData.banner && typeof editFormData.banner !== 'string' && (
-                  <img
-                    src={URL.createObjectURL(editFormData.banner)}
-                    alt="Preview"
-                    className="h-16 w-32 object-contain mt-2 rounded border"
-                  />
-                )}
-                {editFormData.banner && typeof editFormData.banner === 'string' && editFormData.banner !== '' && (
-                  <img
-                    src={editFormData.banner}
-                    alt="Preview"
-                    className="h-16 w-32 object-contain mt-2 rounded border"
-                  />
-                )}
+                {editFormData.banner &&
+                  typeof editFormData.banner !== "string" && (
+                    <img
+                      src={URL.createObjectURL(editFormData.banner)}
+                      alt="Preview"
+                      className="h-16 w-32 object-contain mt-2 rounded border"
+                    />
+                  )}
+                {editFormData.banner &&
+                  typeof editFormData.banner === "string" &&
+                  editFormData.banner !== "" && (
+                    <img
+                      src={editFormData.banner}
+                      alt="Preview"
+                      className="h-16 w-32 object-contain mt-2 rounded border"
+                    />
+                  )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit-priority">Priority</Label>
                 <Input
                   id="edit-priority"
                   type="number"
-                  value={editFormData.priority ?? ''}
+                  value={editFormData.priority ?? ""}
                   onChange={(e) =>
-                    setEditFormData({ ...editFormData, priority: Number(e.target.value) })
+                    setEditFormData({
+                      ...editFormData,
+                      priority: Number(e.target.value),
+                    })
                   }
                 />
               </div>
-              <Button type="submit" className="w-full">Save</Button>
+              <Button type="submit" className="w-full">
+                Save
+              </Button>
             </form>
           )}
         </DialogContent>
@@ -430,9 +457,7 @@ export default function AdminCategoriesPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure?
-            </AlertDialogDescription>
+            <AlertDialogDescription>Are you sure?</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -443,6 +468,5 @@ export default function AdminCategoriesPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }
-
