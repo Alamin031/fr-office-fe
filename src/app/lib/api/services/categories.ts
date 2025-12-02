@@ -9,6 +9,7 @@ interface ApiCategory {
   parentId?: string;
   productCount?: number;
   banner?: string;
+  priority?: string | number;
   children?: ApiCategory[];
 }
 
@@ -23,6 +24,7 @@ function normalizeCategory(raw: ApiCategory): Category {
     ...(raw.parentId && { parentId: raw.parentId }),
     ...(raw.productCount && { productCount: raw.productCount }),
     ...(raw.banner && { banner: raw.banner }),
+    ...(raw.priority !== undefined && { priority: raw.priority }),
     ...(raw.children && Array.isArray(raw.children)
       ? { children: raw.children.map(normalizeCategory) }
       : {}),
