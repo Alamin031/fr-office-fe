@@ -156,3 +156,7 @@ function SettingsPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(SettingsPage, {
+  requiredRoles: ["user"],
+})
