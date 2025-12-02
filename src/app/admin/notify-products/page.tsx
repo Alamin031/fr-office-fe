@@ -377,3 +377,9 @@ function NotifyProductsPage() {
     </div>
   )
 }
+
+export default withProtectedRoute(NotifyProductsPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+});
