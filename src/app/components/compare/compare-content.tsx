@@ -155,8 +155,7 @@ export function CompareContent() {
               <input
                 type="text"
                 placeholder="Search..."
-                disabled
-                className="w-full bg-transparent pl-8 pr-3 py-2 text-sm placeholder-muted-foreground outline-none cursor-not-allowed"
+                className="w-full bg-transparent pl-8 pr-3 py-2 text-sm placeholder-muted-foreground outline-none"
               />
             </div>
 
