@@ -149,7 +149,7 @@ export default function AdminCustomersPage() {
   const handleSendEmail = () => {
     if (selectedCustomer && emailFormData.subject && emailFormData.message) {
       alert(`Email sent to ${selectedCustomer.email}\n\nSubject: ${emailFormData.subject}`)
-      setEmailOpen(false)
+      handleCloseEmail(false)
     }
   }
 
