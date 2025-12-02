@@ -500,54 +500,60 @@ export default function AdminCustomersPage() {
 
       {/* Send Email Drawer */}
       <Sheet open={emailOpen} onOpenChange={setEmailOpen}>
-        <SheetContent side="right" className="w-full sm:w-[500px]">
-          <SheetHeader>
-            <SheetTitle>Send Email</SheetTitle>
-            <SheetDescription>
-              Send an email to {selectedCustomer?.name}
-            </SheetDescription>
-          </SheetHeader>
+        <SheetContent side="right" className="drawer-animate w-full border-l border-slate-200 bg-gradient-to-b from-slate-50 to-white p-0 shadow-2xl dark:border-slate-700 dark:from-slate-900 dark:to-slate-800 sm:w-[500px]">
+          <div className="flex h-full flex-col">
+            <SheetHeader className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-5 dark:border-slate-700 dark:from-slate-900 dark:to-slate-800">
+              <SheetTitle className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent dark:from-slate-50 dark:to-slate-300">Send Email</SheetTitle>
+              <SheetDescription className="text-slate-600 dark:text-slate-400">
+                Send an email to <span className="font-semibold text-slate-900 dark:text-slate-50">{selectedCustomer?.name}</span>
+              </SheetDescription>
+            </SheetHeader>
 
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="email-to">To</Label>
-              <Input
-                id="email-to"
-                value={selectedCustomer?.email}
-                disabled
-                className="bg-muted"
-              />
+            <div className="flex-1 overflow-y-auto px-6 py-6">
+              <div className="space-y-5">
+                <div className="space-y-2.5">
+                  <Label htmlFor="email-to" className="text-sm font-semibold text-slate-700 dark:text-slate-300">To</Label>
+                  <Input
+                    id="email-to"
+                    value={selectedCustomer?.email}
+                    disabled
+                    className="border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                  />
+                </div>
+                <div className="space-y-2.5">
+                  <Label htmlFor="email-subject" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Subject</Label>
+                  <Input
+                    id="email-subject"
+                    value={emailFormData.subject}
+                    onChange={(e) => setEmailFormData({ ...emailFormData, subject: e.target.value })}
+                    placeholder="Enter email subject"
+                    className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10 dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+                <div className="space-y-2.5">
+                  <Label htmlFor="email-message" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Message</Label>
+                  <Textarea
+                    id="email-message"
+                    value={emailFormData.message}
+                    onChange={(e) => setEmailFormData({ ...emailFormData, message: e.target.value })}
+                    placeholder="Enter your message"
+                    rows={8}
+                    className="input-enhance resize-none border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10 dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email-subject">Subject</Label>
-              <Input
-                id="email-subject"
-                value={emailFormData.subject}
-                onChange={(e) => setEmailFormData({ ...emailFormData, subject: e.target.value })}
-                placeholder="Enter email subject"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email-message">Message</Label>
-              <Textarea
-                id="email-message"
-                value={emailFormData.message}
-                onChange={(e) => setEmailFormData({ ...emailFormData, message: e.target.value })}
-                placeholder="Enter your message"
-                rows={6}
-              />
-            </div>
+
+            <SheetFooter className="border-t border-slate-200 bg-slate-50 px-6 py-4 dark:border-slate-700 dark:bg-slate-800">
+              <Button variant="outline" onClick={() => setEmailOpen(false)} className="border-slate-200 dark:border-slate-700">
+                Cancel
+              </Button>
+              <Button onClick={handleSendEmail} className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+                <Send className="h-4 w-4" />
+                Send Email
+              </Button>
+            </SheetFooter>
           </div>
-
-          <SheetFooter>
-            <Button variant="outline" onClick={() => setEmailOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSendEmail} className="gap-2">
-              <Send className="h-4 w-4" />
-              Send Email
-            </Button>
-          </SheetFooter>
         </SheetContent>
       </Sheet>
 
