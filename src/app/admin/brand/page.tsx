@@ -430,3 +430,9 @@ function BrandPage() {
     </div>
   );
 }
+
+export default withProtectedRoute(BrandPage, {
+  requiredRoles: ["admin"],
+  fallbackTo: "/login",
+  showLoader: true,
+})
