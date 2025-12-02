@@ -432,55 +432,55 @@ export default function AdminCustomersPage() {
           {editFormData && (
             <div className="space-y-5 max-h-[60vh] overflow-y-auto pr-4">
               <div className="space-y-2.5">
-                <Label htmlFor="edit-name" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Full Name</Label>
+                <Label htmlFor="edit-name" className="text-sm font-semibold text-slate-700">Full Name</Label>
                 <Input
                   id="edit-name"
                   value={editFormData.name}
                   onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
                   placeholder="Enter full name"
-                  className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10 dark:border-slate-700 dark:bg-slate-800"
+                  className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2.5">
-                  <Label htmlFor="edit-email" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Email</Label>
+                  <Label htmlFor="edit-email" className="text-sm font-semibold text-slate-700">Email</Label>
                   <Input
                     id="edit-email"
                     type="email"
                     value={editFormData.email}
                     onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
                     placeholder="Enter email"
-                    className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10 dark:border-slate-700 dark:bg-slate-800"
+                    className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
                   />
                 </div>
                 <div className="space-y-2.5">
-                  <Label htmlFor="edit-phone" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Phone</Label>
+                  <Label htmlFor="edit-phone" className="text-sm font-semibold text-slate-700">Phone</Label>
                   <Input
                     id="edit-phone"
                     value={editFormData.phone}
                     onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
                     placeholder="Enter phone"
-                    className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10 dark:border-slate-700 dark:bg-slate-800"
+                    className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
                   />
                 </div>
               </div>
               <div className="space-y-2.5">
-                <Label htmlFor="edit-address" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Address</Label>
+                <Label htmlFor="edit-address" className="text-sm font-semibold text-slate-700">Address</Label>
                 <Input
                   id="edit-address"
                   value={editFormData.address}
                   onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
                   placeholder="Enter address"
-                  className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10 dark:border-slate-700 dark:bg-slate-800"
+                  className="input-enhance border-slate-200 bg-white transition-all duration-200 focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/10"
                 />
               </div>
               <div className="space-y-2.5">
-                <Label htmlFor="edit-status" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Status</Label>
+                <Label htmlFor="edit-status" className="text-sm font-semibold text-slate-700">Status</Label>
                 <Select value={editFormData.status} onValueChange={(value) => setEditFormData({ ...editFormData, status: value })}>
-                  <SelectTrigger id="edit-status" className="input-enhance border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+                  <SelectTrigger id="edit-status" className="input-enhance border-slate-200 bg-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+                  <SelectContent className="border-slate-200 bg-white">
                     <SelectItem value="Active">Active</SelectItem>
                     <SelectItem value="Inactive">Inactive</SelectItem>
                     <SelectItem value="Blocked">Blocked</SelectItem>
@@ -490,7 +490,7 @@ export default function AdminCustomersPage() {
             </div>
           )}
           <DialogFooter className="mt-6 flex gap-3">
-            <Button variant="outline" onClick={() => setEditOpen(false)} className="border-slate-200 dark:border-slate-700">
+            <Button variant="outline" onClick={() => setEditOpen(false)} className="border-slate-200">
               Cancel
             </Button>
             <Button onClick={handleSaveEdit} className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">Save Changes</Button>
