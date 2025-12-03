@@ -102,7 +102,10 @@ export default function RootLayout({
         <JsonLd data={generateOrganizationSchema()} />
       </head>
       <body className="font-sans antialiased" suppressHydrationWarning>
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          <AuthInit />
+          {children}
+        </StoreProvider>
         <Analytics />
       </body>
     </html>
