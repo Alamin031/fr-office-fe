@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { User } from "../types"
 import AuthService from "../lib/api/services/auth.service"
+import { TokenManager } from "../lib/api/token-manager"
 
 interface AuthStore {
   user: User | null
@@ -30,6 +31,7 @@ export const useAuthStore = create<AuthStore>()(
         set({ user, token, isAuthenticated: true })
       },
       logout: () => {
+        TokenManager.clearTokens()
         set({ user: null, token: null, isAuthenticated: false })
       },
       updateUser: (updates) => {
