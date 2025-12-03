@@ -37,8 +37,7 @@ export function withProtectedRoute<P extends object>(
 ): ComponentType<P> {
   return function ProtectedRouteComponent(props: P) {
     const router = useRouter();
-    const { user, token, isAuthenticated } = useAuthStore();
-    // Hydration state for client-side only
+    const { user, token, isAuthenticated, isInitialized, isHydrating, hydrate } = useAuthStore();
     const [isHydrated, setIsHydrated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthorized, setIsAuthorized] = useState(false);
@@ -55,8 +54,16 @@ export function withProtectedRoute<P extends object>(
       setIsHydrated(true);
     }, []);
 
+    // Initialize user from /users/me if token exists and not yet initialized
     useEffect(() => {
-      if (!isHydrated) return; // Wait for hydration
+      if (!isHydrated || isInitialized || isHydrating) return;
+      if (token && !user) {
+        hydrate();
+      }
+    }, [isHydrated, token, user, isInitialized, isHydrating, hydrate]);
+
+    useEffect(() => {
+      if (!isHydrated || !isInitialized) return;
       setIsLoading(true);
       setError(null);
 
@@ -79,7 +86,6 @@ export function withProtectedRoute<P extends object>(
         const hasRole = requiredRoles.includes(user.role);
 
         if (!hasRole) {
-          // User is authenticated but doesn't have required role
           router.push("/403");
           return;
         }
@@ -96,6 +102,7 @@ export function withProtectedRoute<P extends object>(
       fallbackTo,
       requiredRoles,
       isHydrated,
+      isInitialized,
     ]);
 
     // Debug log for hydration/auth state
@@ -110,7 +117,6 @@ export function withProtectedRoute<P extends object>(
     }, [isHydrated, user, token, isAuthenticated]);
 
     if (!isHydrated) {
-      // Optionally show a loader or nothing until hydrated
       return null;
     }
 
@@ -151,9 +157,16 @@ export function withProtectedRoute<P extends object>(
  */
 export function useProtectedRoute(requiredRoles?: UserRole[]) {
   const router = useRouter();
-  const { user, token, isAuthenticated } = useAuthStore();
+  const { user, token, isAuthenticated, isInitialized, isHydrating, hydrate } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
+
+  // Initialize user from /users/me if needed
+  useEffect(() => {
+    if (token && !user && !isInitialized && !isHydrating) {
+      hydrate();
+    }
+  }, [token, user, isInitialized, isHydrating, hydrate]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -176,7 +189,7 @@ export function useProtectedRoute(requiredRoles?: UserRole[]) {
     };
 
     checkAuth();
-  }, [isAuthenticated, token, user, requiredRoles]);
+  }, [isAuthenticated, token, user, requiredRoles, isInitialized]);
 
   const requireAuth = (fallbackTo: string = "/login") => {
     if (!isLoading && !isAuthorized) {
@@ -206,7 +219,18 @@ export function ProtectedContent({
   fallback = null,
   requiredRoles = [],
 }: ProtectedContentProps) {
-  const { user, token, isAuthenticated } = useAuthStore();
+  const { user, token, isAuthenticated, isInitialized, hydrate } = useAuthStore();
+
+  // Initialize user from /users/me if needed
+  useEffect(() => {
+    if (token && !user && !isInitialized) {
+      hydrate();
+    }
+  }, [token, user, isInitialized, hydrate]);
+
+  if (!isInitialized) {
+    return null;
+  }
 
   if (!isAuthenticated || !token) {
     return fallback;
