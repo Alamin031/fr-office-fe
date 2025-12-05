@@ -132,6 +132,7 @@ function NewProductPage() {
       id: string;
       networkName: string;
       priceAdjustment: string;
+      defaultStorageSize: string;
       isDefault: boolean;
       colors: Array<{
         id: string;
@@ -400,27 +401,19 @@ function NewProductPage() {
         id: `network-${Date.now()}`,
         networkName: '',
         priceAdjustment: '0',
+        defaultStorageSize: '',
         isDefault: false,
         colors: [
           {
             id: `color-${Date.now()}`,
             colorName: '',
             colorImage: '',
-            hasStorage: true,
+            colorImageFile: null,
+            hasStorage: false,
             singlePrice: '',
             singleComparePrice: '',
             singleStockQuantity: '',
-            storages: [
-              {
-                id: `storage-${Date.now()}`,
-                storageSize: '',
-                regularPrice: '',
-                discountPrice: '',
-                discountPercent: '',
-                stockQuantity: '',
-                lowStockAlert: '5',
-              },
-            ],
+            storages: [],
           },
         ],
       },
