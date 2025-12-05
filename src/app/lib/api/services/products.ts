@@ -10,21 +10,6 @@ import { API_ENDPOINTS } from "../config"
 
 export const productsService = {
   /**
-   * Create a new product with FormData (Admin/Management only)
-   * Accepts pre-built FormData with files and JSON fields
-   */
-  createWithFormData: async (formData: FormData): Promise<Product> => {
-    const response = await apiClient.post<Product>(
-      API_ENDPOINTS.PRODUCTS_CREATE,
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      }
-    );
-    return response.data;
-  },
-
-  /**
    * Get all products with optional filters
    */
   getAll: async (filters?: ProductFilters, page = 1, limit = 20): Promise<ProductListResponse> => {
@@ -235,6 +220,36 @@ export const productsService = {
   delete: async (id: string): Promise<void> => {
     const endpoint = API_ENDPOINTS.PRODUCTS_DELETE.replace("{id}", id)
     await apiClient.delete(endpoint)
+  },
+
+  /**
+   * Create basic product with variants, pricing, images, and specs
+   */
+  createBasic: async (data: any): Promise<Product> => {
+    const response = await apiClient.post<Product>(API_ENDPOINTS.PRODUCTS_CREATE_BASIC, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  /**
+   * Create network-based product
+   */
+  createNetwork: async (data: any): Promise<Product> => {
+    const response = await apiClient.post<Product>(API_ENDPOINTS.PRODUCTS_CREATE_NETWORK, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  /**
+   * Create region-based product
+   */
+  createRegion: async (data: any): Promise<Product> => {
+    const response = await apiClient.post<Product>(API_ENDPOINTS.PRODUCTS_CREATE_REGION, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
   },
 }
 

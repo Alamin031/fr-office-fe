@@ -79,6 +79,11 @@ export const API_ENDPOINTS = {
   PRODUCTS_UPDATE: '/products/{id}',
   PRODUCTS_DELETE: '/products/{id}',
 
+  // Products (New Architecture)
+  PRODUCTS_CREATE_BASIC: '/products-new/basic',
+  PRODUCTS_CREATE_NETWORK: '/products-new/network',
+  PRODUCTS_CREATE_REGION: '/products-new/region',
+
   // Product Care Plans
   PRODUCT_CARE_CREATE: '/products/cares',
   PRODUCT_CARE_LIST: '/products/{productId}/cares',

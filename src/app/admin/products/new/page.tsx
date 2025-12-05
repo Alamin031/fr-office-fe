@@ -134,11 +134,23 @@ function NewProductPage() {
       priceAdjustment: string;
       defaultStorageSize: string;
       isDefault: boolean;
+      hasDefaultStorages: boolean;
+      defaultStorages: Array<{
+        id: string;
+        storageSize: string;
+        regularPrice: string;
+        discountPrice: string;
+        discountPercent: string;
+        stockQuantity: string;
+        lowStockAlert: string;
+      }>;
       colors: Array<{
         id: string;
         colorName: string;
         colorImage: string;
+        colorImageFile: File | null;
         hasStorage: boolean;
+        useDefaultStorages: boolean;
         singlePrice: string;
         singleComparePrice: string;
         singleStockQuantity: string;
@@ -403,13 +415,26 @@ function NewProductPage() {
         priceAdjustment: '0',
         defaultStorageSize: '',
         isDefault: false,
+        hasDefaultStorages: false,
+        defaultStorages: [
+          {
+            id: `default-storage-${Date.now()}`,
+            storageSize: '256GB',
+            regularPrice: '',
+            discountPrice: '',
+            discountPercent: '',
+            stockQuantity: '',
+            lowStockAlert: '5',
+          },
+        ],
         colors: [
           {
             id: `color-${Date.now()}`,
             colorName: '',
             colorImage: '',
             colorImageFile: null,
-            hasStorage: false,
+            hasStorage: true,
+            useDefaultStorages: true,
             singlePrice: '',
             singleComparePrice: '',
             singleStockQuantity: '',
@@ -492,21 +517,13 @@ function NewProductPage() {
                   id: `color-${Date.now()}`,
                   colorName: '',
                   colorImage: '',
+                  colorImageFile: null,
                   hasStorage: true,
+                  useDefaultStorages: true,
                   singlePrice: '',
                   singleComparePrice: '',
                   singleStockQuantity: '',
-                  storages: [
-                    {
-                      id: `storage-${Date.now()}`,
-                      storageSize: '',
-                      regularPrice: '',
-                      discountPrice: '',
-                      discountPercent: '',
-                      stockQuantity: '',
-                      lowStockAlert: '5',
-                    },
-                  ],
+                  storages: [],
                 },
               ],
             }
@@ -621,6 +638,64 @@ function NewProductPage() {
                       ),
                     }
                   : c,
+              ),
+            }
+          : n,
+      ),
+    );
+  };
+
+  // Network default storage management
+  const addDefaultStorageToNetwork = (networkId: string) => {
+    setNetworks(
+      networks.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              defaultStorages: [
+                ...n.defaultStorages,
+                {
+                  id: `default-storage-${Date.now()}`,
+                  storageSize: '',
+                  regularPrice: '',
+                  discountPrice: '',
+                  discountPercent: '',
+                  stockQuantity: '',
+                  lowStockAlert: '5',
+                },
+              ],
+            }
+          : n,
+      ),
+    );
+  };
+
+  const removeDefaultStorageFromNetwork = (networkId: string, storageId: string) => {
+    setNetworks(
+      networks.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              defaultStorages: n.defaultStorages.filter(s => s.id !== storageId),
+            }
+          : n,
+      ),
+    );
+  };
+
+  const updateDefaultStorageInNetwork = (
+    networkId: string,
+    storageId: string,
+    field: string,
+    value: any,
+  ) => {
+    setNetworks(
+      networks.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              defaultStorages: n.defaultStorages.map(s =>
+                s.id === storageId ? {...s, [field]: value} : s,
               ),
             }
           : n,
@@ -954,7 +1029,12 @@ function NewProductPage() {
         }
       });
 
-      const response = await productsService.createWithFormData(formData);
+      const response =
+        productType === 'basic'
+          ? await productsService.createBasic(formData)
+          : productType === 'network'
+          ? await productsService.createNetwork(formData)
+          : await productsService.createRegion(formData);
       alert('✓ Basic product created successfully!');
     } catch (err: any) {
       console.error('Error creating basic product:', err);
@@ -978,6 +1058,53 @@ function NewProductPage() {
         formData.append('galleryImages', file);
       });
 
+      // Format networks data properly for backend
+      const formattedNetworks = networks.map((network, netIdx) => ({
+        networkName: network.networkName,
+        isDefault: network.isDefault,
+        hasDefaultStorages: network.hasDefaultStorages,
+        displayOrder: netIdx,
+        // Default storages for this network
+        defaultStorages: network.hasDefaultStorages
+          ? network.defaultStorages.map((storage, storIdx) => ({
+              storageSize: storage.storageSize,
+              regularPrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
+              comparePrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
+              discountPrice: storage.discountPrice ? Number(storage.discountPrice) : 0,
+              discountPercent: storage.discountPercent ? Number(storage.discountPercent) : 0,
+              stockQuantity: storage.stockQuantity ? Number(storage.stockQuantity) : 0,
+              lowStockAlert: storage.lowStockAlert ? Number(storage.lowStockAlert) : 5,
+              displayOrder: storIdx,
+            }))
+          : undefined,
+        // Colors in this network
+        colors: network.colors.map((color, colorIdx) => ({
+          colorName: color.colorName,
+          colorImage: color.colorImage || undefined,
+          hasStorage: color.hasStorage,
+          useDefaultStorages: color.useDefaultStorages,
+          displayOrder: colorIdx,
+          // If no storage, use single price
+          singlePrice: !color.hasStorage ? Number(color.singlePrice) || 0 : undefined,
+          singleComparePrice: !color.hasStorage ? Number(color.singleComparePrice) || 0 : undefined,
+          singleStockQuantity: !color.hasStorage ? Number(color.singleStockQuantity) || 0 : undefined,
+          // Custom storages (only if has storage and not using defaults)
+          storages:
+            color.hasStorage && !color.useDefaultStorages
+              ? color.storages.map((storage, storIdx) => ({
+                  storageSize: storage.storageSize,
+                  regularPrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
+                  comparePrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
+                  discountPrice: storage.discountPrice ? Number(storage.discountPrice) : 0,
+                  discountPercent: storage.discountPercent ? Number(storage.discountPercent) : 0,
+                  stockQuantity: storage.stockQuantity ? Number(storage.stockQuantity) : 0,
+                  lowStockAlert: storage.lowStockAlert ? Number(storage.lowStockAlert) : 5,
+                  displayOrder: storIdx,
+                }))
+              : undefined,
+        })),
+      }));
+
       const payload: any = {
         name: productName,
         slug,
@@ -1018,7 +1145,7 @@ function NewProductPage() {
             specValue: s.value,
             displayOrder: idx,
           })),
-        networks: networks.length > 0 ? networks : undefined,
+        networks: formattedNetworks.length > 0 ? formattedNetworks : undefined,
       };
 
       Object.keys(payload).forEach(key => {
@@ -1032,7 +1159,12 @@ function NewProductPage() {
         }
       });
 
-      const response = await productsService.createWithFormData(formData);
+      const response =
+        productType === 'basic'
+          ? await productsService.createBasic(formData)
+          : productType === 'network'
+          ? await productsService.createNetwork(formData)
+          : await productsService.createRegion(formData);
       alert('✓ Network product created successfully!');
     } catch (err: any) {
       console.error('Error creating network product:', err);
@@ -1056,6 +1188,50 @@ function NewProductPage() {
         formData.append('galleryImages', file);
       });
 
+      // Format regions data properly for backend
+      const formattedRegions = regions.map((region, regIdx) => ({
+        regionName: region.regionName,
+        isDefault: region.isDefault,
+        displayOrder: regIdx,
+        // Default storages for this region (always present)
+        defaultStorages: region.defaultStorages.map((storage, storIdx) => ({
+          storageSize: storage.storageSize,
+          regularPrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
+          comparePrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
+          discountPrice: storage.discountPrice ? Number(storage.discountPrice) : 0,
+          discountPercent: storage.discountPercent ? Number(storage.discountPercent) : 0,
+          stockQuantity: storage.stockQuantity ? Number(storage.stockQuantity) : 0,
+          lowStockAlert: storage.lowStockAlert ? Number(storage.lowStockAlert) : 5,
+          displayOrder: storIdx,
+        })),
+        // Colors in this region
+        colors: region.colors.map((color, colorIdx) => ({
+          colorName: color.colorName,
+          colorImage: color.colorImage || undefined,
+          hasStorage: color.hasStorage,
+          useDefaultStorages: color.useDefaultStorages,
+          displayOrder: colorIdx,
+          // If no storage, use single price
+          singlePrice: !color.hasStorage ? Number(color.singlePrice) || 0 : undefined,
+          singleComparePrice: !color.hasStorage ? Number(color.singleComparePrice) || 0 : undefined,
+          singleStockQuantity: !color.hasStorage ? Number(color.singleStockQuantity) || 0 : undefined,
+          // Custom storages (only if has storage and not using defaults)
+          storages:
+            color.hasStorage && !color.useDefaultStorages
+              ? color.storages.map((storage, storIdx) => ({
+                  storageSize: storage.storageSize,
+                  regularPrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
+                  comparePrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
+                  discountPrice: storage.discountPrice ? Number(storage.discountPrice) : 0,
+                  discountPercent: storage.discountPercent ? Number(storage.discountPercent) : 0,
+                  stockQuantity: storage.stockQuantity ? Number(storage.stockQuantity) : 0,
+                  lowStockAlert: storage.lowStockAlert ? Number(storage.lowStockAlert) : 5,
+                  displayOrder: storIdx,
+                }))
+              : undefined,
+        })),
+      }));
+
       const payload: any = {
         name: productName,
         slug,
@@ -1096,7 +1272,7 @@ function NewProductPage() {
             specValue: s.value,
             displayOrder: idx,
           })),
-        regions: regions.length > 0 ? regions : undefined,
+        regions: formattedRegions.length > 0 ? formattedRegions : undefined,
       };
 
       Object.keys(payload).forEach(key => {
@@ -1110,7 +1286,12 @@ function NewProductPage() {
         }
       });
 
-      const response = await productsService.createWithFormData(formData);
+      const response =
+        productType === 'basic'
+          ? await productsService.createBasic(formData)
+          : productType === 'network'
+          ? await productsService.createNetwork(formData)
+          : await productsService.createRegion(formData);
       alert('✓ Region product created successfully!');
     } catch (err: any) {
       console.error('Error creating region product:', err);
@@ -1710,6 +1891,15 @@ function NewProductPage() {
                         placeholder="e.g., Retail Partner A"
                       />
                     </div>
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm">Has Default Storages</Label>
+                      <Switch
+                        checked={network.hasDefaultStorages}
+                        onCheckedChange={e =>
+                          updateNetwork(network.id, 'hasDefaultStorages', e)
+                        }
+                      />
+                    </div>
                     <button
                       type="button"
                       onClick={() => removeNetwork(network.id)}
@@ -1719,69 +1909,11 @@ function NewProductPage() {
                     </button>
                   </div>
 
-                  {network.colors.map(color => (
-                    <div key={color.id} className="space-y-2 rounded bg-gray-50 p-3">
-                      <div className="flex items-end gap-2">
-                        <div className="flex-1">
-                          <Label className="text-sm">Color Name</Label>
-                          <Input
-                            value={color.colorName}
-                            onChange={e =>
-                              updateColorInNetwork(
-                                network.id,
-                                color.id,
-                                'colorName',
-                                e.target.value,
-                              )
-                            }
-                            placeholder="e.g., Midnight Black"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <Label className="text-sm">Color Image</Label>
-                          {color.colorImage ? (
-                            <div className="relative inline-block">
-                              <img
-                                src={color.colorImage}
-                                alt={color.colorName}
-                                className="h-12 w-12 rounded object-cover"
-                              />
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  removeNetworkColorImage(network.id, color.id)
-                                }
-                                className="absolute -right-2 -top-2 rounded-full bg-red-500 p-0.5 text-white hover:bg-red-600"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
-                            </div>
-                          ) : (
-                            <label className="flex cursor-pointer items-center justify-center rounded border-2 border-dashed border-gray-300 p-2">
-                              <Upload className="h-4 w-4 text-gray-400" />
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={e =>
-                                  handleNetworkColorImageUpload(network.id, color.id, e)
-                                }
-                                className="hidden"
-                              />
-                            </label>
-                          )}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            removeColorFromNetwork(network.id, color.id)
-                          }
-                          className="rounded bg-red-100 px-2 py-2 text-red-600 hover:bg-red-200"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-
-                      {color.storages.map(storage => (
+                  {network.hasDefaultStorages && (
+                    <div className="space-y-3 rounded bg-blue-50 p-3">
+                      <Label className="block font-semibold">Default Storages (for this Network)</Label>
+                      <p className="text-xs text-gray-600">These storages will be used by all colors unless overridden</p>
+                      {network.defaultStorages.map(storage => (
                         <div
                           key={storage.id}
                           className="space-y-2 rounded bg-white p-2"
@@ -1792,9 +1924,8 @@ function NewProductPage() {
                               <Input
                                 value={storage.storageSize}
                                 onChange={e =>
-                                  updateStorageInNetwork(
+                                  updateDefaultStorageInNetwork(
                                     network.id,
-                                    color.id,
                                     storage.id,
                                     'storageSize',
                                     e.target.value,
@@ -1809,9 +1940,8 @@ function NewProductPage() {
                                 type="number"
                                 value={storage.regularPrice}
                                 onChange={e =>
-                                  updateStorageInNetwork(
+                                  updateDefaultStorageInNetwork(
                                     network.id,
-                                    color.id,
                                     storage.id,
                                     'regularPrice',
                                     e.target.value,
@@ -1829,16 +1959,14 @@ function NewProductPage() {
                                   const percent = parseFloat(e.target.value) || 0;
                                   const regularPrice = parseFloat(storage.regularPrice) || 0;
                                   const discountPrice = regularPrice - (regularPrice * percent) / 100;
-                                  updateStorageInNetwork(
+                                  updateDefaultStorageInNetwork(
                                     network.id,
-                                    color.id,
                                     storage.id,
                                     'discountPercent',
                                     e.target.value,
                                   );
-                                  updateStorageInNetwork(
+                                  updateDefaultStorageInNetwork(
                                     network.id,
-                                    color.id,
                                     storage.id,
                                     'discountPrice',
                                     discountPrice.toString(),
@@ -1853,9 +1981,8 @@ function NewProductPage() {
                                 type="number"
                                 value={storage.discountPrice}
                                 onChange={e =>
-                                  updateStorageInNetwork(
+                                  updateDefaultStorageInNetwork(
                                     network.id,
-                                    color.id,
                                     storage.id,
                                     'discountPrice',
                                     e.target.value,
@@ -1872,9 +1999,8 @@ function NewProductPage() {
                                 type="number"
                                 value={storage.stockQuantity}
                                 onChange={e =>
-                                  updateStorageInNetwork(
+                                  updateDefaultStorageInNetwork(
                                     network.id,
-                                    color.id,
                                     storage.id,
                                     'stockQuantity',
                                     e.target.value,
@@ -1883,42 +2009,329 @@ function NewProductPage() {
                                 placeholder="0"
                               />
                             </div>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                removeStorageFromNetwork(
-                                  network.id,
-                                  color.id,
-                                  storage.id,
-                                )
-                              }
-                              className="rounded bg-red-100 px-2 py-2 text-red-600 hover:bg-red-200"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
+                            {network.defaultStorages.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  removeDefaultStorageFromNetwork(
+                                    network.id,
+                                    storage.id,
+                                  )
+                                }
+                                className="rounded bg-red-100 px-2 py-2 text-red-600 hover:bg-red-200"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            )}
                           </div>
                         </div>
                       ))}
-
                       <button
                         type="button"
-                        onClick={() =>
-                          addStorageToNetwork(network.id, color.id)
-                        }
+                        onClick={() => addDefaultStorageToNetwork(network.id)}
                         className="text-xs text-blue-600 hover:underline"
                       >
-                        + Add Storage
+                        + Add Default Storage
                       </button>
                     </div>
-                  ))}
+                  )}
 
-                  <button
-                    type="button"
-                    onClick={() => addColorToNetwork(network.id)}
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    + Add Color
-                  </button>
+                  <div className="space-y-3">
+                    <Label className="block font-semibold">Colors</Label>
+                    {network.colors.map(color => (
+                      <div key={color.id} className="space-y-2 rounded bg-gray-50 p-3">
+                        <div className="flex items-end gap-2">
+                          <div className="flex-1">
+                            <Label className="text-sm">Color Name</Label>
+                            <Input
+                              value={color.colorName}
+                              onChange={e =>
+                                updateColorInNetwork(
+                                  network.id,
+                                  color.id,
+                                  'colorName',
+                                  e.target.value,
+                                )
+                              }
+                              placeholder="e.g., Midnight Black"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <Label className="text-sm">Color Image</Label>
+                            {color.colorImage ? (
+                              <div className="relative inline-block">
+                                <img
+                                  src={color.colorImage}
+                                  alt={color.colorName}
+                                  className="h-12 w-12 rounded object-cover"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    removeNetworkColorImage(network.id, color.id)
+                                  }
+                                  className="absolute -right-2 -top-2 rounded-full bg-red-500 p-0.5 text-white hover:bg-red-600"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ) : (
+                              <label className="flex cursor-pointer items-center justify-center rounded border-2 border-dashed border-gray-300 p-2">
+                                <Upload className="h-4 w-4 text-gray-400" />
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={e =>
+                                    handleNetworkColorImageUpload(network.id, color.id, e)
+                                  }
+                                  className="hidden"
+                                />
+                              </label>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeColorFromNetwork(network.id, color.id)
+                            }
+                            className="rounded bg-red-100 px-2 py-2 text-red-600 hover:bg-red-200"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm">Has Storage Options</Label>
+                          <Switch
+                            checked={color.hasStorage}
+                            onCheckedChange={e =>
+                              updateColorInNetwork(
+                                network.id,
+                                color.id,
+                                'hasStorage',
+                                e,
+                              )
+                            }
+                          />
+                        </div>
+
+                        {!color.hasStorage && (
+                          <div className="grid grid-cols-3 gap-2 rounded bg-white p-2">
+                            <div>
+                              <Label className="text-xs">Single Price</Label>
+                              <Input
+                                type="number"
+                                value={color.singlePrice}
+                                onChange={e =>
+                                  updateColorInNetwork(
+                                    network.id,
+                                    color.id,
+                                    'singlePrice',
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="0"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Compare Price</Label>
+                              <Input
+                                type="number"
+                                value={color.singleComparePrice}
+                                onChange={e =>
+                                  updateColorInNetwork(
+                                    network.id,
+                                    color.id,
+                                    'singleComparePrice',
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="0"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Stock</Label>
+                              <Input
+                                type="number"
+                                value={color.singleStockQuantity}
+                                onChange={e =>
+                                  updateColorInNetwork(
+                                    network.id,
+                                    color.id,
+                                    'singleStockQuantity',
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="0"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {color.hasStorage && (
+                          <>
+                            {network.hasDefaultStorages && (
+                              <div className="flex items-center gap-2">
+                                <Label className="text-sm">Use Default Storages</Label>
+                                <Switch
+                                  checked={color.useDefaultStorages}
+                                  onCheckedChange={e =>
+                                    updateColorInNetwork(
+                                      network.id,
+                                      color.id,
+                                      'useDefaultStorages',
+                                      e,
+                                    )
+                                  }
+                                />
+                              </div>
+                            )}
+
+                            {(!network.hasDefaultStorages || !color.useDefaultStorages) && (
+                              <>
+                                {color.storages.map(storage => (
+                                  <div
+                                    key={storage.id}
+                                    className="space-y-2 rounded bg-white p-2"
+                                  >
+                                    <div className="grid grid-cols-4 gap-2">
+                                      <div>
+                                        <Label className="text-xs">Storage Size</Label>
+                                        <Input
+                                          value={storage.storageSize}
+                                          onChange={e =>
+                                            updateStorageInNetwork(
+                                              network.id,
+                                              color.id,
+                                              storage.id,
+                                              'storageSize',
+                                              e.target.value,
+                                            )
+                                          }
+                                          placeholder="256GB"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs">Regular Price</Label>
+                                        <Input
+                                          type="number"
+                                          value={storage.regularPrice}
+                                          onChange={e =>
+                                            updateStorageInNetwork(
+                                              network.id,
+                                              color.id,
+                                              storage.id,
+                                              'regularPrice',
+                                              e.target.value,
+                                            )
+                                          }
+                                          placeholder="0"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs">Discount %</Label>
+                                        <Input
+                                          type="number"
+                                          value={storage.discountPercent}
+                                          onChange={e => {
+                                            const percent = parseFloat(e.target.value) || 0;
+                                            const regularPrice = parseFloat(storage.regularPrice) || 0;
+                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            updateStorageInNetwork(
+                                              network.id,
+                                              color.id,
+                                              storage.id,
+                                              'discountPercent',
+                                              e.target.value,
+                                            );
+                                            updateStorageInNetwork(
+                                              network.id,
+                                              color.id,
+                                              storage.id,
+                                              'discountPrice',
+                                              discountPrice.toString(),
+                                            );
+                                          }}
+                                          placeholder="0"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs">Discount Price</Label>
+                                        <Input
+                                          type="number"
+                                          value={storage.discountPrice}
+                                          onChange={e =>
+                                            updateStorageInNetwork(
+                                              network.id,
+                                              color.id,
+                                              storage.id,
+                                              'discountPrice',
+                                              e.target.value,
+                                            )
+                                          }
+                                          placeholder="0"
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <div className="flex-1">
+                                        <Label className="text-xs">Stock</Label>
+                                        <Input
+                                          type="number"
+                                          value={storage.stockQuantity}
+                                          onChange={e =>
+                                            updateStorageInNetwork(
+                                              network.id,
+                                              color.id,
+                                              storage.id,
+                                              'stockQuantity',
+                                              e.target.value,
+                                            )
+                                          }
+                                          placeholder="0"
+                                        />
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          removeStorageFromNetwork(
+                                            network.id,
+                                            color.id,
+                                            storage.id,
+                                          )
+                                        }
+                                        className="rounded bg-red-100 px-2 py-2 text-red-600 hover:bg-red-200"
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    addStorageToNetwork(network.id, color.id)
+                                  }
+                                  className="text-xs text-blue-600 hover:underline"
+                                >
+                                  + Add Storage
+                                </button>
+                              </>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={() => addColorToNetwork(network.id)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      + Add Color
+                    </button>
+                </div>
                 </div>
               ))}
 
@@ -2080,6 +2493,8 @@ function NewProductPage() {
                             <Label className="text-sm">Color Name</Label>
                             <Input
                               value={color.colorName}
+
+
                               onChange={e =>
                                 updateColorInRegion(
                                   region.id,
@@ -2176,7 +2591,7 @@ function NewProductPage() {
                                         />
                                       </div>
                                       <div>
-                                        <Label className="text-xs">Discount</Label>
+                                        <Label className="text-xs">Discount Price</Label>
                                         <Input
                                           type="number"
                                           value={storage.discountPrice}
@@ -2250,7 +2665,7 @@ function NewProductPage() {
                     >
                       + Add Color
                     </button>
-                  </div>
+                </div>
                 </div>
               ))}
 
