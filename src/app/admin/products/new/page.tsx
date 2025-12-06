@@ -1014,8 +1014,8 @@ function NewProductPage() {
     setProductCode('');
     setSku('');
     setWarranty('');
-    setSelectedCategory('');
-    setSelectedBrand('');
+    setSelectedCategories([]);
+    setSelectedBrands([]);
     setIsActive(true);
     setIsOnline(true);
     setIsPos(true);
