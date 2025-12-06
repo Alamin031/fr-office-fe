@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import { toast } from 'sonner';
 import productsService from '../../../lib/api/services/products';
 import categoriesService from '../../../lib/api/services/categories';
@@ -52,6 +52,7 @@ function NewProductPage() {
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
   const [shortDescription, setShortDescription] = useState('');
+  const shortDescriptionRef = useRef<HTMLDivElement>(null);
   const [productCode, setProductCode] = useState('');
   const [sku, setSku] = useState('');
   const [warranty, setWarranty] = useState('');
@@ -1007,6 +1008,9 @@ function NewProductPage() {
     setSlug('');
     setDescription('');
     setShortDescription('');
+    if (shortDescriptionRef.current) {
+      shortDescriptionRef.current.innerHTML = '';
+    }
     setProductCode('');
     setSku('');
     setWarranty('');
@@ -1090,6 +1094,7 @@ function NewProductPage() {
       });
 
       const payload: any = {
+        productType: 'basic',
         name: productName,
         slug,
         description: description || undefined,
@@ -1276,6 +1281,7 @@ function NewProductPage() {
       });
 
       const payload: any = {
+        productType: 'network',
         name: productName,
         slug,
         description: description || undefined,
@@ -1449,6 +1455,7 @@ function NewProductPage() {
       });
 
       const payload: any = {
+        productType: 'region',
         name: productName,
         slug,
         description: description || undefined,
@@ -1533,7 +1540,14 @@ function NewProductPage() {
         <p className="mt-2 text-gray-600">Create a new product listing</p>
       </div>
 
-      <Tabs value={productType} onValueChange={(value) => setProductType(value as ProductType)} className="w-full">
+      <Tabs 
+        value={productType} 
+        onValueChange={(value) => {
+          setProductType(value as ProductType);
+          resetForm();
+        }} 
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="basic">Basic Product</TabsTrigger>
           <TabsTrigger value="network">Network Product</TabsTrigger>
@@ -1616,6 +1630,7 @@ function NewProductPage() {
               </div>
               <div
                 id="shortDescription"
+                ref={shortDescriptionRef}
                 contentEditable
                 onInput={handleShortDescriptionChange}
                 className="min-h-24 rounded border border-gray-300 p-3 focus:border-blue-500 focus:outline-none"

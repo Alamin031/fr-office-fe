@@ -13,9 +13,10 @@ export const productsService = {
    * Get all products with optional filters
    */
   getAll: async (filters?: ProductFilters, page = 1, limit = 20): Promise<ProductListResponse> => {
+    const offset = (page - 1) * limit;
     const response = await apiClient.get<ProductListResponse>(API_ENDPOINTS.PRODUCTS_GET, {
       params: {
-        page,
+        offset,
         limit,
         ...filters,
       },
@@ -56,9 +57,9 @@ export const productsService = {
   /**
    * Search products
    */
-  search: async (query: string, page = 1, limit = 20): Promise<ProductSearchResponse> => {
+  search: async (query: string): Promise<ProductSearchResponse> => {
     const response = await apiClient.get<ProductSearchResponse>(API_ENDPOINTS.PRODUCTS_SEARCH, {
-      params: { query, page, limit },
+      params: { q: query },
     })
     return response.data
   },
@@ -79,6 +80,16 @@ export const productsService = {
     const endpoint = API_ENDPOINTS.PRODUCTS_GET_ONE.replace("{id}", id)
     const response = await apiClient.get<Product>(endpoint)
     return response.data
+  },
+
+  /**
+   * Get specific variant price
+   */
+  getVariantPrice: async (productId: string, params: { regionId?: string; colorId?: string; storageId?: string }) => {
+    const response = await apiClient.get(`${API_ENDPOINTS.PRODUCTS_GET}/${productId}/variant-price`, {
+      params,
+    });
+    return response.data;
   },
 
   /**

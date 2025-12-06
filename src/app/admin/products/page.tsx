@@ -62,10 +62,14 @@ type UIProduct = {
   stock: number;
   status: string;
   description?: string;
+  type: 'basic' | 'network' | 'region';
 };
 
 function AdminProductsPage() {
   const [products, setProducts] = useState<UIProduct[]>([]);
+  const [activeTab, setActiveTab] = useState<
+    'all' | 'basic' | 'network' | 'region'
+  >('all');
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -84,7 +88,7 @@ function AdminProductsPage() {
         setCategories(
           cats
             .filter((c: any) => c.id !== 'all')
-            .map((c: any) => ({id: c.id, name: c.name}))
+            .map((c: any) => ({id: c.id, name: c.name})),
         );
       } catch {
         setCategories([]);
@@ -99,12 +103,14 @@ function AdminProductsPage() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        let res;
-        if (selectedCategory && selectedCategory !== 'all') {
-          res = await productsService.getAll({categoryId: selectedCategory});
-        } else {
-          res = await productsService.getAll();
+        const queryParams: any = {};
+        if (activeTab !== 'all') {
+          queryParams.productType = activeTab;
         }
+        if (selectedCategory && selectedCategory !== 'all') {
+          queryParams.categoryId = selectedCategory;
+        }
+        const res = await productsService.getAll(queryParams);
         const apiProducts = Array.isArray(res) ? res : [];
         // Find missing category IDs
         const missingCategoryIds = [
@@ -131,41 +137,66 @@ function AdminProductsPage() {
             ];
             // Deduplicate by id
             const deduped = Array.from(
-              new Map(allCats.map(cat => [cat.id, cat])).values()
+              new Map(allCats.map(cat => [cat.id, cat])).values(),
             );
             return deduped;
           });
         }
         const mapped: UIProduct[] = apiProducts.map((p: any) => {
           const categoryObj = categories.find(c => c.id === p.categoryId);
-          let stockNum = 0;
-          if (typeof p.stock === 'number') stockNum = p.stock;
-          else if (typeof p.stock === 'string')
-            stockNum = parseInt(p.stock) || 0;
-          const priceNum =
-            p.price !== null && p.price !== undefined
-              ? Number(p.price)
-              : p.basePrice !== null && p.basePrice !== undefined
-              ? Number(p.basePrice)
-              : 0;
+
+          // Map backend fields to UI fields
+          // Stock: Use totalStock (calculated from all variants) or stockQuantity (simple product)
+          const stockNum = p.totalStock ?? p.stockQuantity ?? 0;
+
+          // Price: Use price (simple) or min price from range
+          const priceNum = p.price ?? p.priceRange?.min ?? 0;
+
+          // Image: Find thumbnail or use first image
+          const imageUrl =
+            p.images?.find((img: any) => img.isThumbnail)?.url ||
+            p.images?.[0]?.url ||
+            '/placeholder.svg';
+
+          // Status: Derive from isActive and stock
+          let status = 'Inactive';
+          if (p.isActive) {
+            if (stockNum <= (p.lowStockAlert || 5) && stockNum > 0)
+              status = 'Low Stock';
+            else if (stockNum > 0) status = 'Active';
+            else status = 'Out of Stock';
+          }
+
+          // Determine type
+          let type: 'basic' | 'network' | 'region' = 'basic';
+
+          if (p.productType) {
+            const pt = String(p.productType).toLowerCase();
+            if (pt === 'network') type = 'network';
+            else if (pt === 'region') type = 'region';
+          } else if (
+            p.type &&
+            ['basic', 'network', 'region'].includes(p.type)
+          ) {
+            type = p.type as 'basic' | 'network' | 'region';
+          } else {
+            if (Array.isArray(p.networks) && p.networks.length > 0)
+              type = 'network';
+            else if (Array.isArray(p.regions) && p.regions.length > 0)
+              type = 'region';
+          }
+
           return {
             id: p.id,
             name: p.name,
-            image:
-              (Array.isArray(p.image) && p.image.length > 0 && p.image[0]) ||
-              p.thumbnail ||
-              '/placeholder.svg',
+            image: imageUrl,
             sku: p.sku || '',
             category: categoryObj ? categoryObj.name : 'Uncategorized',
             price: priceNum,
             stock: stockNum,
-            status:
-              typeof p.status === 'string'
-                ? p.status
-                : !stockNum || stockNum === 0
-                ? 'Out of Stock'
-                : 'Active',
+            status: status,
             description: p.description || '',
+            type,
           };
         });
         setProducts(mapped);
@@ -176,7 +207,7 @@ function AdminProductsPage() {
       }
     };
     fetchProducts();
-  }, [selectedCategory]);
+  }, [selectedCategory, categories, activeTab]);
 
   const handleViewClick = (product: UIProduct) => {
     setSelectedProduct(product);
@@ -193,13 +224,21 @@ function AdminProductsPage() {
     setDeleteOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (selectedProduct) {
-      setProducts(products.filter(p => p.id !== selectedProduct.id));
-      setDeleteOpen(false);
-      setSelectedProduct(null);
+      try {
+        await productsService.delete(selectedProduct.id);
+        setProducts(products.filter(p => p.id !== selectedProduct.id));
+        setDeleteOpen(false);
+        setSelectedProduct(null);
+      } catch (error) {
+        console.error('Failed to delete product', error);
+        // You might want to add a toast notification here
+      }
     }
   };
+
+  const filteredProducts = products;
 
   return (
     <div className="space-y-6">
@@ -216,6 +255,29 @@ function AdminProductsPage() {
             Add Product
           </Button>
         </Link>
+      </div>
+
+      <div className="flex items-center space-x-2 mb-4">
+        <Button
+          variant={activeTab === 'all' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('all')}>
+          All Products
+        </Button>
+        <Button
+          variant={activeTab === 'basic' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('basic')}>
+          Basic Products
+        </Button>
+        <Button
+          variant={activeTab === 'network' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('network')}>
+          Network Products
+        </Button>
+        <Button
+          variant={activeTab === 'region' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('region')}>
+          Region Products
+        </Button>
       </div>
 
       <Card>
@@ -238,8 +300,8 @@ function AdminProductsPage() {
                     new Map(
                       categories
                         .filter(cat => cat.id !== 'all')
-                        .map(cat => [cat.id, cat])
-                    ).values()
+                        .map(cat => [cat.id, cat]),
+                    ).values(),
                   ).map(cat => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
@@ -293,16 +355,16 @@ function AdminProductsPage() {
                       Loading products...
                     </td>
                   </tr>
-                ) : products.length === 0 ? (
+                ) : filteredProducts.length === 0 ? (
                   <tr>
                     <td
                       colSpan={8}
                       className="py-8 text-center text-muted-foreground">
-                      No products found.
+                      No products found in this category.
                     </td>
                   </tr>
                 ) : (
-                  products.map(product => (
+                  filteredProducts.map(product => (
                     <tr key={product.id} className="border-b border-border">
                       <td className="py-4 pr-4">
                         <Checkbox />
@@ -357,15 +419,19 @@ function AdminProductsPage() {
                               <Eye className="mr-2 h-4 w-4" />
                               View
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleEditClick(product)}>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Copy className="mr-2 h-4 w-4" />
-                              Duplicate
-                            </DropdownMenuItem>
+                            {activeTab !== 'all' && (
+                              <>
+                                <DropdownMenuItem
+                                  onClick={() => handleEditClick(product)}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Copy className="mr-2 h-4 w-4" />
+                                  Duplicate
+                                </DropdownMenuItem>
+                              </>
+                            )}
                             <DropdownMenuItem
                               className="text-destructive"
                               onClick={() => handleDeleteClick(product)}>
