@@ -28,18 +28,12 @@ import {Label} from '../../../components/ui/label';
 import {Textarea} from '../../../components/ui/textarea';
 import {Switch} from '../../../components/ui/switch';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../../components/ui/select';
-import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '../../../components/ui/tabs';
+import {Checkbox} from '../../../components/ui/checkbox';
 import {withProtectedRoute} from '../../../lib/auth/protected-route';
 
 type ProductType = 'basic' | 'network' | 'region';
@@ -62,8 +56,8 @@ function NewProductPage() {
     [],
   );
   const [brands, setBrands] = useState<{id: string; name: string}[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedBrand, setSelectedBrand] = useState<string>('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
   // Status flags
   const [isActive, setIsActive] = useState(true);
@@ -264,6 +258,22 @@ function NewProductPage() {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-+|-+$/g, '');
+
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+
+  const toggleBrand = (brandId: string) => {
+    setSelectedBrands(prev =>
+      prev.includes(brandId)
+        ? prev.filter(id => id !== brandId)
+        : [...prev, brandId]
+    );
+  };
 
   const handleProductNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
@@ -1014,8 +1024,8 @@ function NewProductPage() {
     setProductCode('');
     setSku('');
     setWarranty('');
-    setSelectedCategory('');
-    setSelectedBrand('');
+    setSelectedCategories([]);
+    setSelectedBrands([]);
     setIsActive(true);
     setIsOnline(true);
     setIsPos(true);
@@ -1099,8 +1109,8 @@ function NewProductPage() {
         slug,
         description: description || undefined,
         shortDescription: shortDescription || undefined,
-        categoryId: selectedCategory || undefined,
-        brandId: selectedBrand || undefined,
+        categoryIds: selectedCategories.length > 0 ? selectedCategories : undefined,
+        brandIds: selectedBrands.length > 0 ? selectedBrands : undefined,
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
@@ -1286,8 +1296,8 @@ function NewProductPage() {
         slug,
         description: description || undefined,
         shortDescription: shortDescription || undefined,
-        categoryId: selectedCategory || undefined,
-        brandId: selectedBrand || undefined,
+        categoryIds: selectedCategories.length > 0 ? selectedCategories : undefined,
+        brandIds: selectedBrands.length > 0 ? selectedBrands : undefined,
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
@@ -1460,8 +1470,8 @@ function NewProductPage() {
         slug,
         description: description || undefined,
         shortDescription: shortDescription || undefined,
-        categoryId: selectedCategory || undefined,
-        brandId: selectedBrand || undefined,
+        categoryIds: selectedCategories.length > 0 ? selectedCategories : undefined,
+        brandIds: selectedBrands.length > 0 ? selectedBrands : undefined,
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
@@ -1640,34 +1650,60 @@ function NewProductPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="category">Category *</Label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Category *</Label>
+                <div className="mt-2 rounded border border-gray-300 bg-white p-3 max-h-48 overflow-y-auto">
+                  {categories.length > 0 ? (
+                    <div className="space-y-2">
+                      {categories.map(cat => (
+                        <div key={cat.id} className="flex items-center gap-2">
+                          <Checkbox
+                            id={`category-${cat.id}`}
+                            checked={selectedCategories.includes(cat.id)}
+                            onCheckedChange={() => toggleCategory(cat.id)}
+                          />
+                          <Label htmlFor={`category-${cat.id}`} className="font-normal cursor-pointer">
+                            {cat.name}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">Loading categories...</p>
+                  )}
+                </div>
+                {selectedCategories.length > 0 && (
+                  <p className="mt-2 text-xs text-gray-600">
+                    {selectedCategories.length} selected
+                  </p>
+                )}
               </div>
               <div>
-                <Label htmlFor="brand">Brand *</Label>
-                <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                  <SelectTrigger id="brand">
-                    <SelectValue placeholder="Select brand" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {brands.map(br => (
-                      <SelectItem key={br.id} value={br.id}>
-                        {br.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Brand *</Label>
+                <div className="mt-2 rounded border border-gray-300 bg-white p-3 max-h-48 overflow-y-auto">
+                  {brands.length > 0 ? (
+                    <div className="space-y-2">
+                      {brands.map(br => (
+                        <div key={br.id} className="flex items-center gap-2">
+                          <Checkbox
+                            id={`brand-${br.id}`}
+                            checked={selectedBrands.includes(br.id)}
+                            onCheckedChange={() => toggleBrand(br.id)}
+                          />
+                          <Label htmlFor={`brand-${br.id}`} className="font-normal cursor-pointer">
+                            {br.name}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">Loading brands...</p>
+                  )}
+                </div>
+                {selectedBrands.length > 0 && (
+                  <p className="mt-2 text-xs text-gray-600">
+                    {selectedBrands.length} selected
+                  </p>
+                )}
               </div>
             </div>
 
@@ -2059,7 +2095,7 @@ function NewProductPage() {
                         onChange={e => {
                           const regularPrice = parseFloat(e.target.value) || 0;
                           const percent = parseFloat(color.discountPercent) || 0;
-                          const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                          const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                           
                           updateBasicColor(
                             color.id,
@@ -2085,7 +2121,7 @@ function NewProductPage() {
                         onChange={e => {
                           const percent = parseFloat(e.target.value) || 0;
                           const regularPrice = parseFloat(color.regularPrice) || 0;
-                          const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                          const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                           
                           updateBasicColor(
                             color.id,
@@ -2209,7 +2245,7 @@ function NewProductPage() {
                                 onChange={e => {
                                   const regularPrice = parseFloat(e.target.value) || 0;
                                   const percent = parseFloat(storage.discountPercent) || 0;
-                                  const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                  const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                   
                                   updateDefaultStorageInNetwork(
                                     network.id,
@@ -2237,7 +2273,7 @@ function NewProductPage() {
                                 onChange={e => {
                                   const percent = parseFloat(e.target.value) || 0;
                                   const regularPrice = parseFloat(storage.regularPrice) || 0;
-                                  const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                  const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                   updateDefaultStorageInNetwork(
                                     network.id,
                                     storage.id,
@@ -2498,7 +2534,7 @@ function NewProductPage() {
                                           onChange={e => {
                                             const regularPrice = parseFloat(e.target.value) || 0;
                                             const percent = parseFloat(storage.discountPercent) || 0;
-                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                             
                                             updateStorageInNetwork(
                                               network.id,
@@ -2528,7 +2564,7 @@ function NewProductPage() {
                                           onChange={e => {
                                             const percent = parseFloat(e.target.value) || 0;
                                             const regularPrice = parseFloat(storage.regularPrice) || 0;
-                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                             updateStorageInNetwork(
                                               network.id,
                                               color.id,
@@ -2708,7 +2744,7 @@ function NewProductPage() {
                               onChange={e => {
                                 const regularPrice = parseFloat(e.target.value) || 0;
                                 const percent = parseFloat(storage.discountPercent) || 0;
-                                const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                 
                                 updateDefaultStorageInRegion(
                                   region.id,
@@ -2736,7 +2772,7 @@ function NewProductPage() {
                               onChange={e => {
                                 const percent = parseFloat(e.target.value) || 0;
                                 const regularPrice = parseFloat(storage.regularPrice) || 0;
-                                const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                 updateDefaultStorageInRegion(
                                   region.id,
                                   storage.id,
@@ -2941,7 +2977,7 @@ function NewProductPage() {
                                           onChange={e => {
                                             const regularPrice = parseFloat(e.target.value) || 0;
                                             const percent = parseFloat(storage.discountPercent) || 0;
-                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                             
                                             updateStorageInRegion(
                                               region.id,
@@ -2971,7 +3007,7 @@ function NewProductPage() {
                                           onChange={e => {
                                             const percent = parseFloat(e.target.value) || 0;
                                             const regularPrice = parseFloat(storage.regularPrice) || 0;
-                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                             updateStorageInRegion(
                                               region.id,
                                               color.id,
