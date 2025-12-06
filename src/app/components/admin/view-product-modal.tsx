@@ -15,56 +15,150 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { formatPrice } from "../../lib/utils/format";
 
-type Variant = { name?: string; price?: number; stock?: number };
-type Region = { name?: string; price?: number; stock?: number };
-type Color = { name?: string; code?: string };
-type Spec = { key?: string; value?: string };
-
 interface Product {
   id?: string | number;
   name?: string;
   sku?: string;
-  image?: string;
-  images?: string[];
-  thumbnail?: string;
-  gallery?: string[];
-  price?: number;
-  basePrice?: number;
-  description?: string;
-  highlights?: string | string[];
-  category?: { name?: string } | null;
-  categoryId?: string | number;
-  brand?: { name?: string } | null;
-  brandId?: string | number;
-  productCode?: string;
-  averageRating?: number;
-  rating?: number;
-  rewardsPoints?: number;
-  status?: string | boolean;
-  isActive?: boolean;
   slug?: string;
-  discountPrice?: number;
-  discountPercent?: number;
-  emiAvailable?: boolean;
-  minBookingPrice?: number;
-  variants?: Variant[] | string;
-  regions?: Region[] | string;
-  colors?: Color[] | string;
-  networks?: string[] | string;
-  sizes?: string[] | string;
-  plugs?: string[] | string;
-  specifications?: Spec[] | string;
-  stock?: number;
-  lowStock?: number | string;
-  trackStock?: boolean;
-  allowBackorder?: boolean;
-  metaTitle?: string;
-  metaDescription?: string;
-  metaKeywords?: string | string[];
-  seoTitle?: string;
-  seoDescription?: string;
-  seoKeywords?: string | string[];
-  model?: string;
+  productType?: string;
+  price?: number;
+  comparePrice?: number;
+  description?: string;
+  productCode?: string;
+  warranty?: string;
+  rewardPoints?: string | number;
+  minBookingPrice?: number | string;
+  
+  // Categories & Brands (multiple)
+  categoryIds?: string[];
+  categories?: { id?: string; name?: string; slug?: string }[];
+  brandIds?: string[];
+  brands?: { id?: string; name?: string; slug?: string; logo?: string }[];
+  
+  // Images
+  images?: { id?: string; url?: string; isThumbnail?: boolean; altText?: string }[];
+  
+  // Status flags
+  isActive?: string | boolean;
+  isOnline?: string | boolean;
+  isPos?: string | boolean;
+  isPreOrder?: string | boolean;
+  isOfficial?: string | boolean;
+  freeShipping?: string | boolean;
+  isEmi?: string | boolean;
+  
+  // SEO
+  seo?: {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+    canonical?: string | null;
+  };
+  
+  // Tags
+  tags?: string[];
+  
+  // Price range
+  priceRange?: {
+    min?: number;
+    max?: number;
+    currency?: string;
+  };
+  
+  // Stock
+  totalStock?: number;
+  stockQuantity?: number | string;
+  lowStockAlert?: number | string;
+  
+  // For Basic Products - Direct Colors
+  directColors?: Array<{
+    id?: string;
+    name?: string;
+    image?: string;
+    hasStorage?: boolean;
+    regularPrice?: number;
+    discountPrice?: number;
+    stockQuantity?: number;
+    features?: string | null;
+  }>;
+  
+  // For Network Products
+  networks?: Array<{
+    id?: string;
+    name?: string;
+    priceAdjustment?: number | null;
+    isDefault?: boolean;
+    defaultStorages?: Array<{
+      id?: string;
+      size?: string;
+      price?: {
+        regular?: number;
+        compare?: number;
+        discount?: number;
+        discountPercent?: number;
+        final?: number;
+      };
+      stock?: number;
+      inStock?: boolean;
+    }>;
+    colors?: Array<{
+      id?: string;
+      name?: string;
+      image?: string;
+      hasStorage?: boolean;
+      useDefaultStorages?: boolean;
+      regularPrice?: number | null;
+      discountPrice?: number | null;
+      stockQuantity?: number | null;
+      features?: string | null;
+    }>;
+  }>;
+  
+  // For Region Products
+  regions?: Array<{
+    id?: string;
+    name?: string;
+    isDefault?: boolean;
+    defaultStorages?: Array<{
+      id?: string;
+      size?: string;
+      price?: {
+        regular?: number;
+        compare?: number;
+        discount?: number;
+        discountPercent?: number;
+        final?: number;
+      };
+      stock?: number;
+      inStock?: boolean;
+    }>;
+    colors?: Array<{
+      id?: string;
+      name?: string;
+      image?: string;
+      hasStorage?: boolean;
+      useDefaultStorages?: boolean;
+      regularPrice?: number | null;
+      discountPrice?: number | null;
+      stockQuantity?: number | null;
+      features?: string | null;
+    }>;
+  }>;
+  
+  // Specifications
+  specifications?: Array<{
+    key?: string;
+    value?: string;
+    displayOrder?: number;
+  }>;
+  
+  // Videos
+  videos?: Array<{
+    id?: string;
+    url?: string;
+    thumbnail?: string;
+  }>;
+  
   createdAt?: string | number | Date;
   updatedAt?: string | number | Date;
 }
@@ -82,56 +176,42 @@ export function ViewProductModal({
 }: ViewProductModalProps) {
   if (!product) return null;
 
-  const parseJSON = <T = unknown,>(
-    val: unknown,
-    fallback: T | null = null
-  ): T | null => {
-    if (val === undefined || val === null) return fallback;
-    try {
-      const parsed: unknown =
-        typeof val === "string" ? (JSON.parse(val) as unknown) : val;
-      return parsed as T;
-    } catch {
-      return fallback;
-    }
+  const getThumbnailImage = () => {
+    const thumbnail = product.images?.find((img) => img.isThumbnail);
+    return thumbnail?.url || product.images?.[0]?.url || "/placeholder.svg";
   };
 
-  type ProductStatus = string | boolean | null | undefined;
-
-  const getStatusBadgeColor = (status: ProductStatus) => {
-    if (status === true || status === "true" || status === "Active")
-      return "bg-green-500/10 text-green-600";
-    if (status === "Out of Stock") return "bg-red-500/10 text-red-600";
-    if (status === "Low Stock") return "bg-yellow-500/10 text-yellow-600";
-    return "bg-gray-500/10 text-gray-600";
+  const getGalleryImages = () => {
+    return product.images?.filter((img) => !img.isThumbnail) || [];
   };
 
-  const mainImage =
-    product.image ||
-    product.images?.[0] ||
-    product.thumbnail ||
-    "/placeholder.svg";
-  const galleryImages = product.gallery || product.images?.slice(1) || [];
-  const price = product.price || product.basePrice || 0;
+  const formatBoolean = (val: any) => {
+    if (val === true || val === "true") return "Yes";
+    if (val === false || val === "false") return "No";
+    return "N/A";
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>{product.name}</DialogTitle>
-          <DialogDescription>
-            Product ID: {product.id} • SKU: {product.sku || "N/A"}
+          <DialogTitle className="text-2xl">{product.name}</DialogTitle>
+          <DialogDescription className="flex flex-wrap gap-4 text-xs pt-2">
+            <span>ID: {product.id}</span>
+            <span>SKU: {product.sku || "N/A"}</span>
+            <span>Type: {product.productType?.toUpperCase() || "N/A"}</span>
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto">
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="pricing">Pricing</TabsTrigger>
-              <TabsTrigger value="attributes">Attributes</TabsTrigger>
+              <TabsTrigger value="variants">Variants</TabsTrigger>
+              <TabsTrigger value="status">Status</TabsTrigger>
               <TabsTrigger value="inventory">Inventory</TabsTrigger>
-              <TabsTrigger value="meta">Meta Info</TabsTrigger>
+              <TabsTrigger value="seo">SEO</TabsTrigger>
             </TabsList>
 
             {/* Overview Tab */}
@@ -142,8 +222,8 @@ export function ViewProductModal({
                   <h3 className="font-semibold">Product Image</h3>
                   <div className="relative rounded-lg bg-muted p-4 flex items-center justify-center min-h-80">
                     <Image
-                      src={mainImage}
-                      alt={product.name ?? ""}
+                      src={getThumbnailImage()}
+                      alt={product.name ?? "Product"}
                       fill
                       className="object-contain p-4"
                     />
@@ -168,22 +248,37 @@ export function ViewProductModal({
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Category
-                      </label>
-                      <p className="mt-1 text-sm">
-                        {product.category?.name || product.categoryId || "N/A"}
-                      </p>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground uppercase">
+                      Categories
+                    </label>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {product.categories && product.categories.length > 0 ? (
+                        product.categories.map((cat) => (
+                          <Badge key={cat.id} variant="secondary">
+                            {cat.name}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-sm text-muted-foreground">N/A</span>
+                      )}
                     </div>
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Brand
-                      </label>
-                      <p className="mt-1 text-sm">
-                        {product.brand?.name || product.brandId || "N/A"}
-                      </p>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground uppercase">
+                      Brands
+                    </label>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {product.brands && product.brands.length > 0 ? (
+                        product.brands.map((brand) => (
+                          <Badge key={brand.id} variant="secondary">
+                            {brand.name}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-sm text-muted-foreground">N/A</span>
+                      )}
                     </div>
                   </div>
 
@@ -198,49 +293,21 @@ export function ViewProductModal({
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        SKU
-                      </label>
-                      <p className="mt-1 text-sm">{product.sku || "N/A"}</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Rating
+                        Warranty
                       </label>
                       <p className="mt-1 text-sm">
-                        {product.averageRating || product.rating
-                          ? `${product.averageRating || product.rating}/5`
-                          : "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Reward Points
-                      </label>
-                      <p className="mt-1 text-sm">
-                        {product.rewardsPoints || "N/A"}
+                        {product.warranty || "N/A"}
                       </p>
                     </div>
                   </div>
 
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground uppercase">
-                      Status
+                      Reward Points
                     </label>
-                    <div className="mt-1">
-                      <Badge
-                        variant="secondary"
-                        className={getStatusBadgeColor(product.status)}
-                      >
-                        {product.status === true ||
-                        product.status === "true" ||
-                        product.isActive
-                          ? "Published"
-                          : "Unpublished"}
-                      </Badge>
-                    </div>
+                    <p className="mt-1 text-sm">
+                      {product.rewardPoints || "N/A"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -252,48 +319,43 @@ export function ViewProductModal({
                     Description
                   </label>
                   <p className="mt-2 text-sm whitespace-pre-wrap">
-                    {String(product.description)}
+                    {product.description}
                   </p>
                 </div>
               )}
 
-              {/* Highlights */}
-              {(() => {
-                const highlights = parseJSON<string[]>(product.highlights, []);
-                if (Array.isArray(highlights) && highlights.length > 0) {
-                  return (
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Highlights
-                      </label>
-                      <ul className="mt-2 space-y-1">
-                        {highlights.map((highlight: string, idx: number) => (
-                          <li key={idx} className="text-sm">
-                            • {highlight}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                }
-                return null;
-              })()}
-
-              {/* Gallery Images */}
-              {galleryImages && galleryImages.length > 0 && (
+              {/* Tags */}
+              {product.tags && product.tags.length > 0 && (
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground uppercase">
-                    Gallery Images
+                    Tags
+                  </label>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {product.tags.map((tag, idx) => (
+                      <Badge key={idx} variant="outline">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Gallery Images */}
+              {getGalleryImages().length > 0 && (
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase">
+                    Gallery Images ({getGalleryImages().length})
                   </label>
                   <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                    {galleryImages.map((img: string, idx: number) => (
+                    {getGalleryImages().map((img, idx) => (
                       <div
-                        key={idx}
+                        key={img.id || idx}
                         className="rounded-lg border bg-muted p-2 flex items-center justify-center aspect-square"
+                        title={img.altText}
                       >
                         <Image
-                          src={img}
-                          alt={`Gallery ${idx + 1}`}
+                          src={img.url || "/placeholder.svg"}
+                          alt={img.altText || `Gallery ${idx + 1}`}
                           width={150}
                           height={150}
                           className="max-w-full max-h-full object-contain"
@@ -309,253 +371,405 @@ export function ViewProductModal({
             <TabsContent value="pricing" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Pricing</CardTitle>
+                  <CardTitle>Price Range</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Selling Price
+                        Min Price
                       </label>
-                      <p className="mt-2 text-2xl font-bold">
-                        {formatPrice(price)}
+                      <p className="mt-2 text-xl font-bold">
+                        {product.priceRange?.min !== undefined
+                          ? formatPrice(product.priceRange.min)
+                          : "N/A"}
                       </p>
                     </div>
-                    {product.discountPrice && (
-                      <div>
-                        <label className="text-xs font-semibold text-muted-foreground uppercase">
-                          Discount Price
-                        </label>
-                        <p className="mt-2 text-2xl font-bold">
-                          {formatPrice(product.discountPrice)}
-                        </p>
-                      </div>
-                    )}
-                    {product.discountPercent && (
-                      <div>
-                        <label className="text-xs font-semibold text-muted-foreground uppercase">
-                          Discount Percent
-                        </label>
-                        <p className="mt-2 text-xl font-bold">
-                          {product.discountPercent}%
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">
-                      EMI Available
-                    </label>
-                    <p className="mt-1">
-                      <Badge
-                        variant={product.emiAvailable ? "default" : "secondary"}
-                      >
-                        {product.emiAvailable ? "Yes" : "No"}
-                      </Badge>
-                    </p>
-                  </div>
-
-                  {product.minBookingPrice && (
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Min Booking Price
+                        Max Price
                       </label>
-                      <p className="mt-1 text-sm">
-                        {formatPrice(product.minBookingPrice)}
+                      <p className="mt-2 text-xl font-bold">
+                        {product.priceRange?.max !== undefined
+                          ? formatPrice(product.priceRange.max)
+                          : "N/A"}
                       </p>
                     </div>
-                  )}
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">
+                        Currency
+                      </label>
+                      <p className="mt-2 text-lg font-semibold">
+                        {product.priceRange?.currency || "BDT"}
+                      </p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
-              {/* Variants */}
-              {(() => {
-                const variants = parseJSON(product.variants, []);
-                return variants && variants.length > 0 ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Variants</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {variants.map((variant: any, idx: number) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between border rounded p-3"
-                          >
-                            <div className="flex-1">
-                              <p className="font-medium">{variant.name}</p>
-                              <p className="text-xs text-muted-foreground">
-                                Price: {formatPrice(variant.price || 0)} •
-                                Stock: {variant.stock || 0}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : null;
-              })()}
+              {product.minBookingPrice && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Min Booking Price</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-2xl font-bold">
+                      {formatPrice(Number(product.minBookingPrice))}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
-            {/* Attributes Tab */}
-            <TabsContent value="attributes" className="space-y-4">
-              {/* Regions */}
-              {(() => {
-                const regions = parseJSON(product.regions, []);
-                return regions && regions.length > 0 ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Regions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {regions.map((region: any, idx: number) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between border rounded p-3"
-                          >
-                            <div className="flex-1">
-                              <p className="font-medium">{region.name}</p>
-                              <p className="text-xs text-muted-foreground">
-                                Price: {formatPrice(region.price || 0)} • Stock:{" "}
-                                {region.stock || 0}
+            {/* Variants Tab */}
+            <TabsContent value="variants" className="space-y-4">
+              {/* Direct Colors (Basic Products) */}
+              {product.directColors && product.directColors.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Colors</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {product.directColors.map((color) => (
+                        <div
+                          key={color.id}
+                          className="border rounded-lg p-4 space-y-2"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h4 className="font-semibold">{color.name}</h4>
+                              {color.image && (
+                                <div className="mt-2 w-16 h-16">
+                                  <Image
+                                    src={color.image}
+                                    alt={color.name || "Color"}
+                                    width={64}
+                                    height={64}
+                                    className="object-cover rounded"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-4">
+                            {color.regularPrice !== undefined && (
+                              <div>
+                                <span className="text-xs text-muted-foreground">
+                                  Regular Price
+                                </span>
+                                <p className="font-semibold">
+                                  {formatPrice(color.regularPrice)}
+                                </p>
+                              </div>
+                            )}
+                            {color.discountPrice !== undefined &&
+                              color.discountPrice !== null && (
+                                <div>
+                                  <span className="text-xs text-muted-foreground">
+                                    Discount Price
+                                  </span>
+                                  <p className="font-semibold">
+                                    {formatPrice(color.discountPrice)}
+                                  </p>
+                                </div>
+                              )}
+                            {color.stockQuantity !== undefined && (
+                              <div>
+                                <span className="text-xs text-muted-foreground">
+                                  Stock
+                                </span>
+                                <p className="font-semibold">
+                                  {color.stockQuantity}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Networks (Network Products) */}
+              {product.networks && product.networks.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Networks</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {product.networks.map((network) => (
+                        <div
+                          key={network.id}
+                          className="border rounded-lg p-4 space-y-4"
+                        >
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold">{network.name}</h4>
+                            {network.isDefault && (
+                              <Badge>Default</Badge>
+                            )}
+                          </div>
+
+                          {/* Storages */}
+                          {network.defaultStorages &&
+                            network.defaultStorages.length > 0 && (
+                              <div>
+                                <p className="text-sm font-semibold mb-2">
+                                  Storages
+                                </p>
+                                <div className="space-y-2">
+                                  {network.defaultStorages.map((storage) => (
+                                    <div
+                                      key={storage.id}
+                                      className="bg-muted p-2 rounded text-sm"
+                                    >
+                                      <div className="font-medium">
+                                        {storage.size}
+                                      </div>
+                                      <div className="grid grid-cols-4 gap-2 mt-1 text-xs">
+                                        <div>
+                                          Regular:{" "}
+                                          {formatPrice(
+                                            storage.price?.regular || 0
+                                          )}
+                                        </div>
+                                        <div>
+                                          Discount:{" "}
+                                          {formatPrice(
+                                            storage.price?.discount || 0
+                                          )}
+                                        </div>
+                                        <div>
+                                          ({storage.price?.discountPercent}%)
+                                        </div>
+                                        <div>Stock: {storage.stock || 0}</div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                          {/* Colors */}
+                          {network.colors && network.colors.length > 0 && (
+                            <div>
+                              <p className="text-sm font-semibold mb-2">
+                                Colors
                               </p>
+                              <div className="flex flex-wrap gap-3">
+                                {network.colors.map((color) => (
+                                  <div
+                                    key={color.id}
+                                    className="text-center"
+                                  >
+                                    {color.image && (
+                                      <div className="w-12 h-12 mb-1">
+                                        <Image
+                                          src={color.image}
+                                          alt={color.name || "Color"}
+                                          width={48}
+                                          height={48}
+                                          className="object-cover rounded"
+                                        />
+                                      </div>
+                                    )}
+                                    <span className="text-xs">
+                                      {color.name}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Regions (Region Products) */}
+              {product.regions && product.regions.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Regions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {product.regions.map((region) => (
+                        <div
+                          key={region.id}
+                          className="border rounded-lg p-4 space-y-4"
+                        >
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold">{region.name}</h4>
+                            {region.isDefault && (
+                              <Badge>Default</Badge>
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : null;
-              })()}
 
-              {/* Colors */}
-              {(() => {
-                const colors = parseJSON(product.colors, []);
-                return colors && colors.length > 0 ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Colors</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-4">
-                        {colors.map((color: any, idx: number) => (
-                          <div key={idx} className="flex flex-col items-center">
-                            <span
-                              className="inline-block w-10 h-10 rounded-full border-2 mb-1"
-                              style={{
-                                backgroundColor: color.code || "#000000",
-                                borderColor: "#bbb",
-                              }}
-                              title={color.name}
-                            />
-                            <span className="text-xs text-muted-foreground">
-                              {color.name}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : null;
-              })()}
+                          {/* Storages */}
+                          {region.defaultStorages &&
+                            region.defaultStorages.length > 0 && (
+                              <div>
+                                <p className="text-sm font-semibold mb-2">
+                                  Storages
+                                </p>
+                                <div className="space-y-2">
+                                  {region.defaultStorages.map((storage) => (
+                                    <div
+                                      key={storage.id}
+                                      className="bg-muted p-2 rounded text-sm"
+                                    >
+                                      <div className="font-medium">
+                                        {storage.size}
+                                      </div>
+                                      <div className="grid grid-cols-4 gap-2 mt-1 text-xs">
+                                        <div>
+                                          Regular:{" "}
+                                          {formatPrice(
+                                            storage.price?.regular || 0
+                                          )}
+                                        </div>
+                                        <div>
+                                          Discount:{" "}
+                                          {formatPrice(
+                                            storage.price?.discount || 0
+                                          )}
+                                        </div>
+                                        <div>
+                                          ({storage.price?.discountPercent}%)
+                                        </div>
+                                        <div>Stock: {storage.stock || 0}</div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
 
-              {/* Networks, Sizes, Plugs */}
-              <div className="grid gap-4 sm:grid-cols-3">
-                {(() => {
-                  const networks = parseJSON(product.networks, []);
-                  return networks && networks.length > 0 ? (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Networks</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-wrap gap-2">
-                          {networks.map((network: string, idx: number) => (
-                            <Badge key={idx} variant="secondary">
-                              {network}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : null;
-                })()}
-
-                {(() => {
-                  const sizes = parseJSON(product.sizes, []);
-                  return sizes && sizes.length > 0 ? (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Sizes</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-wrap gap-2">
-                          {sizes.map((size: string, idx: number) => (
-                            <Badge key={idx} variant="secondary">
-                              {size}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : null;
-                })()}
-
-                {(() => {
-                  const plugs = parseJSON(product.plugs, []);
-                  return plugs && plugs.length > 0 ? (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Plugs</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-wrap gap-2">
-                          {plugs.map((plug: string, idx: number) => (
-                            <Badge key={idx} variant="secondary">
-                              {plug}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : null;
-                })()}
-              </div>
-
-              {/* Specifications */}
-              {(() => {
-                const specifications = parseJSON(product.specifications, []);
-                return specifications && specifications.length > 0 ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Specifications</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="rounded-lg border">
-                        <div className="grid grid-cols-2 bg-muted font-semibold p-3 rounded-t-lg gap-4">
-                          <div>Key</div>
-                          <div>Value</div>
-                        </div>
-                        {specifications.map((spec: any, idx: number) => (
-                          <div
-                            key={idx}
-                            className="grid grid-cols-2 gap-4 border-t p-3"
-                          >
-                            <div className="font-medium text-sm">
-                              {spec.key}
+                          {/* Colors */}
+                          {region.colors && region.colors.length > 0 && (
+                            <div>
+                              <p className="text-sm font-semibold mb-2">
+                                Colors
+                              </p>
+                              <div className="flex flex-wrap gap-3">
+                                {region.colors.map((color) => (
+                                  <div
+                                    key={color.id}
+                                    className="text-center"
+                                  >
+                                    {color.image && (
+                                      <div className="w-12 h-12 mb-1">
+                                        <Image
+                                          src={color.image}
+                                          alt={color.name || "Color"}
+                                          width={48}
+                                          height={48}
+                                          className="object-cover rounded"
+                                        />
+                                      </div>
+                                    )}
+                                    <span className="text-xs">
+                                      {color.name}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                            <div className="text-sm">{spec.value}</div>
-                          </div>
-                        ))}
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* Status Tab */}
+            <TabsContent value="status" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Product Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">
+                        Active
+                      </label>
+                      <div className="mt-2">
+                        <Badge variant={product.isActive === "true" || product.isActive === true ? "default" : "secondary"}>
+                          {formatBoolean(product.isActive)}
+                        </Badge>
                       </div>
-                    </CardContent>
-                  </Card>
-                ) : null;
-              })()}
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">
+                        Online
+                      </label>
+                      <div className="mt-2">
+                        <Badge variant={product.isOnline === "true" || product.isOnline === true ? "default" : "secondary"}>
+                          {formatBoolean(product.isOnline)}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">
+                        POS
+                      </label>
+                      <div className="mt-2">
+                        <Badge variant={product.isPos === "true" || product.isPos === true ? "default" : "secondary"}>
+                          {formatBoolean(product.isPos)}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">
+                        Pre-Order
+                      </label>
+                      <div className="mt-2">
+                        <Badge variant={product.isPreOrder === "true" || product.isPreOrder === true ? "default" : "secondary"}>
+                          {formatBoolean(product.isPreOrder)}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">
+                        Official
+                      </label>
+                      <div className="mt-2">
+                        <Badge variant={product.isOfficial === "true" || product.isOfficial === true ? "default" : "secondary"}>
+                          {formatBoolean(product.isOfficial)}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">
+                        Free Shipping
+                      </label>
+                      <div className="mt-2">
+                        <Badge variant={product.freeShipping === "true" || product.freeShipping === true ? "default" : "secondary"}>
+                          {formatBoolean(product.freeShipping)}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">
+                        EMI Available
+                      </label>
+                      <div className="mt-2">
+                        <Badge variant={product.isEmi === "true" || product.isEmi === true ? "default" : "secondary"}>
+                          {formatBoolean(product.isEmi)}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* Inventory Tab */}
@@ -568,10 +782,10 @@ export function ViewProductModal({
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Stock Quantity
+                        Total Stock
                       </label>
-                      <p className="mt-2 text-lg font-semibold">
-                        {product.stock || 0}
+                      <p className="mt-2 text-2xl font-bold">
+                        {product.totalStock || 0}
                       </p>
                     </div>
                     <div>
@@ -579,40 +793,7 @@ export function ViewProductModal({
                         Low Stock Alert
                       </label>
                       <p className="mt-2 text-lg font-semibold">
-                        {product.lowStock || "Not set"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Track Stock
-                      </label>
-                      <p className="mt-1">
-                        <Badge
-                          variant={
-                            product.trackStock !== false
-                              ? "default"
-                              : "secondary"
-                          }
-                        >
-                          {product.trackStock !== false ? "Yes" : "No"}
-                        </Badge>
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Allow Backorder
-                      </label>
-                      <p className="mt-1">
-                        <Badge
-                          variant={
-                            product.allowBackorder ? "default" : "secondary"
-                          }
-                        >
-                          {product.allowBackorder ? "Yes" : "No"}
-                        </Badge>
+                        {product.lowStockAlert || "Not set"}
                       </p>
                     </div>
                   </div>
@@ -620,107 +801,101 @@ export function ViewProductModal({
               </Card>
             </TabsContent>
 
-            {/* Meta Info Tab */}
-            <TabsContent value="meta" className="space-y-4">
+            {/* SEO Tab */}
+            <TabsContent value="seo" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Meta & SEO Information</CardTitle>
+                  <CardTitle>SEO Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {product.metaTitle && (
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Meta Title
-                      </label>
-                      <p className="mt-1 text-sm">{product.metaTitle}</p>
-                    </div>
-                  )}
-
-                  {product.metaDescription && (
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Meta Description
-                      </label>
-                      <p className="mt-1 text-sm">{product.metaDescription}</p>
-                    </div>
-                  )}
-
-                  {product.metaKeywords && (
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Meta Keywords
-                      </label>
-                      <p className="mt-1 text-sm">
-                        {Array.isArray(product.metaKeywords)
-                          ? product.metaKeywords.join(", ")
-                          : String(product.metaKeywords)}
-                      </p>
-                    </div>
-                  )}
-
-                  {product.seoTitle && (
+                  {product.seo?.title && (
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground uppercase">
                         SEO Title
                       </label>
-                      <p className="mt-1 text-sm">{product.seoTitle}</p>
+                      <p className="mt-1 text-sm">{product.seo.title}</p>
                     </div>
                   )}
 
-                  {product.seoDescription && (
+                  {product.seo?.description && (
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground uppercase">
                         SEO Description
                       </label>
-                      <p className="mt-1 text-sm">{product.seoDescription}</p>
+                      <p className="mt-1 text-sm">{product.seo.description}</p>
                     </div>
                   )}
 
-                  {product.seoKeywords && (
+                  {product.seo?.keywords && product.seo.keywords.length > 0 && (
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        SEO Keywords
+                        Keywords
                       </label>
-                      <p className="mt-1 text-sm">
-                        {Array.isArray(product.seoKeywords)
-                          ? product.seoKeywords.join(", ")
-                          : String(product.seoKeywords)}
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {product.seo.keywords.map((keyword, idx) => (
+                          <Badge key={idx} variant="outline">
+                            {keyword}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {product.seo?.canonical && (
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">
+                        Canonical URL
+                      </label>
+                      <p className="mt-1 text-sm font-mono break-all">
+                        {product.seo.canonical}
                       </p>
                     </div>
                   )}
 
-                  {product.model && (
+                  <div className="border-t pt-4 space-y-2 text-xs text-muted-foreground">
                     <div>
-                      <label className="text-xs font-semibold text-muted-foreground uppercase">
-                        Model
-                      </label>
-                      <p className="mt-1 text-sm">{product.model}</p>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">
-                      Created
-                    </label>
-                    <p className="mt-1 text-sm">
-                      {product.createdAt != null
+                      Created:{" "}
+                      {product.createdAt
                         ? new Date(product.createdAt).toLocaleDateString()
                         : "N/A"}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">
-                      Last Updated
-                    </label>
-                    <p className="mt-1 text-sm">
-                      {product.updatedAt != null
+                    </div>
+                    <div>
+                      Updated:{" "}
+                      {product.updatedAt
                         ? new Date(product.updatedAt).toLocaleDateString()
                         : "N/A"}
-                    </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Specifications */}
+              {product.specifications && product.specifications.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Specifications</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {product.specifications.map((spec, idx) => (
+                        <div
+                          key={idx}
+                          className="flex justify-between border-b pb-2 last:border-0"
+                        >
+                          <span className="font-semibold text-sm">
+                            {spec.key}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {Array.isArray(spec.value)
+                              ? spec.value.join(", ")
+                              : spec.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
           </Tabs>
         </div>
