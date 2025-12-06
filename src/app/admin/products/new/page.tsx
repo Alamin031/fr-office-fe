@@ -2095,7 +2095,7 @@ function NewProductPage() {
                         onChange={e => {
                           const regularPrice = parseFloat(e.target.value) || 0;
                           const percent = parseFloat(color.discountPercent) || 0;
-                          const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                          const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                           
                           updateBasicColor(
                             color.id,
@@ -2121,7 +2121,7 @@ function NewProductPage() {
                         onChange={e => {
                           const percent = parseFloat(e.target.value) || 0;
                           const regularPrice = parseFloat(color.regularPrice) || 0;
-                          const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                          const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                           
                           updateBasicColor(
                             color.id,
@@ -2245,7 +2245,7 @@ function NewProductPage() {
                                 onChange={e => {
                                   const regularPrice = parseFloat(e.target.value) || 0;
                                   const percent = parseFloat(storage.discountPercent) || 0;
-                                  const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                  const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                   
                                   updateDefaultStorageInNetwork(
                                     network.id,
@@ -2273,7 +2273,7 @@ function NewProductPage() {
                                 onChange={e => {
                                   const percent = parseFloat(e.target.value) || 0;
                                   const regularPrice = parseFloat(storage.regularPrice) || 0;
-                                  const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                  const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                   updateDefaultStorageInNetwork(
                                     network.id,
                                     storage.id,
@@ -2534,7 +2534,7 @@ function NewProductPage() {
                                           onChange={e => {
                                             const regularPrice = parseFloat(e.target.value) || 0;
                                             const percent = parseFloat(storage.discountPercent) || 0;
-                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                             
                                             updateStorageInNetwork(
                                               network.id,
@@ -2564,7 +2564,7 @@ function NewProductPage() {
                                           onChange={e => {
                                             const percent = parseFloat(e.target.value) || 0;
                                             const regularPrice = parseFloat(storage.regularPrice) || 0;
-                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                             updateStorageInNetwork(
                                               network.id,
                                               color.id,
@@ -2744,7 +2744,7 @@ function NewProductPage() {
                               onChange={e => {
                                 const regularPrice = parseFloat(e.target.value) || 0;
                                 const percent = parseFloat(storage.discountPercent) || 0;
-                                const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                 
                                 updateDefaultStorageInRegion(
                                   region.id,
@@ -2772,7 +2772,7 @@ function NewProductPage() {
                               onChange={e => {
                                 const percent = parseFloat(e.target.value) || 0;
                                 const regularPrice = parseFloat(storage.regularPrice) || 0;
-                                const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                 updateDefaultStorageInRegion(
                                   region.id,
                                   storage.id,
@@ -2977,7 +2977,7 @@ function NewProductPage() {
                                           onChange={e => {
                                             const regularPrice = parseFloat(e.target.value) || 0;
                                             const percent = parseFloat(storage.discountPercent) || 0;
-                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                             
                                             updateStorageInRegion(
                                               region.id,
@@ -3007,7 +3007,7 @@ function NewProductPage() {
                                           onChange={e => {
                                             const percent = parseFloat(e.target.value) || 0;
                                             const regularPrice = parseFloat(storage.regularPrice) || 0;
-                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            const discountPrice = Math.round(regularPrice - (regularPrice * percent) / 100);
                                             updateStorageInRegion(
                                               region.id,
                                               color.id,
