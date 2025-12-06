@@ -4,6 +4,7 @@
 'use client';
 
 import {useState, useEffect} from 'react';
+import { toast } from 'sonner';
 import productsService from '../../../lib/api/services/products';
 import categoriesService from '../../../lib/api/services/categories';
 import brandsService from '../../../lib/api/services/brands';
@@ -104,6 +105,7 @@ function NewProductPage() {
       colorImageFile: File | null;
       regularPrice: string;
       discountPrice: string;
+      discountPercent: string;
       stockQuantity: string;
     }>
   >([]);
@@ -186,6 +188,7 @@ function NewProductPage() {
         id: string;
         colorName: string;
         colorImage: string;
+        colorImageFile: File | null;
         hasStorage: boolean;
         useDefaultStorages: boolean;
         singlePrice: string;
@@ -223,6 +226,7 @@ function NewProductPage() {
           id: 'color-1',
           colorName: 'Midnight',
           colorImage: '',
+          colorImageFile: null,
           hasStorage: true,
           useDefaultStorages: true,
           singlePrice: '',
@@ -336,6 +340,7 @@ function NewProductPage() {
         colorImageFile: null,
         regularPrice: '',
         discountPrice: '',
+        discountPercent: '',
         stockQuantity: '',
       },
     ]);
@@ -346,8 +351,8 @@ function NewProductPage() {
   };
 
   const updateBasicColor = (colorId: string, field: string, value: any) => {
-    setBasicColors(
-      basicColors.map(c => (c.id === colorId ? {...c, [field]: value} : c)),
+    setBasicColors(prev =>
+      prev.map(c => (c.id === colorId ? {...c, [field]: value} : c)),
     );
   };
 
@@ -450,8 +455,8 @@ function NewProductPage() {
   };
 
   const updateNetwork = (networkId: string, field: string, value: any) => {
-    setNetworks(
-      networks.map(n => (n.id === networkId ? {...n, [field]: value} : n)),
+    setNetworks(prev =>
+      prev.map(n => (n.id === networkId ? {...n, [field]: value} : n)),
     );
   };
 
@@ -505,6 +510,56 @@ function NewProductPage() {
     );
   };
 
+  // Color image upload for region colors
+  const handleRegionColorImageUpload = (
+    regionId: string,
+    colorId: string,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setRegions(prev =>
+          prev.map(r =>
+            r.id === regionId
+              ? {
+                  ...r,
+                  colors: r.colors.map(c =>
+                    c.id === colorId
+                      ? {
+                          ...c,
+                          colorImage: reader.result as string,
+                          colorImageFile: file,
+                        }
+                      : c,
+                  ),
+                }
+              : r,
+          ),
+        );
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeRegionColorImage = (regionId: string, colorId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map(c =>
+                c.id === colorId
+                  ? {...c, colorImage: '', colorImageFile: null}
+                  : c,
+              ),
+            }
+          : r,
+      ),
+    );
+  };
+
   const addColorToNetwork = (networkId: string) => {
     setNetworks(
       networks.map(n =>
@@ -548,8 +603,8 @@ function NewProductPage() {
     field: string,
     value: any,
   ) => {
-    setNetworks(
-      networks.map(n =>
+    setNetworks(prev =>
+      prev.map(n =>
         n.id === networkId
           ? {
               ...n,
@@ -624,8 +679,8 @@ function NewProductPage() {
     field: string,
     value: any,
   ) => {
-    setNetworks(
-      networks.map(n =>
+    setNetworks(prev =>
+      prev.map(n =>
         n.id === networkId
           ? {
               ...n,
@@ -689,8 +744,8 @@ function NewProductPage() {
     field: string,
     value: any,
   ) => {
-    setNetworks(
-      networks.map(n =>
+    setNetworks(prev =>
+      prev.map(n =>
         n.id === networkId
           ? {
               ...n,
@@ -727,6 +782,7 @@ function NewProductPage() {
             id: `color-${Date.now()}`,
             colorName: '',
             colorImage: '',
+            colorImageFile: null,
             hasStorage: true,
             useDefaultStorages: true,
             singlePrice: '',
@@ -744,8 +800,8 @@ function NewProductPage() {
   };
 
   const updateRegion = (regionId: string, field: string, value: any) => {
-    setRegions(
-      regions.map(r => (r.id === regionId ? {...r, [field]: value} : r)),
+    setRegions(prev =>
+      prev.map(r => (r.id === regionId ? {...r, [field]: value} : r)),
     );
   };
 
@@ -761,6 +817,7 @@ function NewProductPage() {
                   id: `color-${Date.now()}`,
                   colorName: '',
                   colorImage: '',
+                  colorImageFile: null,
                   hasStorage: true,
                   useDefaultStorages: true,
                   singlePrice: '',
@@ -791,8 +848,8 @@ function NewProductPage() {
     field: string,
     value: any,
   ) => {
-    setRegions(
-      regions.map(r =>
+    setRegions(prev =>
+      prev.map(r =>
         r.id === regionId
           ? {
               ...r,
@@ -867,8 +924,8 @@ function NewProductPage() {
     field: string,
     value: any,
   ) => {
-    setRegions(
-      regions.map(r =>
+    setRegions(prev =>
+      prev.map(r =>
         r.id === regionId
           ? {
               ...r,
@@ -931,8 +988,8 @@ function NewProductPage() {
     field: string,
     value: any,
   ) => {
-    setRegions(
-      regions.map(r =>
+    setRegions(prev =>
+      prev.map(r =>
         r.id === regionId
           ? {
               ...r,
@@ -943,6 +1000,72 @@ function NewProductPage() {
           : r,
       ),
     );
+  };
+
+  const resetForm = () => {
+    setProductName('');
+    setSlug('');
+    setDescription('');
+    setShortDescription('');
+    setProductCode('');
+    setSku('');
+    setWarranty('');
+    setSelectedCategory('');
+    setSelectedBrand('');
+    setIsActive(true);
+    setIsOnline(true);
+    setIsPos(true);
+    setIsPreOrder(false);
+    setIsOfficial(false);
+    setFreeShipping(false);
+    setIsEmi(false);
+    setRewardPoints('');
+    setMinBookingPrice('');
+    setSeoTitle('');
+    setSeoDescription('');
+    setSeoKeywords('');
+    setSeoCanonical('');
+    setTags('');
+    setThumbnailFile(null);
+    setThumbnailPreview('');
+    setGalleryImageFiles([]);
+    setGalleryImagePreviews([]);
+    setBasicColors([]);
+    setVideos([{id: 'video-1', url: '', type: 'youtube'}]);
+    setSpecifications([{id: 'spec-1', key: '', value: ''}]);
+    setNetworks([]);
+    setRegions([
+      {
+        id: 'region-1',
+        regionName: 'International',
+        isDefault: true,
+        defaultStorages: [
+          {
+            id: 'default-storage-1',
+            storageSize: '256GB',
+            regularPrice: '',
+            discountPrice: '',
+            discountPercent: '',
+            stockQuantity: '',
+            lowStockAlert: '5',
+          },
+        ],
+        colors: [
+          {
+            id: 'color-1',
+            colorName: 'Midnight',
+            colorImage: '',
+            colorImageFile: null,
+            hasStorage: true,
+            useDefaultStorages: true,
+            singlePrice: '',
+            singleComparePrice: '',
+            singleStockQuantity: '',
+            storages: [],
+          },
+        ],
+      },
+    ]);
   };
 
   // SUBMIT FUNCTIONS
@@ -1012,6 +1135,7 @@ function NewProductPage() {
                 colorName: c.colorName,
                 regularPrice: c.regularPrice ? Number(c.regularPrice) : undefined,
                 discountPrice: c.discountPrice ? Number(c.discountPrice) : undefined,
+                discountPercent: c.discountPercent ? Number(c.discountPercent) : undefined,
                 stockQuantity: c.stockQuantity ? Number(c.stockQuantity) : undefined,
                 displayOrder: idx,
               }))
@@ -1035,10 +1159,11 @@ function NewProductPage() {
           : productType === 'network'
           ? await productsService.createNetwork(formData)
           : await productsService.createRegion(formData);
-      alert('✓ Basic product created successfully!');
+      toast.success('Basic product created successfully!');
+      resetForm();
     } catch (err: any) {
       console.error('Error creating basic product:', err);
-      alert(`Error: ${err?.response?.data?.message || err?.message || 'Unknown error'}`);
+      toast.error(`Error: ${err?.response?.data?.message || err?.message || 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -1058,6 +1183,8 @@ function NewProductPage() {
         formData.append('galleryImages', file);
       });
 
+      const networkColorImages: File[] = [];
+
       // Format networks data properly for backend
       const formattedNetworks = networks.map((network, netIdx) => ({
         networkName: network.networkName,
@@ -1068,42 +1195,85 @@ function NewProductPage() {
         defaultStorages: network.hasDefaultStorages
           ? network.defaultStorages.map((storage, storIdx) => ({
               storageSize: storage.storageSize,
-              regularPrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
-              comparePrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
-              discountPrice: storage.discountPrice ? Number(storage.discountPrice) : 0,
-              discountPercent: storage.discountPercent ? Number(storage.discountPercent) : 0,
-              stockQuantity: storage.stockQuantity ? Number(storage.stockQuantity) : 0,
-              lowStockAlert: storage.lowStockAlert ? Number(storage.lowStockAlert) : 5,
+              regularPrice: storage.regularPrice
+                ? Number(storage.regularPrice)
+                : 0,
+              comparePrice: storage.regularPrice
+                ? Number(storage.regularPrice)
+                : 0,
+              discountPrice: storage.discountPrice
+                ? Number(storage.discountPrice)
+                : 0,
+              discountPercent: storage.discountPercent
+                ? Number(storage.discountPercent)
+                : 0,
+              stockQuantity: storage.stockQuantity
+                ? Number(storage.stockQuantity)
+                : 0,
+              lowStockAlert: storage.lowStockAlert
+                ? Number(storage.lowStockAlert)
+                : 5,
               displayOrder: storIdx,
             }))
           : undefined,
         // Colors in this network
-        colors: network.colors.map((color, colorIdx) => ({
-          colorName: color.colorName,
-          colorImage: color.colorImage || undefined,
-          hasStorage: color.hasStorage,
-          useDefaultStorages: color.useDefaultStorages,
-          displayOrder: colorIdx,
-          // If no storage, use single price
-          singlePrice: !color.hasStorage ? Number(color.singlePrice) || 0 : undefined,
-          singleComparePrice: !color.hasStorage ? Number(color.singleComparePrice) || 0 : undefined,
-          singleStockQuantity: !color.hasStorage ? Number(color.singleStockQuantity) || 0 : undefined,
-          // Custom storages (only if has storage and not using defaults)
-          storages:
-            color.hasStorage && !color.useDefaultStorages
-              ? color.storages.map((storage, storIdx) => ({
-                  storageSize: storage.storageSize,
-                  regularPrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
-                  comparePrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
-                  discountPrice: storage.discountPrice ? Number(storage.discountPrice) : 0,
-                  discountPercent: storage.discountPercent ? Number(storage.discountPercent) : 0,
-                  stockQuantity: storage.stockQuantity ? Number(storage.stockQuantity) : 0,
-                  lowStockAlert: storage.lowStockAlert ? Number(storage.lowStockAlert) : 5,
-                  displayOrder: storIdx,
-                }))
+        colors: network.colors.map((color, colorIdx) => {
+          let imageIndex = -1;
+          if (color.colorImageFile) {
+            networkColorImages.push(color.colorImageFile);
+            imageIndex = networkColorImages.length - 1;
+          }
+
+          return {
+            colorName: color.colorName,
+            hasStorage: color.hasStorage,
+            useDefaultStorages: color.useDefaultStorages,
+            displayOrder: colorIdx,
+            colorImageIndex: imageIndex > -1 ? imageIndex : undefined,
+            // If no storage, use single price
+            singlePrice: !color.hasStorage
+              ? Number(color.singlePrice) || 0
               : undefined,
-        })),
+            singleComparePrice: !color.hasStorage
+              ? Number(color.singleComparePrice) || 0
+              : undefined,
+            singleStockQuantity: !color.hasStorage
+              ? Number(color.singleStockQuantity) || 0
+              : undefined,
+            // Custom storages (only if has storage and not using defaults)
+            storages:
+              color.hasStorage && !color.useDefaultStorages
+                ? color.storages.map((storage, storIdx) => ({
+                    storageSize: storage.storageSize,
+                    regularPrice: storage.regularPrice
+                      ? Number(storage.regularPrice)
+                      : 0,
+                    comparePrice: storage.regularPrice
+                      ? Number(storage.regularPrice)
+                      : 0,
+                    discountPrice: storage.discountPrice
+                      ? Number(storage.discountPrice)
+                      : 0,
+                    discountPercent: storage.discountPercent
+                      ? Number(storage.discountPercent)
+                      : 0,
+                    stockQuantity: storage.stockQuantity
+                      ? Number(storage.stockQuantity)
+                      : 0,
+                    lowStockAlert: storage.lowStockAlert
+                      ? Number(storage.lowStockAlert)
+                      : 5,
+                    displayOrder: storIdx,
+                  }))
+                : undefined,
+          };
+        }),
       }));
+
+      // Append network color images
+      networkColorImages.forEach(file => {
+        formData.append('colors', file);
+      });
 
       const payload: any = {
         name: productName,
@@ -1165,10 +1335,11 @@ function NewProductPage() {
           : productType === 'network'
           ? await productsService.createNetwork(formData)
           : await productsService.createRegion(formData);
-      alert('✓ Network product created successfully!');
+      toast.success('Network product created successfully!');
+      resetForm();
     } catch (err: any) {
       console.error('Error creating network product:', err);
-      alert(`Error: ${err?.response?.data?.message || err?.message || 'Unknown error'}`);
+      toast.error(`Error: ${err?.response?.data?.message || err?.message || 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -1188,6 +1359,8 @@ function NewProductPage() {
         formData.append('galleryImages', file);
       });
 
+      const regionColorImages: File[] = [];
+
       // Format regions data properly for backend
       const formattedRegions = regions.map((region, regIdx) => ({
         regionName: region.regionName,
@@ -1196,41 +1369,84 @@ function NewProductPage() {
         // Default storages for this region (always present)
         defaultStorages: region.defaultStorages.map((storage, storIdx) => ({
           storageSize: storage.storageSize,
-          regularPrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
-          comparePrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
-          discountPrice: storage.discountPrice ? Number(storage.discountPrice) : 0,
-          discountPercent: storage.discountPercent ? Number(storage.discountPercent) : 0,
-          stockQuantity: storage.stockQuantity ? Number(storage.stockQuantity) : 0,
-          lowStockAlert: storage.lowStockAlert ? Number(storage.lowStockAlert) : 5,
+          regularPrice: storage.regularPrice
+            ? Number(storage.regularPrice)
+            : 0,
+          comparePrice: storage.regularPrice
+            ? Number(storage.regularPrice)
+            : 0,
+          discountPrice: storage.discountPrice
+            ? Number(storage.discountPrice)
+            : 0,
+          discountPercent: storage.discountPercent
+            ? Number(storage.discountPercent)
+            : 0,
+          stockQuantity: storage.stockQuantity
+            ? Number(storage.stockQuantity)
+            : 0,
+          lowStockAlert: storage.lowStockAlert
+            ? Number(storage.lowStockAlert)
+            : 5,
           displayOrder: storIdx,
         })),
         // Colors in this region
-        colors: region.colors.map((color, colorIdx) => ({
-          colorName: color.colorName,
-          colorImage: color.colorImage || undefined,
-          hasStorage: color.hasStorage,
-          useDefaultStorages: color.useDefaultStorages,
-          displayOrder: colorIdx,
-          // If no storage, use single price
-          singlePrice: !color.hasStorage ? Number(color.singlePrice) || 0 : undefined,
-          singleComparePrice: !color.hasStorage ? Number(color.singleComparePrice) || 0 : undefined,
-          singleStockQuantity: !color.hasStorage ? Number(color.singleStockQuantity) || 0 : undefined,
-          // Custom storages (only if has storage and not using defaults)
-          storages:
-            color.hasStorage && !color.useDefaultStorages
-              ? color.storages.map((storage, storIdx) => ({
-                  storageSize: storage.storageSize,
-                  regularPrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
-                  comparePrice: storage.regularPrice ? Number(storage.regularPrice) : 0,
-                  discountPrice: storage.discountPrice ? Number(storage.discountPrice) : 0,
-                  discountPercent: storage.discountPercent ? Number(storage.discountPercent) : 0,
-                  stockQuantity: storage.stockQuantity ? Number(storage.stockQuantity) : 0,
-                  lowStockAlert: storage.lowStockAlert ? Number(storage.lowStockAlert) : 5,
-                  displayOrder: storIdx,
-                }))
+        colors: region.colors.map((color, colorIdx) => {
+          let imageIndex = -1;
+          if (color.colorImageFile) {
+            regionColorImages.push(color.colorImageFile);
+            imageIndex = regionColorImages.length - 1;
+          }
+
+          return {
+            colorName: color.colorName,
+            hasStorage: color.hasStorage,
+            useDefaultStorages: color.useDefaultStorages,
+            displayOrder: colorIdx,
+            colorImageIndex: imageIndex > -1 ? imageIndex : undefined,
+            // If no storage, use single price
+            singlePrice: !color.hasStorage
+              ? Number(color.singlePrice) || 0
               : undefined,
-        })),
+            singleComparePrice: !color.hasStorage
+              ? Number(color.singleComparePrice) || 0
+              : undefined,
+            singleStockQuantity: !color.hasStorage
+              ? Number(color.singleStockQuantity) || 0
+              : undefined,
+            // Custom storages (only if has storage and not using defaults)
+            storages:
+              color.hasStorage && !color.useDefaultStorages
+                ? color.storages.map((storage, storIdx) => ({
+                    storageSize: storage.storageSize,
+                    regularPrice: storage.regularPrice
+                      ? Number(storage.regularPrice)
+                      : 0,
+                    comparePrice: storage.regularPrice
+                      ? Number(storage.regularPrice)
+                      : 0,
+                    discountPrice: storage.discountPrice
+                      ? Number(storage.discountPrice)
+                      : 0,
+                    discountPercent: storage.discountPercent
+                      ? Number(storage.discountPercent)
+                      : 0,
+                    stockQuantity: storage.stockQuantity
+                      ? Number(storage.stockQuantity)
+                      : 0,
+                    lowStockAlert: storage.lowStockAlert
+                      ? Number(storage.lowStockAlert)
+                      : 5,
+                    displayOrder: storIdx,
+                  }))
+                : undefined,
+          };
+        }),
       }));
+
+      // Append region color images
+      regionColorImages.forEach(file => {
+        formData.append('colors', file);
+      });
 
       const payload: any = {
         name: productName,
@@ -1292,10 +1508,11 @@ function NewProductPage() {
           : productType === 'network'
           ? await productsService.createNetwork(formData)
           : await productsService.createRegion(formData);
-      alert('✓ Region product created successfully!');
+      toast.success('Region product created successfully!');
+      resetForm();
     } catch (err: any) {
       console.error('Error creating region product:', err);
-      alert(`Error: ${err?.response?.data?.message || err?.message || 'Unknown error'}`);
+      toast.error(`Error: ${err?.response?.data?.message || err?.message || 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -1824,13 +2041,48 @@ function NewProductPage() {
                       <Input
                         type="number"
                         value={color.regularPrice}
-                        onChange={e =>
+                        onChange={e => {
+                          const regularPrice = parseFloat(e.target.value) || 0;
+                          const percent = parseFloat(color.discountPercent) || 0;
+                          const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                          
                           updateBasicColor(
                             color.id,
                             'regularPrice',
                             e.target.value,
-                          )
-                        }
+                          );
+                          if (percent > 0) {
+                            updateBasicColor(
+                              color.id,
+                              'discountPrice',
+                              discountPrice.toString(),
+                            );
+                          }
+                        }}
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <Label>Discount %</Label>
+                      <Input
+                        type="number"
+                        value={color.discountPercent}
+                        onChange={e => {
+                          const percent = parseFloat(e.target.value) || 0;
+                          const regularPrice = parseFloat(color.regularPrice) || 0;
+                          const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                          
+                          updateBasicColor(
+                            color.id,
+                            'discountPercent',
+                            e.target.value,
+                          );
+                          updateBasicColor(
+                            color.id,
+                            'discountPrice',
+                            discountPrice.toString(),
+                          );
+                        }}
                         placeholder="0"
                       />
                     </div>
@@ -1939,14 +2191,26 @@ function NewProductPage() {
                               <Input
                                 type="number"
                                 value={storage.regularPrice}
-                                onChange={e =>
+                                onChange={e => {
+                                  const regularPrice = parseFloat(e.target.value) || 0;
+                                  const percent = parseFloat(storage.discountPercent) || 0;
+                                  const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                  
                                   updateDefaultStorageInNetwork(
                                     network.id,
                                     storage.id,
                                     'regularPrice',
                                     e.target.value,
-                                  )
-                                }
+                                  );
+                                  if (percent > 0) {
+                                    updateDefaultStorageInNetwork(
+                                      network.id,
+                                      storage.id,
+                                      'discountPrice',
+                                      discountPrice.toString(),
+                                    );
+                                  }
+                                }}
                                 placeholder="0"
                               />
                             </div>
@@ -2216,15 +2480,28 @@ function NewProductPage() {
                                         <Input
                                           type="number"
                                           value={storage.regularPrice}
-                                          onChange={e =>
+                                          onChange={e => {
+                                            const regularPrice = parseFloat(e.target.value) || 0;
+                                            const percent = parseFloat(storage.discountPercent) || 0;
+                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            
                                             updateStorageInNetwork(
                                               network.id,
                                               color.id,
                                               storage.id,
                                               'regularPrice',
                                               e.target.value,
-                                            )
-                                          }
+                                            );
+                                            if (percent > 0) {
+                                              updateStorageInNetwork(
+                                                network.id,
+                                                color.id,
+                                                storage.id,
+                                                'discountPrice',
+                                                discountPrice.toString(),
+                                              );
+                                            }
+                                          }}
                                           placeholder="0"
                                         />
                                       </div>
@@ -2392,7 +2669,7 @@ function NewProductPage() {
                         key={storage.id}
                         className="space-y-2 rounded bg-white p-2"
                       >
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-4 gap-2">
                           <div>
                             <Label className="text-xs">Storage Size</Label>
                             <Input
@@ -2413,14 +2690,51 @@ function NewProductPage() {
                             <Input
                               type="number"
                               value={storage.regularPrice}
-                              onChange={e =>
+                              onChange={e => {
+                                const regularPrice = parseFloat(e.target.value) || 0;
+                                const percent = parseFloat(storage.discountPercent) || 0;
+                                const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                
                                 updateDefaultStorageInRegion(
                                   region.id,
                                   storage.id,
                                   'regularPrice',
                                   e.target.value,
-                                )
-                              }
+                                );
+                                if (percent > 0) {
+                                  updateDefaultStorageInRegion(
+                                    region.id,
+                                    storage.id,
+                                    'discountPrice',
+                                    discountPrice.toString(),
+                                  );
+                                }
+                              }}
+                              placeholder="0"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Discount %</Label>
+                            <Input
+                              type="number"
+                              value={storage.discountPercent}
+                              onChange={e => {
+                                const percent = parseFloat(e.target.value) || 0;
+                                const regularPrice = parseFloat(storage.regularPrice) || 0;
+                                const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                updateDefaultStorageInRegion(
+                                  region.id,
+                                  storage.id,
+                                  'discountPercent',
+                                  e.target.value,
+                                );
+                                updateDefaultStorageInRegion(
+                                  region.id,
+                                  storage.id,
+                                  'discountPrice',
+                                  discountPrice.toString(),
+                                );
+                              }}
                               placeholder="0"
                             />
                           </div>
@@ -2493,8 +2807,6 @@ function NewProductPage() {
                             <Label className="text-sm">Color Name</Label>
                             <Input
                               value={color.colorName}
-
-
                               onChange={e =>
                                 updateColorInRegion(
                                   region.id,
@@ -2505,6 +2817,39 @@ function NewProductPage() {
                               }
                               placeholder="e.g., Midnight"
                             />
+                          </div>
+                          <div className="flex-1">
+                            <Label className="text-sm">Color Image</Label>
+                            {color.colorImage ? (
+                              <div className="relative inline-block">
+                                <img
+                                  src={color.colorImage}
+                                  alt={color.colorName}
+                                  className="h-12 w-12 rounded object-cover"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    removeRegionColorImage(region.id, color.id)
+                                  }
+                                  className="absolute -right-2 -top-2 rounded-full bg-red-500 p-0.5 text-white hover:bg-red-600"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ) : (
+                              <label className="flex cursor-pointer items-center justify-center rounded border-2 border-dashed border-gray-300 p-2">
+                                <Upload className="h-4 w-4 text-gray-400" />
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={e =>
+                                    handleRegionColorImageUpload(region.id, color.id, e)
+                                  }
+                                  className="hidden"
+                                />
+                              </label>
+                            )}
                           </div>
                           <button
                             type="button"
@@ -2556,7 +2901,7 @@ function NewProductPage() {
                                     key={storage.id}
                                     className="space-y-2 rounded bg-white p-2"
                                   >
-                                    <div className="grid grid-cols-3 gap-2">
+                                    <div className="grid grid-cols-4 gap-2">
                                       <div>
                                         <Label className="text-xs">Storage</Label>
                                         <Input
@@ -2578,15 +2923,55 @@ function NewProductPage() {
                                         <Input
                                           type="number"
                                           value={storage.regularPrice}
-                                          onChange={e =>
+                                          onChange={e => {
+                                            const regularPrice = parseFloat(e.target.value) || 0;
+                                            const percent = parseFloat(storage.discountPercent) || 0;
+                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            
                                             updateStorageInRegion(
                                               region.id,
                                               color.id,
                                               storage.id,
                                               'regularPrice',
                                               e.target.value,
-                                            )
-                                          }
+                                            );
+                                            if (percent > 0) {
+                                              updateStorageInRegion(
+                                                region.id,
+                                                color.id,
+                                                storage.id,
+                                                'discountPrice',
+                                                discountPrice.toString(),
+                                              );
+                                            }
+                                          }}
+                                          placeholder="0"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs">Discount %</Label>
+                                        <Input
+                                          type="number"
+                                          value={storage.discountPercent}
+                                          onChange={e => {
+                                            const percent = parseFloat(e.target.value) || 0;
+                                            const regularPrice = parseFloat(storage.regularPrice) || 0;
+                                            const discountPrice = regularPrice - (regularPrice * percent) / 100;
+                                            updateStorageInRegion(
+                                              region.id,
+                                              color.id,
+                                              storage.id,
+                                              'discountPercent',
+                                              e.target.value,
+                                            );
+                                            updateStorageInRegion(
+                                              region.id,
+                                              color.id,
+                                              storage.id,
+                                              'discountPrice',
+                                              discountPrice.toString(),
+                                            );
+                                          }}
                                           placeholder="0"
                                         />
                                       </div>
