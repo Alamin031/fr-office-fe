@@ -62,8 +62,8 @@ function NewProductPage() {
     [],
   );
   const [brands, setBrands] = useState<{id: string; name: string}[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedBrand, setSelectedBrand] = useState<string>('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
   // Status flags
   const [isActive, setIsActive] = useState(true);
