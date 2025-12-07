@@ -113,6 +113,503 @@ export function EditProductModal({
   // Regions
   const [regions, setRegions] = useState<any[]>([]);
 
+  // Network helper functions
+  const addNetwork = () => {
+    setNetworks([...networks, {
+      id: `network-${Date.now()}`,
+      networkName: '',
+      isDefault: false,
+      hasDefaultStorages: false,
+      defaultStorages: [],
+      colors: [],
+    }]);
+  };
+
+  const removeNetwork = (networkId: string) => {
+    setNetworks(networks.filter(n => n.id !== networkId));
+  };
+
+  const updateNetwork = (networkId: string, field: string, value: any) => {
+    setNetworks(prev => prev.map(n => (n.id === networkId ? {...n, [field]: value} : n)));
+  };
+
+  const addNetworkDefaultStorage = (networkId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              defaultStorages: [
+                ...n.defaultStorages,
+                {
+                  id: `ds-${Date.now()}`,
+                  storageSize: '',
+                  regularPrice: '',
+                  discountPrice: '',
+                  discountPercent: '',
+                  stockQuantity: '',
+                  lowStockAlert: '5',
+                },
+              ],
+            }
+          : n
+      )
+    );
+  };
+
+  const removeNetworkDefaultStorage = (networkId: string, storageId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {...n, defaultStorages: n.defaultStorages.filter((s: any) => s.id !== storageId)}
+          : n
+      )
+    );
+  };
+
+  const updateDefaultStorageInNetwork = (
+    networkId: string,
+    storageId: string,
+    field: string,
+    value: string
+  ) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              defaultStorages: n.defaultStorages.map((s: any) =>
+                s.id === storageId ? {...s, [field]: value} : s
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const addNetworkColor = (networkId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: [
+                ...n.colors,
+                {
+                  id: `color-${Date.now()}`,
+                  colorName: '',
+                  colorImage: '',
+                  colorImageFile: null,
+                  hasStorage: false,
+                  useDefaultStorages: false,
+                  singlePrice: '',
+                  singleComparePrice: '',
+                  singleStockQuantity: '',
+                  storages: [],
+                },
+              ],
+            }
+          : n
+      )
+    );
+  };
+
+  const removeNetworkColor = (networkId: string, colorId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {...n, colors: n.colors.filter((c: any) => c.id !== colorId)}
+          : n
+      )
+    );
+  };
+
+  const updateNetworkColor = (networkId: string, colorId: string, field: string, value: any) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map((c: any) =>
+                c.id === colorId ? {...c, [field]: value} : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const handleNetworkColorImageUpload = (
+    networkId: string,
+    colorId: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNetworks(prev =>
+          prev.map(n =>
+            n.id === networkId
+              ? {
+                  ...n,
+                  colors: n.colors.map(c =>
+                    c.id === colorId
+                      ? {
+                          ...c,
+                          colorImage: reader.result as string,
+                          colorImageFile: file,
+                        }
+                      : c
+                  ),
+                }
+              : n
+          )
+        );
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeNetworkColorImage = (networkId: string, colorId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map(c =>
+                c.id === colorId ? {...c, colorImage: '', colorImageFile: null} : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const addNetworkColorStorage = (networkId: string, colorId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map(c =>
+                c.id === colorId
+                  ? {
+                      ...c,
+                      storages: [
+                        ...c.storages,
+                        {
+                          id: `s-${Date.now()}`,
+                          storageSize: '',
+                          regularPrice: '',
+                          discountPrice: '',
+                          discountPercent: '',
+                          stockQuantity: '',
+                          lowStockAlert: '5',
+                        },
+                      ],
+                    }
+                  : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const removeNetworkColorStorage = (networkId: string, colorId: string, storageId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map(c =>
+                c.id === colorId
+                  ? {...c, storages: c.storages.filter((s: any) => s.id !== storageId)}
+                  : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const updateNetworkColorStorage = (
+    networkId: string,
+    colorId: string,
+    storageId: string,
+    field: string,
+    value: string
+  ) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map(c =>
+                c.id === colorId
+                  ? {
+                      ...c,
+                      storages: c.storages.map((s: any) =>
+                        s.id === storageId ? {...s, [field]: value} : s
+                      ),
+                    }
+                  : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  // Region helper functions
+  const addRegion = () => {
+    setRegions([...regions, {
+      id: `region-${Date.now()}`,
+      regionName: '',
+      isDefault: false,
+      defaultStorages: [],
+      colors: [],
+    }]);
+  };
+
+  const removeRegion = (regionId: string) => {
+    setRegions(regions.filter(r => r.id !== regionId));
+  };
+
+  const updateRegion = (regionId: string, field: string, value: any) => {
+    setRegions(prev => prev.map(r => (r.id === regionId ? {...r, [field]: value} : r)));
+  };
+
+  const addRegionDefaultStorage = (regionId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              defaultStorages: [
+                ...r.defaultStorages,
+                {
+                  id: `ds-${Date.now()}`,
+                  storageSize: '',
+                  regularPrice: '',
+                  discountPrice: '',
+                  discountPercent: '',
+                  stockQuantity: '',
+                  lowStockAlert: '5',
+                },
+              ],
+            }
+          : r
+      )
+    );
+  };
+
+  const removeRegionDefaultStorage = (regionId: string, storageId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {...r, defaultStorages: r.defaultStorages.filter((s: any) => s.id !== storageId)}
+          : r
+      )
+    );
+  };
+
+  const updateDefaultStorageInRegion = (
+    regionId: string,
+    storageId: string,
+    field: string,
+    value: string
+  ) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              defaultStorages: r.defaultStorages.map((s: any) =>
+                s.id === storageId ? {...s, [field]: value} : s
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const addRegionColor = (regionId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: [
+                ...r.colors,
+                {
+                  id: `color-${Date.now()}`,
+                  colorName: '',
+                  colorImage: '',
+                  colorImageFile: null,
+                  hasStorage: false,
+                  useDefaultStorages: false,
+                  singlePrice: '',
+                  singleComparePrice: '',
+                  singleStockQuantity: '',
+                  storages: [],
+                },
+              ],
+            }
+          : r
+      )
+    );
+  };
+
+  const removeRegionColor = (regionId: string, colorId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {...r, colors: r.colors.filter((c: any) => c.id !== colorId)}
+          : r
+      )
+    );
+  };
+
+  const updateRegionColor = (regionId: string, colorId: string, field: string, value: any) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map((c: any) =>
+                c.id === colorId ? {...c, [field]: value} : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const handleRegionColorImageUpload = (
+    regionId: string,
+    colorId: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setRegions(prev =>
+          prev.map(r =>
+            r.id === regionId
+              ? {
+                  ...r,
+                  colors: r.colors.map(c =>
+                    c.id === colorId
+                      ? {
+                          ...c,
+                          colorImage: reader.result as string,
+                          colorImageFile: file,
+                        }
+                      : c
+                  ),
+                }
+              : r
+          )
+        );
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeRegionColorImage = (regionId: string, colorId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map(c =>
+                c.id === colorId ? {...c, colorImage: '', colorImageFile: null} : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const addRegionColorStorage = (regionId: string, colorId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map(c =>
+                c.id === colorId
+                  ? {
+                      ...c,
+                      storages: [
+                        ...c.storages,
+                        {
+                          id: `s-${Date.now()}`,
+                          storageSize: '',
+                          regularPrice: '',
+                          discountPrice: '',
+                          discountPercent: '',
+                          stockQuantity: '',
+                          lowStockAlert: '5',
+                        },
+                      ],
+                    }
+                  : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const removeRegionColorStorage = (regionId: string, colorId: string, storageId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map(c =>
+                c.id === colorId
+                  ? {...c, storages: c.storages.filter((s: any) => s.id !== storageId)}
+                  : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const updateRegionColorStorage = (
+    regionId: string,
+    colorId: string,
+    storageId: string,
+    field: string,
+    value: string
+  ) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map(c =>
+                c.id === colorId
+                  ? {
+                      ...c,
+                      storages: c.storages.map((s: any) =>
+                        s.id === storageId ? {...s, [field]: value} : s
+                      ),
+                    }
+                  : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
   // Fetch categories and brands
   useEffect(() => {
     if (open) {
