@@ -5,6 +5,7 @@ import {EditProductModal} from '../../components/admin/edit-product-modal';
 import {ViewProductModal} from '../../components/admin/view-product-modal';
 
 import {useState, useEffect} from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
