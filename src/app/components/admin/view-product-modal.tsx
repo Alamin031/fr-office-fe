@@ -536,63 +536,42 @@ export function ViewProductModal({
               {product.directColors && product.directColors.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Colors</CardTitle>
+                    <CardTitle>Color Variants</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {product.directColors.map((color) => (
                         <div
                           key={color.id}
-                          className="border rounded-lg p-4 space-y-2"
+                          className="border rounded-lg p-4 space-y-3 hover:shadow-md transition-shadow"
                         >
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h4 className="font-semibold">{color.name}</h4>
-                              {color.image && (
-                                <div className="mt-2 w-16 h-16">
-                                  <Image
-                                    src={color.image}
-                                    alt={color.name || "Color"}
-                                    width={64}
-                                    height={64}
-                                    className="object-cover rounded"
-                                  />
-                                </div>
-                              )}
+                          {color.colorImage && (
+                            <div className="w-full aspect-square overflow-hidden rounded-lg bg-muted">
+                              <Image
+                                src={color.colorImage}
+                                alt={color.name || "Color"}
+                                width={200}
+                                height={200}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                          </div>
-                          <div className="grid grid-cols-3 gap-4">
-                            {color.regularPrice !== undefined && (
-                              <div>
-                                <span className="text-xs text-muted-foreground">
-                                  Regular Price
-                                </span>
-                                <p className="font-semibold">
-                                  {formatPrice(color.regularPrice)}
-                                </p>
+                          )}
+                          <div>
+                            <h4 className="font-semibold text-sm">{color.name}</h4>
+                            <div className="mt-2 space-y-1 text-xs">
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Regular:</span>
+                                <span className="font-medium">{formatPrice(color.regularPrice || 0)}</span>
                               </div>
-                            )}
-                            {color.discountPrice !== undefined &&
-                              color.discountPrice !== null && (
-                                <div>
-                                  <span className="text-xs text-muted-foreground">
-                                    Discount Price
-                                  </span>
-                                  <p className="font-semibold">
-                                    {formatPrice(color.discountPrice)}
-                                  </p>
-                                </div>
-                              )}
-                            {color.stockQuantity !== undefined && (
-                              <div>
-                                <span className="text-xs text-muted-foreground">
-                                  Stock
-                                </span>
-                                <p className="font-semibold">
-                                  {color.stockQuantity}
-                                </p>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Discount:</span>
+                                <span className="font-medium">{formatPrice(color.discountPrice || 0)}</span>
                               </div>
-                            )}
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Stock:</span>
+                                <span className="font-medium">{color.stockQuantity || 0}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       ))}
