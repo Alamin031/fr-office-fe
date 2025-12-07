@@ -276,22 +276,34 @@ function AdminProductsPage() {
       <div className="flex items-center space-x-2 mb-4">
         <Button
           variant={activeTab === 'all' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('all')}>
+          onClick={() => {
+            setActiveTab('all');
+            setCurrentPage(1);
+          }}>
           All Products
         </Button>
         <Button
           variant={activeTab === 'basic' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('basic')}>
+          onClick={() => {
+            setActiveTab('basic');
+            setCurrentPage(1);
+          }}>
           Basic Products
         </Button>
         <Button
           variant={activeTab === 'network' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('network')}>
+          onClick={() => {
+            setActiveTab('network');
+            setCurrentPage(1);
+          }}>
           Network Products
         </Button>
         <Button
           variant={activeTab === 'region' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('region')}>
+          onClick={() => {
+            setActiveTab('region');
+            setCurrentPage(1);
+          }}>
           Region Products
         </Button>
       </div>
