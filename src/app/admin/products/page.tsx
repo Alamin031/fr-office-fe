@@ -172,10 +172,15 @@ function AdminProductsPage() {
 
           const stockNum = p.totalStock ?? p.stockQuantity ?? 0;
           const priceNum = p.price ?? p.priceRange?.min ?? 0;
-          const imageUrl =
-            p.images?.find((img: any) => img.isThumbnail)?.url ||
-            p.images?.[0]?.url ||
-            '/placeholder.svg';
+
+          // Handle images - they should come from API response
+          let imageUrl = '/placeholder.svg';
+          if (Array.isArray(p.images) && p.images.length > 0) {
+            imageUrl = p.images.find((img: any) => img.isThumbnail)?.url || p.images[0]?.url || '/placeholder.svg';
+          } else if (p.image) {
+            // fallback for single image field
+            imageUrl = p.image;
+          }
 
           let status = 'Inactive';
           if (p.isActive) {
