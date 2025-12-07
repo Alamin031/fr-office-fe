@@ -265,17 +265,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
         <div className="mt-auto pt-3">
           <div className="flex items-baseline gap-2">
             <span className="text-lg font-bold">
-              {formatPrice(product.price)}
+              {formatPrice(salePrice)}
             </span>
             {hasDiscount && (
               <span className="text-sm text-muted-foreground line-through">
-                {formatPrice(product.originalPrice!)}
+                {formatPrice(regularPrice)}
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            EMI: {formatEMI(product.price)}
-          </p>
         </div>
 
         {/* Stock Indicator */}
