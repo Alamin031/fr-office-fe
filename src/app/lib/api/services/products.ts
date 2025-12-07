@@ -19,7 +19,7 @@ export const productsService = {
       params: {
         offset,
         limit,
-        fields: 'id,name,sku,categoryId,price,stockQuantity,isActive,images,productType,description',
+        fields: 'id,name,sku,categoryId,price,stockQuantity,isActive,lowStockAlert,images,productType,totalStock',
         ...filters,
       },
     })
