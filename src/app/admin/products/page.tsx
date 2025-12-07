@@ -101,12 +101,22 @@ function AdminProductsPage() {
     fetchCategories();
   }, []);
 
-  // Fetch products, optionally filtered by category
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Fetch products with pagination and caching
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
+        const cacheKey = `${activeTab}-${selectedCategory}-${currentPage}`;
+
+        // Check cache first
+        if (cacheRef.current.has(cacheKey)) {
+          const cached = cacheRef.current.get(cacheKey);
+          setProducts(cached.products);
+          setTotalCount(cached.totalCount);
+          setLoading(false);
+          return;
+        }
+
         const queryParams: any = {};
         if (activeTab !== 'all') {
           queryParams.productType = activeTab;
@@ -114,8 +124,16 @@ function AdminProductsPage() {
         if (selectedCategory && selectedCategory !== 'all') {
           queryParams.categoryId = selectedCategory;
         }
-        const res = await productsService.getAll(queryParams);
-        const apiProducts = Array.isArray(res) ? res : [];
+
+        const res = await productsService.getAllLite(
+          queryParams,
+          currentPage,
+          pageSize,
+        );
+
+        const apiProducts = Array.isArray(res) ? res : res?.data || [];
+        const total = res?.total || res?.count || apiProducts.length;
+
         // Find missing category IDs
         const missingCategoryIds = [
           ...new Set(
@@ -126,10 +144,13 @@ function AdminProductsPage() {
               ),
           ),
         ];
-        // Fetch missing categories
+
+        // Fetch missing categories in parallel
         if (missingCategoryIds.length > 0) {
           const fetched = await Promise.all(
-            missingCategoryIds.map(id => categoriesService.getById(id)),
+            missingCategoryIds.map(id =>
+              categoriesService.getById(id).catch(() => null),
+            ),
           );
           setCategories(prev => {
             const allCats = [
@@ -139,30 +160,23 @@ function AdminProductsPage() {
                 .filter((c: any) => c.id !== 'all')
                 .map((c: any) => ({id: c.id, name: c.name})),
             ];
-            // Deduplicate by id
             const deduped = Array.from(
               new Map(allCats.map(cat => [cat.id, cat])).values(),
             );
             return deduped;
           });
         }
+
         const mapped: UIProduct[] = apiProducts.map((p: any) => {
           const categoryObj = categories.find(c => c.id === p.categoryId);
 
-          // Map backend fields to UI fields
-          // Stock: Use totalStock (calculated from all variants) or stockQuantity (simple product)
           const stockNum = p.totalStock ?? p.stockQuantity ?? 0;
-
-          // Price: Use price (simple) or min price from range
           const priceNum = p.price ?? p.priceRange?.min ?? 0;
-
-          // Image: Find thumbnail or use first image
           const imageUrl =
             p.images?.find((img: any) => img.isThumbnail)?.url ||
             p.images?.[0]?.url ||
             '/placeholder.svg';
 
-          // Status: Derive from isActive and stock
           let status = 'Inactive';
           if (p.isActive) {
             if (stockNum <= (p.lowStockAlert || 5) && stockNum > 0)
@@ -171,23 +185,11 @@ function AdminProductsPage() {
             else status = 'Out of Stock';
           }
 
-          // Determine type
           let type: 'basic' | 'network' | 'region' = 'basic';
-
           if (p.productType) {
             const pt = String(p.productType).toLowerCase();
             if (pt === 'network') type = 'network';
             else if (pt === 'region') type = 'region';
-          } else if (
-            p.type &&
-            ['basic', 'network', 'region'].includes(p.type)
-          ) {
-            type = p.type as 'basic' | 'network' | 'region';
-          } else {
-            if (Array.isArray(p.networks) && p.networks.length > 0)
-              type = 'network';
-            else if (Array.isArray(p.regions) && p.regions.length > 0)
-              type = 'region';
           }
 
           return {
@@ -203,15 +205,25 @@ function AdminProductsPage() {
             type,
           };
         });
+
+        // Cache the results
+        cacheRef.current.set(cacheKey, {
+          products: mapped,
+          totalCount: total,
+        });
+
         setProducts(mapped);
-      } catch {
+        setTotalCount(total);
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
         setProducts([]);
       } finally {
         setLoading(false);
       }
     };
+
     fetchProducts();
-  }, [selectedCategory, categories, activeTab]);
+  }, [selectedCategory, currentPage, activeTab, pageSize, categories]);
 
   const handleViewClick = (product: UIProduct) => {
     setSelectedProduct(product);
