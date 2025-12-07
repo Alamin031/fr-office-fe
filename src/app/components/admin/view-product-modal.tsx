@@ -85,25 +85,35 @@ interface Product {
   // For Network Products
   networks?: Array<{
     id?: string;
+    networkType?: string;
     name?: string;
     priceAdjustment?: number | null;
     isDefault?: boolean;
     defaultStorages?: Array<{
       id?: string;
-      size?: string;
+      storageSize?: string;
+      displayOrder?: number;
       price?: {
-        regular?: number;
-        compare?: number;
-        discount?: number;
+        id?: string;
+        storageId?: string;
+        regularPrice?: number;
+        comparePrice?: number;
+        discountPrice?: number;
         discountPercent?: number;
-        final?: number;
+        campaignPrice?: number | null;
+        campaignStart?: string | null;
+        campaignEnd?: string | null;
+        stockQuantity?: number;
+        lowStockAlert?: number;
+        createdAt?: string;
+        updatedAt?: string;
       };
-      stock?: number;
-      inStock?: boolean;
     }>;
     colors?: Array<{
       id?: string;
+      colorName?: string;
       name?: string;
+      colorImage?: string;
       image?: string;
       hasStorage?: boolean;
       useDefaultStorages?: boolean;
@@ -113,28 +123,41 @@ interface Product {
       features?: string | null;
     }>;
   }>;
-  
+
   // For Region Products
   regions?: Array<{
     id?: string;
+    regionName?: string;
     name?: string;
     isDefault?: boolean;
+    displayOrder?: number;
     defaultStorages?: Array<{
       id?: string;
-      size?: string;
+      regionId?: string;
+      storageSize?: string;
+      displayOrder?: number;
       price?: {
-        regular?: number;
-        compare?: number;
-        discount?: number;
+        id?: string;
+        storageId?: string;
+        regularPrice?: number;
+        comparePrice?: number;
+        discountPrice?: number;
         discountPercent?: number;
-        final?: number;
+        campaignPrice?: number | null;
+        campaignStart?: string | null;
+        campaignEnd?: string | null;
+        stockQuantity?: number;
+        lowStockAlert?: number;
+        createdAt?: string;
+        updatedAt?: string;
       };
-      stock?: number;
-      inStock?: boolean;
     }>;
     colors?: Array<{
       id?: string;
+      regionId?: string;
+      colorName?: string;
       name?: string;
+      colorImage?: string;
       image?: string;
       hasStorage?: boolean;
       useDefaultStorages?: boolean;
@@ -143,6 +166,7 @@ interface Product {
       stockQuantity?: number | null;
       features?: string | null;
     }>;
+    createdAt?: string;
   }>;
   
   // Specifications
