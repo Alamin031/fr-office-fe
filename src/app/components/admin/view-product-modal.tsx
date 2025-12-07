@@ -913,6 +913,122 @@ export function ViewProductModal({
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Network Inventory Details */}
+              {product.networks && product.networks.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Network Inventory Details</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {product.networks.map((network) => (
+                        <div key={network.id} className="border rounded-lg p-4 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold">{network.name}</h4>
+                            {network.isDefault && <Badge>Default</Badge>}
+                          </div>
+
+                          {network.defaultStorages && network.defaultStorages.length > 0 && (
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b">
+                                    <th className="text-left py-2 px-2 font-semibold">Storage</th>
+                                    <th className="text-right py-2 px-2 font-semibold">Stock Quantity</th>
+                                    <th className="text-right py-2 px-2 font-semibold">Low Stock Alert</th>
+                                    <th className="text-center py-2 px-2 font-semibold">Status</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {network.defaultStorages.map((storage) => {
+                                    const stock = storage.stock || 0;
+                                    const lowStock = storage.price?.lowStockAlert || 5;
+                                    let status = 'In Stock';
+                                    if (stock === 0) status = 'Out of Stock';
+                                    else if (stock <= lowStock) status = 'Low Stock';
+
+                                    return (
+                                      <tr key={storage.id} className="border-b hover:bg-muted/50">
+                                        <td className="py-2 px-2">{storage.size}</td>
+                                        <td className="text-right py-2 px-2 font-semibold">{stock}</td>
+                                        <td className="text-right py-2 px-2">{lowStock}</td>
+                                        <td className="text-center py-2 px-2">
+                                          <Badge variant={stock > 0 ? 'default' : 'secondary'}>
+                                            {status}
+                                          </Badge>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Region Inventory Details */}
+              {product.regions && product.regions.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Region Inventory Details</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {product.regions.map((region) => (
+                        <div key={region.id} className="border rounded-lg p-4 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold">{region.name}</h4>
+                            {region.isDefault && <Badge>Default</Badge>}
+                          </div>
+
+                          {region.defaultStorages && region.defaultStorages.length > 0 && (
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b">
+                                    <th className="text-left py-2 px-2 font-semibold">Storage</th>
+                                    <th className="text-right py-2 px-2 font-semibold">Stock Quantity</th>
+                                    <th className="text-right py-2 px-2 font-semibold">Low Stock Alert</th>
+                                    <th className="text-center py-2 px-2 font-semibold">Status</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {region.defaultStorages.map((storage) => {
+                                    const stock = storage.stock || 0;
+                                    const lowStock = storage.price?.lowStockAlert || 5;
+                                    let status = 'In Stock';
+                                    if (stock === 0) status = 'Out of Stock';
+                                    else if (stock <= lowStock) status = 'Low Stock';
+
+                                    return (
+                                      <tr key={storage.id} className="border-b hover:bg-muted/50">
+                                        <td className="py-2 px-2">{storage.size}</td>
+                                        <td className="text-right py-2 px-2 font-semibold">{stock}</td>
+                                        <td className="text-right py-2 px-2">{lowStock}</td>
+                                        <td className="text-center py-2 px-2">
+                                          <Badge variant={stock > 0 ? 'default' : 'secondary'}>
+                                            {status}
+                                          </Badge>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             {/* SEO Tab */}
