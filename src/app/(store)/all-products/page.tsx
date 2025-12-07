@@ -101,18 +101,23 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
 
     const res = await productsService.getAll(filters, 1, 200);
 
-    if (
-      res &&
-      typeof res === "object" &&
-      Array.isArray((res as { items?: unknown[] }).items)
-    ) {
-      products = (res as { items?: unknown[] }).items as Product[];
+    if (res && typeof res === "object") {
+      if (Array.isArray((res as { data?: unknown[] }).data)) {
+        products = (res as { data?: unknown[] }).data as Product[];
+      } else if (Array.isArray((res as { items?: unknown[] }).items)) {
+        products = (res as { items?: unknown[] }).items as Product[];
+      } else if (Array.isArray(res)) {
+        products = res as Product[];
+      } else {
+        products = [];
+      }
     } else if (Array.isArray(res)) {
       products = res as Product[];
     } else {
       products = [];
     }
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch products:", error);
     products = [];
   }
 

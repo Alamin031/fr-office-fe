@@ -148,7 +148,7 @@ export default function BlogPage() {
       <section className="grid gap-8 lg:grid-cols-2 lg:items-stretch">
         <div className="relative aspect-video overflow-hidden rounded-2xl bg-muted lg:aspect-auto">
           <Image
-            src={blogPosts[0].image}
+            src={blogPosts[0].image || "/placeholder.svg"}
             alt={blogPosts[0].title}
             fill
             className="object-cover"
@@ -186,7 +186,7 @@ export default function BlogPage() {
             <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
               <div className="relative aspect-video overflow-hidden bg-muted">
                 <Image
-                  src={post.image}
+                  src={post.image || "/placeholder.svg"}
                   alt={post.title}
                   fill
                   className="object-cover"
@@ -220,7 +220,7 @@ export default function BlogPage() {
               <CardContent className="p-6 flex items-start gap-6">
                 <div className="relative aspect-video w-32 shrink-0 overflow-hidden rounded-lg bg-muted">
                   <Image
-                    src={post.image}
+                    src={post.image || "/placeholder.svg"}
                     alt={post.title}
                     fill
                     className="object-cover"

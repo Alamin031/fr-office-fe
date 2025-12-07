@@ -113,6 +113,503 @@ export function EditProductModal({
   // Regions
   const [regions, setRegions] = useState<any[]>([]);
 
+  // Network helper functions
+  const addNetwork = () => {
+    setNetworks([...networks, {
+      id: `network-${Date.now()}`,
+      networkName: '',
+      isDefault: false,
+      hasDefaultStorages: false,
+      defaultStorages: [],
+      colors: [],
+    }]);
+  };
+
+  const removeNetwork = (networkId: string) => {
+    setNetworks(networks.filter(n => n.id !== networkId));
+  };
+
+  const updateNetwork = (networkId: string, field: string, value: any) => {
+    setNetworks(prev => prev.map(n => (n.id === networkId ? {...n, [field]: value} : n)));
+  };
+
+  const addNetworkDefaultStorage = (networkId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              defaultStorages: [
+                ...n.defaultStorages,
+                {
+                  id: `ds-${Date.now()}`,
+                  storageSize: '',
+                  regularPrice: '',
+                  discountPrice: '',
+                  discountPercent: '',
+                  stockQuantity: '',
+                  lowStockAlert: '5',
+                },
+              ],
+            }
+          : n
+      )
+    );
+  };
+
+  const removeNetworkDefaultStorage = (networkId: string, storageId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {...n, defaultStorages: n.defaultStorages.filter((s: any) => s.id !== storageId)}
+          : n
+      )
+    );
+  };
+
+  const updateDefaultStorageInNetwork = (
+    networkId: string,
+    storageId: string,
+    field: string,
+    value: string
+  ) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              defaultStorages: n.defaultStorages.map((s: any) =>
+                s.id === storageId ? {...s, [field]: value} : s
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const addNetworkColor = (networkId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: [
+                ...n.colors,
+                {
+                  id: `color-${Date.now()}`,
+                  colorName: '',
+                  colorImage: '',
+                  colorImageFile: null,
+                  hasStorage: false,
+                  useDefaultStorages: false,
+                  singlePrice: '',
+                  singleComparePrice: '',
+                  singleStockQuantity: '',
+                  storages: [],
+                },
+              ],
+            }
+          : n
+      )
+    );
+  };
+
+  const removeNetworkColor = (networkId: string, colorId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {...n, colors: n.colors.filter((c: any) => c.id !== colorId)}
+          : n
+      )
+    );
+  };
+
+  const updateNetworkColor = (networkId: string, colorId: string, field: string, value: any) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map((c: any) =>
+                c.id === colorId ? {...c, [field]: value} : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const handleNetworkColorImageUpload = (
+    networkId: string,
+    colorId: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNetworks(prev =>
+          prev.map(n =>
+            n.id === networkId
+              ? {
+                  ...n,
+                  colors: n.colors.map(c =>
+                    c.id === colorId
+                      ? {
+                          ...c,
+                          colorImage: reader.result as string,
+                          colorImageFile: file,
+                        }
+                      : c
+                  ),
+                }
+              : n
+          )
+        );
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeNetworkColorImage = (networkId: string, colorId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map(c =>
+                c.id === colorId ? {...c, colorImage: '', colorImageFile: null} : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const addNetworkColorStorage = (networkId: string, colorId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map(c =>
+                c.id === colorId
+                  ? {
+                      ...c,
+                      storages: [
+                        ...c.storages,
+                        {
+                          id: `s-${Date.now()}`,
+                          storageSize: '',
+                          regularPrice: '',
+                          discountPrice: '',
+                          discountPercent: '',
+                          stockQuantity: '',
+                          lowStockAlert: '5',
+                        },
+                      ],
+                    }
+                  : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const removeNetworkColorStorage = (networkId: string, colorId: string, storageId: string) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map(c =>
+                c.id === colorId
+                  ? {...c, storages: c.storages.filter((s: any) => s.id !== storageId)}
+                  : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  const updateNetworkColorStorage = (
+    networkId: string,
+    colorId: string,
+    storageId: string,
+    field: string,
+    value: string
+  ) => {
+    setNetworks(prev =>
+      prev.map(n =>
+        n.id === networkId
+          ? {
+              ...n,
+              colors: n.colors.map(c =>
+                c.id === colorId
+                  ? {
+                      ...c,
+                      storages: c.storages.map((s: any) =>
+                        s.id === storageId ? {...s, [field]: value} : s
+                      ),
+                    }
+                  : c
+              ),
+            }
+          : n
+      )
+    );
+  };
+
+  // Region helper functions
+  const addRegion = () => {
+    setRegions([...regions, {
+      id: `region-${Date.now()}`,
+      regionName: '',
+      isDefault: false,
+      defaultStorages: [],
+      colors: [],
+    }]);
+  };
+
+  const removeRegion = (regionId: string) => {
+    setRegions(regions.filter(r => r.id !== regionId));
+  };
+
+  const updateRegion = (regionId: string, field: string, value: any) => {
+    setRegions(prev => prev.map(r => (r.id === regionId ? {...r, [field]: value} : r)));
+  };
+
+  const addRegionDefaultStorage = (regionId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              defaultStorages: [
+                ...r.defaultStorages,
+                {
+                  id: `ds-${Date.now()}`,
+                  storageSize: '',
+                  regularPrice: '',
+                  discountPrice: '',
+                  discountPercent: '',
+                  stockQuantity: '',
+                  lowStockAlert: '5',
+                },
+              ],
+            }
+          : r
+      )
+    );
+  };
+
+  const removeRegionDefaultStorage = (regionId: string, storageId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {...r, defaultStorages: r.defaultStorages.filter((s: any) => s.id !== storageId)}
+          : r
+      )
+    );
+  };
+
+  const updateDefaultStorageInRegion = (
+    regionId: string,
+    storageId: string,
+    field: string,
+    value: string
+  ) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              defaultStorages: r.defaultStorages.map((s: any) =>
+                s.id === storageId ? {...s, [field]: value} : s
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const addRegionColor = (regionId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: [
+                ...r.colors,
+                {
+                  id: `color-${Date.now()}`,
+                  colorName: '',
+                  colorImage: '',
+                  colorImageFile: null,
+                  hasStorage: false,
+                  useDefaultStorages: false,
+                  singlePrice: '',
+                  singleComparePrice: '',
+                  singleStockQuantity: '',
+                  storages: [],
+                },
+              ],
+            }
+          : r
+      )
+    );
+  };
+
+  const removeRegionColor = (regionId: string, colorId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {...r, colors: r.colors.filter((c: any) => c.id !== colorId)}
+          : r
+      )
+    );
+  };
+
+  const updateRegionColor = (regionId: string, colorId: string, field: string, value: any) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map((c: any) =>
+                c.id === colorId ? {...c, [field]: value} : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const handleRegionColorImageUpload = (
+    regionId: string,
+    colorId: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setRegions(prev =>
+          prev.map(r =>
+            r.id === regionId
+              ? {
+                  ...r,
+                  colors: r.colors.map(c =>
+                    c.id === colorId
+                      ? {
+                          ...c,
+                          colorImage: reader.result as string,
+                          colorImageFile: file,
+                        }
+                      : c
+                  ),
+                }
+              : r
+          )
+        );
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeRegionColorImage = (regionId: string, colorId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map(c =>
+                c.id === colorId ? {...c, colorImage: '', colorImageFile: null} : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const addRegionColorStorage = (regionId: string, colorId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map(c =>
+                c.id === colorId
+                  ? {
+                      ...c,
+                      storages: [
+                        ...c.storages,
+                        {
+                          id: `s-${Date.now()}`,
+                          storageSize: '',
+                          regularPrice: '',
+                          discountPrice: '',
+                          discountPercent: '',
+                          stockQuantity: '',
+                          lowStockAlert: '5',
+                        },
+                      ],
+                    }
+                  : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const removeRegionColorStorage = (regionId: string, colorId: string, storageId: string) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map(c =>
+                c.id === colorId
+                  ? {...c, storages: c.storages.filter((s: any) => s.id !== storageId)}
+                  : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
+  const updateRegionColorStorage = (
+    regionId: string,
+    colorId: string,
+    storageId: string,
+    field: string,
+    value: string
+  ) => {
+    setRegions(prev =>
+      prev.map(r =>
+        r.id === regionId
+          ? {
+              ...r,
+              colors: r.colors.map(c =>
+                c.id === colorId
+                  ? {
+                      ...c,
+                      storages: c.storages.map((s: any) =>
+                        s.id === storageId ? {...s, [field]: value} : s
+                      ),
+                    }
+                  : c
+              ),
+            }
+          : r
+      )
+    );
+  };
+
   // Fetch categories and brands
   useEffect(() => {
     if (open) {
@@ -768,15 +1265,681 @@ export function EditProductModal({
                 </div>
               )}
               {productType === 'network' && (
-                <div className="p-4 text-center text-muted-foreground">
-                  Network product editing is complex. Please use the Add Product page to create new ones or contact support for advanced editing features.
-                  (Partial implementation available in code but UI simplified for brevity)
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Networks & Colors</h3>
+                    {networks.map((network) => (
+                      <div key={network.id} className="space-y-4 rounded border p-4 mb-4">
+                        <div className="flex items-end gap-4">
+                          <div className="flex-1">
+                            <Label>Network Name</Label>
+                            <Input
+                              value={network.networkName}
+                              onChange={e =>
+                                updateNetwork(network.id, 'networkName', e.target.value)
+                              }
+                              placeholder="e.g., Retail Partner A"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Label className="text-sm">Has Default Storages</Label>
+                            <Switch
+                              checked={network.hasDefaultStorages}
+                              onCheckedChange={e =>
+                                updateNetwork(network.id, 'hasDefaultStorages', e)
+                              }
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => removeNetwork(network.id)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+
+                        {network.hasDefaultStorages && (
+                          <div className="space-y-3 rounded bg-blue-50 p-3">
+                            <Label className="block font-semibold">Default Storages</Label>
+                            {network.defaultStorages.map(storage => (
+                              <div key={storage.id} className="space-y-2 rounded bg-white p-2">
+                                <div className="grid grid-cols-4 gap-2">
+                                  <div>
+                                    <Label className="text-xs">Storage Size</Label>
+                                    <Input
+                                      value={storage.storageSize}
+                                      onChange={e =>
+                                        updateDefaultStorageInNetwork(
+                                          network.id,
+                                          storage.id,
+                                          'storageSize',
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="256GB"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-xs">Regular Price</Label>
+                                    <Input
+                                      type="number"
+                                      value={storage.regularPrice}
+                                      onChange={e =>
+                                        updateDefaultStorageInNetwork(
+                                          network.id,
+                                          storage.id,
+                                          'regularPrice',
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-xs">Discount %</Label>
+                                    <Input
+                                      type="number"
+                                      value={storage.discountPercent}
+                                      onChange={e =>
+                                        updateDefaultStorageInNetwork(
+                                          network.id,
+                                          storage.id,
+                                          'discountPercent',
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-xs">Discount Price</Label>
+                                    <Input
+                                      type="number"
+                                      value={storage.discountPrice}
+                                      onChange={e =>
+                                        updateDefaultStorageInNetwork(
+                                          network.id,
+                                          storage.id,
+                                          'discountPrice',
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-xs">Stock</Label>
+                                    <Input
+                                      type="number"
+                                      value={storage.stockQuantity}
+                                      onChange={e =>
+                                        updateDefaultStorageInNetwork(
+                                          network.id,
+                                          storage.id,
+                                          'stockQuantity',
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      removeNetworkDefaultStorage(network.id, storage.id)
+                                    }
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => addNetworkDefaultStorage(network.id)}
+                            >
+                              + Add Storage
+                            </Button>
+                          </div>
+                        )}
+
+                        <div className="space-y-3">
+                          <h4 className="font-semibold text-sm">Colors</h4>
+                          {network.colors.map((color) => (
+                            <div key={color.id} className="space-y-3 rounded border p-3 bg-gray-50">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <Label className="text-xs">Color Name</Label>
+                                  <Input
+                                    value={color.colorName}
+                                    onChange={e =>
+                                      updateNetworkColor(network.id, color.id, 'colorName', e.target.value)
+                                    }
+                                    placeholder="e.g., Midnight Black"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-2 pt-6">
+                                  <Label className="text-xs">Has Storage</Label>
+                                  <Switch
+                                    checked={color.hasStorage}
+                                    onCheckedChange={e =>
+                                      updateNetworkColor(network.id, color.id, 'hasStorage', e)
+                                    }
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <Label className="text-xs">Color Image</Label>
+                                {color.colorImage ? (
+                                  <div className="relative inline-block mt-2">
+                                    <img
+                                      src={color.colorImage}
+                                      alt={color.colorName}
+                                      className="h-20 w-20 rounded object-cover"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        removeNetworkColorImage(network.id, color.id)
+                                      }
+                                      className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <label className="mt-2 flex cursor-pointer items-center justify-center gap-1 rounded border border-dashed p-3 text-xs">
+                                    <Upload className="h-4 w-4" />
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={e =>
+                                        handleNetworkColorImageUpload(network.id, color.id, e)
+                                      }
+                                      className="hidden"
+                                    />
+                                  </label>
+                                )}
+                              </div>
+
+                              {color.hasStorage ? (
+                                <>
+                                  <div className="flex items-center gap-2">
+                                    <Label className="text-xs">Use Default Storages</Label>
+                                    <Switch
+                                      checked={color.useDefaultStorages}
+                                      onCheckedChange={e =>
+                                        updateNetworkColor(
+                                          network.id,
+                                          color.id,
+                                          'useDefaultStorages',
+                                          e
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                  {!color.useDefaultStorages && (
+                                    <div className="space-y-2">
+                                      {color.storages.map(storage => (
+                                        <div
+                                          key={storage.id}
+                                          className="grid grid-cols-4 gap-2 rounded bg-white p-2 text-xs"
+                                        >
+                                          <Input
+                                            placeholder="Storage"
+                                            value={storage.storageSize}
+                                            onChange={e =>
+                                              updateNetworkColorStorage(
+                                                network.id,
+                                                color.id,
+                                                storage.id,
+                                                'storageSize',
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                          <Input
+                                            type="number"
+                                            placeholder="Price"
+                                            value={storage.regularPrice}
+                                            onChange={e =>
+                                              updateNetworkColorStorage(
+                                                network.id,
+                                                color.id,
+                                                storage.id,
+                                                'regularPrice',
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                          <Input
+                                            type="number"
+                                            placeholder="Discount %"
+                                            value={storage.discountPercent}
+                                            onChange={e =>
+                                              updateNetworkColorStorage(
+                                                network.id,
+                                                color.id,
+                                                storage.id,
+                                                'discountPercent',
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() =>
+                                              removeNetworkColorStorage(
+                                                network.id,
+                                                color.id,
+                                                storage.id
+                                              )
+                                            }
+                                          >
+                                            <X className="h-3 w-3" />
+                                          </Button>
+                                        </div>
+                                      ))}
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                          addNetworkColorStorage(network.id, color.id)
+                                        }
+                                      >
+                                        + Add Storage
+                                      </Button>
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <div className="grid grid-cols-3 gap-2 text-xs">
+                                  <Input
+                                    type="number"
+                                    placeholder="Price"
+                                    value={color.singlePrice}
+                                    onChange={e =>
+                                      updateNetworkColor(
+                                        network.id,
+                                        color.id,
+                                        'singlePrice',
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                  <Input
+                                    type="number"
+                                    placeholder="Stock"
+                                    value={color.singleStockQuantity}
+                                    onChange={e =>
+                                      updateNetworkColor(
+                                        network.id,
+                                        color.id,
+                                        'singleStockQuantity',
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                </div>
+                              )}
+
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeNetworkColor(network.id, color.id)}
+                              >
+                                Remove Color
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addNetworkColor(network.id)}
+                          >
+                            + Add Color
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    <Button type="button" onClick={addNetwork}>
+                      + Add Network
+                    </Button>
+                  </div>
                 </div>
               )}
               {productType === 'region' && (
-                <div className="p-4 text-center text-muted-foreground">
-                  Region product editing is complex. Please use the Add Product page to create new ones or contact support for advanced editing features.
-                  (Partial implementation available in code but UI simplified for brevity)
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Regions & Colors</h3>
+                    {regions.map((region) => (
+                      <div key={region.id} className="space-y-4 rounded border p-4 mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className="flex-1">
+                            <Label>Region Name</Label>
+                            <Input
+                              value={region.regionName}
+                              onChange={e =>
+                                updateRegion(region.id, 'regionName', e.target.value)
+                              }
+                              placeholder="e.g., North Region"
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => removeRegion(region.id)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+
+                        <div className="space-y-3 rounded bg-blue-50 p-3">
+                          <Label className="block font-semibold">Default Storages</Label>
+                          {region.defaultStorages.map(storage => (
+                            <div key={storage.id} className="space-y-2 rounded bg-white p-2">
+                              <div className="grid grid-cols-5 gap-2">
+                                <div>
+                                  <Label className="text-xs">Storage Size</Label>
+                                  <Input
+                                    value={storage.storageSize}
+                                    onChange={e =>
+                                      updateDefaultStorageInRegion(
+                                        region.id,
+                                        storage.id,
+                                        'storageSize',
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="256GB"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-xs">Regular Price</Label>
+                                  <Input
+                                    type="number"
+                                    value={storage.regularPrice}
+                                    onChange={e =>
+                                      updateDefaultStorageInRegion(
+                                        region.id,
+                                        storage.id,
+                                        'regularPrice',
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-xs">Discount %</Label>
+                                  <Input
+                                    type="number"
+                                    value={storage.discountPercent}
+                                    onChange={e =>
+                                      updateDefaultStorageInRegion(
+                                        region.id,
+                                        storage.id,
+                                        'discountPercent',
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-xs">Discount Price</Label>
+                                  <Input
+                                    type="number"
+                                    value={storage.discountPrice}
+                                    onChange={e =>
+                                      updateDefaultStorageInRegion(
+                                        region.id,
+                                        storage.id,
+                                        'discountPrice',
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() =>
+                                    removeRegionDefaultStorage(region.id, storage.id)
+                                  }
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addRegionDefaultStorage(region.id)}
+                          >
+                            + Add Storage
+                          </Button>
+                        </div>
+
+                        <div className="space-y-3">
+                          <h4 className="font-semibold text-sm">Colors</h4>
+                          {region.colors.map((color) => (
+                            <div key={color.id} className="space-y-3 rounded border p-3 bg-gray-50">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <Label className="text-xs">Color Name</Label>
+                                  <Input
+                                    value={color.colorName}
+                                    onChange={e =>
+                                      updateRegionColor(region.id, color.id, 'colorName', e.target.value)
+                                    }
+                                    placeholder="e.g., Midnight Black"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-2 pt-6">
+                                  <Label className="text-xs">Has Storage</Label>
+                                  <Switch
+                                    checked={color.hasStorage}
+                                    onCheckedChange={e =>
+                                      updateRegionColor(region.id, color.id, 'hasStorage', e)
+                                    }
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <Label className="text-xs">Color Image</Label>
+                                {color.colorImage ? (
+                                  <div className="relative inline-block mt-2">
+                                    <img
+                                      src={color.colorImage}
+                                      alt={color.colorName}
+                                      className="h-20 w-20 rounded object-cover"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        removeRegionColorImage(region.id, color.id)
+                                      }
+                                      className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <label className="mt-2 flex cursor-pointer items-center justify-center gap-1 rounded border border-dashed p-3 text-xs">
+                                    <Upload className="h-4 w-4" />
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={e =>
+                                        handleRegionColorImageUpload(region.id, color.id, e)
+                                      }
+                                      className="hidden"
+                                    />
+                                  </label>
+                                )}
+                              </div>
+
+                              {color.hasStorage ? (
+                                <>
+                                  <div className="flex items-center gap-2">
+                                    <Label className="text-xs">Use Default Storages</Label>
+                                    <Switch
+                                      checked={color.useDefaultStorages}
+                                      onCheckedChange={e =>
+                                        updateRegionColor(
+                                          region.id,
+                                          color.id,
+                                          'useDefaultStorages',
+                                          e
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                  {!color.useDefaultStorages && (
+                                    <div className="space-y-2">
+                                      {color.storages.map(storage => (
+                                        <div
+                                          key={storage.id}
+                                          className="grid grid-cols-4 gap-2 rounded bg-white p-2 text-xs"
+                                        >
+                                          <Input
+                                            placeholder="Storage"
+                                            value={storage.storageSize}
+                                            onChange={e =>
+                                              updateRegionColorStorage(
+                                                region.id,
+                                                color.id,
+                                                storage.id,
+                                                'storageSize',
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                          <Input
+                                            type="number"
+                                            placeholder="Price"
+                                            value={storage.regularPrice}
+                                            onChange={e =>
+                                              updateRegionColorStorage(
+                                                region.id,
+                                                color.id,
+                                                storage.id,
+                                                'regularPrice',
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                          <Input
+                                            type="number"
+                                            placeholder="Discount %"
+                                            value={storage.discountPercent}
+                                            onChange={e =>
+                                              updateRegionColorStorage(
+                                                region.id,
+                                                color.id,
+                                                storage.id,
+                                                'discountPercent',
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() =>
+                                              removeRegionColorStorage(
+                                                region.id,
+                                                color.id,
+                                                storage.id
+                                              )
+                                            }
+                                          >
+                                            <X className="h-3 w-3" />
+                                          </Button>
+                                        </div>
+                                      ))}
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                          addRegionColorStorage(region.id, color.id)
+                                        }
+                                      >
+                                        + Add Storage
+                                      </Button>
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <div className="grid grid-cols-3 gap-2 text-xs">
+                                  <Input
+                                    type="number"
+                                    placeholder="Price"
+                                    value={color.singlePrice}
+                                    onChange={e =>
+                                      updateRegionColor(
+                                        region.id,
+                                        color.id,
+                                        'singlePrice',
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                  <Input
+                                    type="number"
+                                    placeholder="Stock"
+                                    value={color.singleStockQuantity}
+                                    onChange={e =>
+                                      updateRegionColor(
+                                        region.id,
+                                        color.id,
+                                        'singleStockQuantity',
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                </div>
+                              )}
+
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeRegionColor(region.id, color.id)}
+                              >
+                                Remove Color
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addRegionColor(region.id)}
+                          >
+                            + Add Color
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    <Button type="button" onClick={addRegion}>
+                      + Add Region
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>

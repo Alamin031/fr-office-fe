@@ -74,6 +74,25 @@ export function ProductCard({ product, className }: ProductCardProps) {
     }
   };
 
+  // Extract image URL from product images array
+  const getImageUrl = (img: any): string => {
+    if (!img) return "/placeholder.svg";
+    if (typeof img === "string") return img;
+    if (typeof img === "object") {
+      return img.imageUrl || img.url || "/placeholder.svg";
+    }
+    return "/placeholder.svg";
+  };
+
+  const primaryImage = getImageUrl(
+    Array.isArray(product.images) && product.images[0] ? product.images[0] : null
+  );
+
+  const secondaryImage =
+    Array.isArray(product.images) && product.images.length > 1
+      ? getImageUrl(product.images[1])
+      : null;
+
   return (
     <div
       className={cn(
@@ -87,11 +106,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       <div className="relative aspect-square overflow-hidden bg-muted">
         <Link href={`/product/${product.slug}`}>
           <Image
-            src={
-              Array.isArray(product.images) && product.images[0]
-                ? product.images[0]
-                : "/placeholder.svg?height=400&width=400&query=product"
-            }
+            src={primaryImage}
             alt={product.name}
             fill
             className={cn(
@@ -102,19 +117,17 @@ export function ProductCard({ product, className }: ProductCardProps) {
             onLoad={() => setImageLoaded(true)}
           />
           {/* Second image on hover */}
-          {Array.isArray(product.images) &&
-            product.images.length > 1 &&
-            product.images[1] && (
-              <Image
-                src={product.images[1] || "/placeholder.svg"}
-                alt={product.name}
-                fill
-                className={cn(
-                  "absolute inset-0 object-cover transition-opacity duration-500",
-                  isHovered ? "opacity-100" : "opacity-0"
-                )}
-              />
-            )}
+          {secondaryImage && (
+            <Image
+              src={secondaryImage}
+              alt={product.name}
+              fill
+              className={cn(
+                "absolute inset-0 object-cover transition-opacity duration-500",
+                isHovered ? "opacity-100" : "opacity-0"
+              )}
+            />
+          )}
         </Link>
 
         {/* Badges */}
