@@ -74,6 +74,25 @@ export function ProductCard({ product, className }: ProductCardProps) {
     }
   };
 
+  // Extract image URL from product images array
+  const getImageUrl = (img: any): string => {
+    if (!img) return "/placeholder.svg";
+    if (typeof img === "string") return img;
+    if (typeof img === "object") {
+      return img.imageUrl || img.url || "/placeholder.svg";
+    }
+    return "/placeholder.svg";
+  };
+
+  const primaryImage = getImageUrl(
+    Array.isArray(product.images) && product.images[0] ? product.images[0] : null
+  );
+
+  const secondaryImage =
+    Array.isArray(product.images) && product.images.length > 1
+      ? getImageUrl(product.images[1])
+      : null;
+
   return (
     <div
       className={cn(
