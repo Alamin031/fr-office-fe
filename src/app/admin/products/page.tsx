@@ -47,6 +47,7 @@ import {
   AlertDialogTitle,
 } from '../../components/ui/alert-dialog';
 import {formatPrice} from '../../lib/utils/format';
+import {transformProductForModal} from '../../lib/utils/product-transformer';
 
 import productsService from '../../lib/api/services/products';
 import categoriesService from '../../lib/api/services/categories';
