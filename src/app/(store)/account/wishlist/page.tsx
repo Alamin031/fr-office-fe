@@ -72,12 +72,20 @@ function WishlistPage() {
                     <h3 className="line-clamp-2 font-medium hover:underline">{item.name}</h3>
                   </Link>
                   <div className="mt-2 flex items-center gap-2">
-                    <span className="text-lg font-bold">{formatPrice(item.price)}</span>
-                    {item.originalPrice && (
-                      <span className="text-sm text-muted-foreground line-through">
-                        {formatPrice(item.originalPrice)}
-                      </span>
-                    )}
+                    {(() => {
+                      const regularPrice = item.basePrice || (item as any).regularPrice || item.price || 0;
+                      const salePrice = item.discountPrice || item.price || regularPrice;
+                      return (
+                        <>
+                          <span className="text-lg font-bold">{formatPrice(salePrice)}</span>
+                          {regularPrice > 0 && salePrice < regularPrice && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              {formatPrice(regularPrice)}
+                            </span>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                   <div className="mt-4 flex gap-2">
                     <Button className="flex-1 gap-2" onClick={() => handleAddToCart(item)}>
