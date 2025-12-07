@@ -146,20 +146,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <span className="text-3xl font-bold">{formatPrice(totalPrice)}</span>
           {hasDiscount && (
             <>
-              <span className="text-lg text-muted-foreground line-through">{formatPrice(product.originalPrice!)}</span>
+              <span className="text-lg text-muted-foreground line-through">{formatPrice(regularPrice)}</span>
               <Badge className="bg-[oklch(0.55_0.2_25)] text-[oklch(1_0_0)] hover:bg-[oklch(0.55_0.2_25)]">
                 Save {discount}%
               </Badge>
             </>
           )}
         </div>
-        <button
-          onClick={() => setShowEMI(!showEMI)}
-          className="text-sm text-muted-foreground underline-offset-2 hover:underline"
-        >
-          EMI from {formatEMI(totalPrice)} • View options
-        </button>
-        {showEMI && <EMICalculator price={totalPrice} onClose={() => setShowEMI(false)} />}
       </div>
 
       {/* Stock Status */}
