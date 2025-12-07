@@ -25,7 +25,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1)
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({})
   const [carePlusSelected, setCarePlusSelected] = useState(false)
-  const [showEMI, setShowEMI] = useState(false)
   const [notifyDialogOpen, setNotifyDialogOpen] = useState(false)
 
   const addToCart = useCartStore((state) => state.addItem)
