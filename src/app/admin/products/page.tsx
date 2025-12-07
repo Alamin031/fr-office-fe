@@ -82,7 +82,7 @@ function AdminProductsPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [pageSize] = useState<number>(20);
-  const cacheRef = React.useRef<Map<string, any>>(new Map());
+  const cacheRef = useRef<Map<string, any>>(new Map());
 
   // Fetch categories on mount
   useEffect(() => {
