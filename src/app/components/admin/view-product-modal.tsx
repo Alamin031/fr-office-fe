@@ -78,7 +78,9 @@ interface Product {
   directColors?: Array<{
     id?: string;
     name?: string;
+    colorName?: string;
     image?: string;
+    colorImage?: string;
     hasStorage?: boolean;
     regularPrice?: number;
     discountPrice?: number;
@@ -450,7 +452,7 @@ export function ViewProductModal({
                         <tbody>
                           {product.directColors.map((color) => (
                             <tr key={color.id} className="border-b hover:bg-muted/50">
-                              <td className="py-2 px-2 font-medium">{color.name}</td>
+                              <td className="py-2 px-2 font-medium">{color.colorName || color.name}</td>
                               <td className="text-right py-2 px-2">{formatPrice(color.regularPrice || 0)}</td>
                               <td className="text-right py-2 px-2 font-semibold">{formatPrice(color.discountPrice || 0)}</td>
                               <td className="text-right py-2 px-2">{color.stockQuantity || 0}</td>
@@ -575,11 +577,11 @@ export function ViewProductModal({
                           key={color.id}
                           className="border rounded-lg p-4 space-y-3 hover:shadow-md transition-shadow"
                         >
-                          {color.colorImage && (
+                          {(color.colorImage || color.image) && (
                             <div className="w-full aspect-square overflow-hidden rounded-lg bg-muted">
                               <Image
-                                src={color.colorImage}
-                                alt={color.name || "Color"}
+                                src={color.colorImage || color.image || "/placeholder.svg"}
+                                alt={color.colorName || color.name || "Color"}
                                 width={200}
                                 height={200}
                                 className="w-full h-full object-cover"
@@ -587,7 +589,7 @@ export function ViewProductModal({
                             </div>
                           )}
                           <div>
-                            <h4 className="font-semibold text-sm">{color.name}</h4>
+                            <h4 className="font-semibold text-sm">{color.colorName || color.name}</h4>
                             <div className="mt-2 space-y-1 text-xs">
                               <div className="flex justify-between">
                                 <span className="text-muted-foreground">Regular:</span>
@@ -937,7 +939,7 @@ export function ViewProductModal({
 
                             return (
                               <tr key={color.id} className="border-b hover:bg-muted/50">
-                                <td className="py-2 px-2 font-medium">{color.name}</td>
+                                <td className="py-2 px-2 font-medium">{color.colorName || color.name}</td>
                                 <td className="text-right py-2 px-2 font-semibold">{stock}</td>
                                 <td className="text-center py-2 px-2">
                                   <Badge
