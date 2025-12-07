@@ -527,6 +527,7 @@ function AdminProductsPage() {
         open={viewOpen}
         onOpenChange={setViewOpen}
         product={selectedProduct}
+        loading={viewLoading}
       />
 
       {/* Edit Modal */}
