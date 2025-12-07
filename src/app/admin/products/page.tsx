@@ -47,6 +47,7 @@ import {
   AlertDialogTitle,
 } from '../../components/ui/alert-dialog';
 import {formatPrice} from '../../lib/utils/format';
+import {transformProductForModal} from '../../lib/utils/product-transformer';
 
 import productsService from '../../lib/api/services/products';
 import categoriesService from '../../lib/api/services/categories';
@@ -177,7 +178,8 @@ function AdminProductsPage() {
           // Handle images - they should come from API response
           let imageUrl = '/placeholder.svg';
           if (Array.isArray(p.images) && p.images.length > 0) {
-            imageUrl = p.images.find((img: any) => img.isThumbnail)?.url || p.images[0]?.url || '/placeholder.svg';
+            const thumbnail = p.images.find((img: any) => img.isThumbnail);
+            imageUrl = thumbnail?.imageUrl || thumbnail?.url || p.images[0]?.imageUrl || p.images[0]?.url || '/placeholder.svg';
           } else if (p.image) {
             // fallback for single image field
             imageUrl = p.image;
@@ -235,7 +237,8 @@ function AdminProductsPage() {
     try {
       setViewLoading(true);
       const fullProduct = await productsService.getById(product.id);
-      setSelectedProduct(fullProduct);
+      const transformedProduct = transformProductForModal(fullProduct);
+      setSelectedProduct(transformedProduct);
       setViewOpen(true);
     } catch (error) {
       console.error('Failed to fetch product details:', error);
