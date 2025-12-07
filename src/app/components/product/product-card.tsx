@@ -42,10 +42,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   const inWishlist = isInWishlist(product.id);
   const inCompare = isInCompare(product.id);
-  const hasDiscount =
-    product.originalPrice && product.originalPrice > product.price;
+
+  // Use basePrice as regular price, discountPrice as sale price
+  const regularPrice = product.basePrice || product.price || 0;
+  const salePrice = product.discountPrice || product.price || regularPrice;
+  const hasDiscount = regularPrice > 0 && salePrice < regularPrice;
   const discount = hasDiscount
-    ? calculateDiscount(product.originalPrice!, product.price)
+    ? calculateDiscount(regularPrice, salePrice)
     : 0;
   const isOutOfStock = product.stock === 0;
 
