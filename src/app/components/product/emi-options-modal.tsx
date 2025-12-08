@@ -23,11 +23,18 @@ export function EmiOptionsModal({ open, onOpenChange, plans, price }: EmiOptions
   // Group plans by bank
   const plansByBank = useMemo(() => {
     const grouped: Record<string, { bankName: string; plans: EmiPlan[] }> = {}
-    
+
     plans.forEach((plan) => {
       if (!grouped[plan.bankId]) {
+        // Get bank name from current plan or any plan with same bankId
+        let bankName = plan.bankName
+        if (!bankName) {
+          const planWithName = plans.find((p) => p.bankId === plan.bankId && p.bankName)
+          bankName = planWithName?.bankName || "Unknown Bank"
+        }
+
         grouped[plan.bankId] = {
-          bankName: plan.bankName || "Unknown Bank",
+          bankName: bankName,
           plans: [],
         }
       }
