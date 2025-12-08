@@ -33,6 +33,7 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
   const [quantity, setQuantity] = useState(1)
   const [carePlusSelected, setCarePlusSelected] = useState(false)
   const [notifyDialogOpen, setNotifyDialogOpen] = useState(false)
+  const [emiModalOpen, setEmiModalOpen] = useState(false)
   const [carePlans, setCarePlans] = useState<ProductCarePlan[]>([])
   const [selectedCarePlanId, setSelectedCarePlanId] = useState<string>("")
   const [loadingCarePlans, setLoadingCarePlans] = useState(false)
