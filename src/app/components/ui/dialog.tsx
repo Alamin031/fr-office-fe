@@ -115,6 +115,22 @@ function DialogTitle({
   )
 }
 
+// VisuallyHidden helper for accessible but visually hidden DialogTitle
+function VisuallyHiddenTitle({
+  children,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Title>) {
+  return (
+    <DialogPrimitive.Title
+      data-slot="dialog-title"
+      className="sr-only"
+      {...props}
+    >
+      {children}
+    </DialogPrimitive.Title>
+  )
+}
+
 function DialogDescription({
   className,
   ...props
