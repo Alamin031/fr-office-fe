@@ -208,6 +208,8 @@ export default async function ProductPage({params}: ProductPageProps) {
         <ProductGallery
           images={product.images ?? []}
           name={product.name ?? ''}
+          isEmi={!!apiProductAny.isEmi}
+          isCare={!!apiProductAny.isCare}
         />
         <ProductInfoRegion product={product} />
       </div>

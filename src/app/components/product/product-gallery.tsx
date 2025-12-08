@@ -11,9 +11,11 @@ import { cn } from "@/app/lib/utils"
 interface ProductGalleryProps {
   images: string[]
   name: string
+  isEmi?: boolean
+  isCare?: boolean
 }
 
-export function ProductGallery({ images, name }: ProductGalleryProps) {
+export function ProductGallery({ images, name, isEmi, isCare }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 })
@@ -59,6 +61,22 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
               : undefined
           }
         />
+
+        {/* EMI/CARE BADGES */}
+        {(isEmi || isCare) && (
+          <div className="absolute left-4 top-4 flex flex-col gap-2 z-10">
+            {isEmi && (
+              <span className="inline-flex items-center gap-1 rounded bg-blue-600/90 px-2 py-1 text-xs font-semibold text-white shadow">
+                EMI
+              </span>
+            )}
+            {isCare && (
+              <span className="inline-flex items-center gap-1 rounded bg-green-600/90 px-2 py-1 text-xs font-semibold text-white shadow">
+                Care
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Zoom indicator */}
         <div
