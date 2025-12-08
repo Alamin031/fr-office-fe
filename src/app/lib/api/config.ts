@@ -71,13 +71,9 @@ export const API_ENDPOINTS = {
   PRODUCTS_CREATE: '/products-new',
   PRODUCTS_GET: '/products-new',
   PRODUCTS_GET_ONE: '/products-new/id/{id}',
-  PRODUCTS_FEATURED: '/products/featured',
-  PRODUCTS_NEW: '/products/new',
-  PRODUCTS_HOT: '/products/hot',
-  PRODUCTS_SEARCH: '/products/search',
-  PRODUCTS_SLUG: '/products/{slug}',
-  PRODUCTS_UPDATE: '/products/{id}',
-  PRODUCTS_DELETE: '/products/{id}',
+  PRODUCTS_SEARCH: '/products-new/search',
+  PRODUCTS_SLUG: '/products-new/{slug}',
+  PRODUCTS_DELETE: '/products-new/{id}',
 
   // Products (New Architecture)
   PRODUCTS_CREATE_BASIC: '/products-new/basic',
