@@ -20,6 +20,11 @@ export function EmiOptionsModal({ open, onOpenChange, plans, price }: EmiOptions
   const [amount, setAmount] = useState(price.toString())
   const [selectedBankId, setSelectedBankId] = useState<string>("")
 
+  // Debug log
+  if (open) {
+    console.log("Modal opened with plans:", plans)
+  }
+
   // Group plans by bank
   const plansByBank = useMemo(() => {
     const grouped: Record<string, { bankName: string; plans: EmiPlan[] }> = {}
