@@ -78,6 +78,7 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
         try {
           setLoadingEmiPlans(true)
           const plans = await emiService.getPlans()
+          console.log("Fetched EMI plans:", plans)
           setEmiPlans(plans)
         } catch (error) {
           console.error("Error fetching EMI plans:", error)
