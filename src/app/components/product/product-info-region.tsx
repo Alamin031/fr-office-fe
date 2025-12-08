@@ -141,9 +141,9 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col space-y-6">
       {/* Add to Compare Button */}
-      <div className="mb-4 flex justify-end">
+      <div className="flex justify-end">
         <Button
           variant="ghost"
           size="sm"
@@ -165,113 +165,53 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
         </a>
       )}
 
-      <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">{product.name}</h1>
+      <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{product.name}</h1>
 
       {/* Rating & SKU */}
-      <div className="mt-3 flex flex-wrap items-center gap-4">
-        {product.rating > 0 && (
-          <div className="flex items-center gap-2">
-            <div className="flex">
-              {Array.from({length: 5}).map((_, i) => (
-                <svg
-                  key={i}
-                  className={cn(
-                    "h-4 w-4",
-                    i < Math.floor(product.rating)
-                      ? "fill-[oklch(0.75_0.15_85)] text-[oklch(0.75_0.15_85)]"
-                      : "fill-muted text-muted",
-                  )}
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-            <span className="text-sm font-medium">{product.rating}</span>
-            <span className="text-xs text-muted-foreground">({product.reviewCount} reviews)</span>
+      {product.rating > 0 && (
+        <div className="flex items-center gap-2">
+          <div className="flex">
+            {Array.from({length: 5}).map((_, i) => (
+              <svg
+                key={i}
+                className={cn(
+                  "h-4 w-4",
+                  i < Math.floor(product.rating)
+                    ? "fill-[oklch(0.75_0.15_85)] text-[oklch(0.75_0.15_85)]"
+                    : "fill-muted text-muted",
+                )}
+                viewBox="0 0 20 20"
+              >
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            ))}
           </div>
-        )}
-      </div>
-
-      <Separator className="my-6" />
-
-      {/* Price Section */}
-      <div className="space-y-3 mb-6">
-        <div className="flex items-baseline gap-3">
-          <span className="text-4xl font-bold">{formatPrice(totalPrice)}</span>
-          {priceData.hasDiscount && (
-            <>
-              <span className="text-lg text-muted-foreground line-through">{formatPrice(priceData.regularPrice)}</span>
-              <Badge className="bg-[oklch(0.55_0.2_25)] text-[oklch(1_0_0)] hover:bg-[oklch(0.55_0.2_25)]">
-                Save {priceData.discount}%
-              </Badge>
-            </>
-          )}
-        </div>
-
-        {/* Stock Status */}
-        <div>
-          {isOutOfStock ? (
-            <Badge variant="secondary" className="bg-muted-foreground/10 text-muted-foreground">
-              Out of Stock
-            </Badge>
-          ) : priceData.stock <= 10 ? (
-            <Badge className="bg-[oklch(0.55_0.2_25)]/10 text-[oklch(0.55_0.2_25)] hover:bg-[oklch(0.55_0.2_25)]/10">
-              Only {priceData.stock} left in stock
-            </Badge>
-          ) : (
-            <Badge className="bg-[oklch(0.55_0.2_145)]/10 text-[oklch(0.45_0.2_145)] hover:bg-[oklch(0.55_0.2_145)]/10">
-              <Check className="mr-1 h-3 w-3" /> In Stock
-            </Badge>
-          )}
-        </div>
-      </div>
-
-      <Separator className="my-6" />
-
-      {/* Region Selection */}
-      {regions.length > 1 && (
-        <div className="mb-6">
-          <label className="mb-3 block text-sm font-medium">Region/Variant</label>
-          <div className="relative">
-            <button
-              onClick={() => setShowRegionDropdown(!showRegionDropdown)}
-              className="w-full flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left font-medium hover:bg-muted/50"
-            >
-              <span>{selectedRegion?.name || 'Select Region'}</span>
-              <ChevronDown className={cn("h-4 w-4 transition-transform", showRegionDropdown && "rotate-180")} />
-            </button>
-
-            {showRegionDropdown && (
-              <div className="absolute top-full z-10 mt-2 w-full rounded-lg border border-border bg-card shadow-lg">
-                {regions.map((region: any) => (
-                  <button
-                    key={region.id}
-                    onClick={() => {
-                      setSelectedRegionId(region.id)
-                      setShowRegionDropdown(false)
-                      // Reset color and storage selections for new region
-                      setSelectedColorId('')
-                      setSelectedStorageId('')
-                    }}
-                    className={cn(
-                      "w-full px-4 py-3 text-left hover:bg-muted first:rounded-t-lg last:rounded-b-lg",
-                      selectedRegionId === region.id && "bg-foreground/10 font-medium",
-                    )}
-                  >
-                    {region.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <span className="text-sm font-medium">{product.rating}</span>
+          <span className="text-xs text-muted-foreground">({product.reviewCount} reviews)</span>
         </div>
       )}
 
+      {/* Stock Status Badge */}
+      <div>
+        {isOutOfStock ? (
+          <Badge variant="secondary" className="bg-muted-foreground/10 text-muted-foreground">
+            Out of Stock
+          </Badge>
+        ) : priceData.stock <= 10 ? (
+          <Badge className="bg-[oklch(0.55_0.2_25)]/10 text-[oklch(0.55_0.2_25)] hover:bg-[oklch(0.55_0.2_25)]/10">
+            Only {priceData.stock} left in stock
+          </Badge>
+        ) : (
+          <Badge className="bg-[oklch(0.55_0.2_145)]/10 text-[oklch(0.45_0.2_145)] hover:bg-[oklch(0.55_0.2_145)]/10">
+            <Check className="mr-1 h-3 w-3" /> In Stock
+          </Badge>
+        )}
+      </div>
+
       {/* Color Selection */}
       {colors.length > 0 && (
-        <div className="mb-6">
-          <label className="mb-3 block text-sm font-medium">
+        <div className="space-y-3 bg-muted/50 p-4 rounded-lg">
+          <label className="text-sm font-bold uppercase tracking-wide">
             Color: <span className="text-foreground">{selectedColor?.name || 'Select'}</span>
           </label>
           <div className="flex flex-wrap gap-3">
@@ -285,7 +225,7 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
                 )}
               >
                 {color.image && (
-                  <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-muted">
+                  <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-background border border-border">
                     <Image
                       src={color.image}
                       alt={color.name}
@@ -301,35 +241,151 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
         </div>
       )}
 
+      {/* Region Selection */}
+      {regions.length > 1 && (
+        <div className="space-y-3 bg-muted/50 p-4 rounded-lg">
+          <label className="text-sm font-bold uppercase tracking-wide">Region/Variant:</label>
+          <div className="flex flex-wrap gap-2">
+            {regions.map((region: any) => (
+              <button
+                key={region.id}
+                onClick={() => {
+                  setSelectedRegionId(region.id)
+                  setSelectedColorId('')
+                  setSelectedStorageId('')
+                }}
+                className={cn(
+                  "px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all",
+                  selectedRegionId === region.id
+                    ? "border-foreground bg-[oklch(0.8_0.1_45)]"
+                    : "border-border hover:border-foreground/50",
+                )}
+              >
+                {region.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Storage Selection */}
       {storages.length > 0 && (
-        <div className="mb-6">
-          <label className="mb-3 block text-sm font-medium">
-            Storage: <span className="text-foreground">{selectedStorage?.size || 'Select'}</span>
-          </label>
+        <div className="space-y-3 bg-muted/50 p-4 rounded-lg">
+          <label className="text-sm font-bold uppercase tracking-wide">Storage:</label>
           <div className="flex flex-wrap gap-2">
             {storages.map((storage: any) => (
               <button
                 key={storage.id}
                 onClick={() => setSelectedStorageId(storage.id)}
                 className={cn(
-                  "flex flex-col items-center gap-1 rounded-lg border px-4 py-3 text-sm font-medium transition-all",
+                  "px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all",
                   selectedStorageId === storage.id
-                    ? "border-foreground bg-foreground text-background"
+                    ? "border-foreground bg-[oklch(0.8_0.1_45)]"
                     : "border-border hover:border-foreground/50",
                 )}
               >
-                <span>{storage.size}</span>
-                {storage.price && (
-                  <span className={cn("text-xs", selectedStorageId === storage.id ? "text-current opacity-80" : "text-muted-foreground")}>
-                    +{formatPrice(Number(storage.price.regular || storage.price.regularPrice || 0))}
-                  </span>
-                )}
+                {storage.size}
               </button>
             ))}
           </div>
         </div>
       )}
+
+      {/* Info Cards */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-muted/50 p-4 rounded-lg text-center">
+          <div className="text-xs text-muted-foreground mb-2">Minimum Booking</div>
+          <div className="text-sm font-bold">10,000 BDT</div>
+        </div>
+        <div className="bg-muted/50 p-4 rounded-lg text-center">
+          <div className="text-xs text-muted-foreground mb-2">Purchase Points</div>
+          <div className="text-sm font-bold">1000 Points</div>
+        </div>
+        <div className="bg-muted/50 p-4 rounded-lg text-center">
+          <div className="text-xs text-muted-foreground mb-2">EMI Available</div>
+          <div className="text-sm font-bold">Details</div>
+        </div>
+      </div>
+
+      {/* Pricing Cards */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-muted/50 p-4 rounded-lg border border-[oklch(0.8_0.1_45)]">
+          <div className="text-xs text-muted-foreground mb-1">Offer Price</div>
+          <div className="text-xl font-bold text-[oklch(0.55_0.2_25)]">{formatPrice(priceData.discountPrice)}</div>
+          <div className="text-xs text-muted-foreground mt-1">Cash/Card/MFS Payment</div>
+        </div>
+        <div className="bg-muted/50 p-4 rounded-lg border border-border">
+          <div className="text-xs text-muted-foreground mb-1">Regular Price</div>
+          <div className="text-xl font-bold">{formatPrice(priceData.regularPrice)}</div>
+          <div className="text-xs text-muted-foreground mt-1">EMI begin at BDT {Math.round(priceData.regularPrice / 12)}/month</div>
+        </div>
+      </div>
+
+      {/* Quantity & Actions */}
+      <div className="flex flex-col gap-3">
+        <div className="flex gap-3">
+          {/* Quantity */}
+          <div className="flex items-center rounded-lg border border-border">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="px-4 py-2 text-lg font-medium transition-colors hover:bg-muted disabled:opacity-50"
+              disabled={quantity <= 1}
+            >
+              −
+            </button>
+            <span className="min-w-[3rem] text-center font-medium">{quantity}</span>
+            <button
+              onClick={() => setQuantity(Math.min(priceData.stock, quantity + 1))}
+              className="px-4 py-2 text-lg font-medium transition-colors hover:bg-muted disabled:opacity-50"
+              disabled={quantity >= priceData.stock}
+            >
+              +
+            </button>
+          </div>
+
+          {/* Wishlist & Compare */}
+          <Button
+            variant="outline"
+            size="lg"
+            className={cn(inWishlist && "border-[oklch(0.55_0.2_25)] text-[oklch(0.55_0.2_25)]")}
+            onClick={handleWishlistToggle}
+          >
+            <Heart className={cn("h-5 w-5", inWishlist && "fill-current")} />
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className={cn(inCompare && "border-foreground bg-foreground text-background")}
+            onClick={() => addToCompare(product)}
+          >
+            <BarChart3 className="h-5 w-5" />
+          </Button>
+        </div>
+
+        {/* Add to Cart */}
+        <Button size="lg" className="w-full gap-2" disabled={isOutOfStock} onClick={handleAddToCart}>
+          <ShoppingCart className="h-5 w-5" />
+          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+        </Button>
+
+        {/* Buy Now */}
+        <Button variant="secondary" size="lg" className="w-full" disabled={isOutOfStock}>
+          Buy Now
+        </Button>
+
+        {/* Notify Product Button */}
+        <Button
+          variant="outline"
+          size="lg"
+          className="w-full gap-2"
+          onClick={() => setNotifyDialogOpen(true)}
+        >
+          <AlertCircle className="h-5 w-5" />
+          Notify About Product
+        </Button>
+      </div>
+
+      <Separator className="my-4" />
 
       {/* Care+ Add-on */}
       <CarePlusAddon
@@ -338,114 +394,35 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
         onToggle={() => setCarePlusSelected(!carePlusSelected)}
       />
 
-      <Separator className="my-6" />
-
-      {/* Quantity & Actions */}
-      <div className="flex flex-col gap-4 sm:flex-row">
-        {/* Quantity */}
-        <div className="flex items-center rounded-lg border border-border">
-          <button
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="px-4 py-3 text-lg font-medium transition-colors hover:bg-muted disabled:opacity-50"
-            disabled={quantity <= 1}
-          >
-            −
-          </button>
-          <span className="min-w-[3rem] text-center font-medium">{quantity}</span>
-          <button
-            onClick={() => setQuantity(Math.min(priceData.stock, quantity + 1))}
-            className="px-4 py-3 text-lg font-medium transition-colors hover:bg-muted disabled:opacity-50"
-            disabled={quantity >= priceData.stock}
-          >
-            +
-          </button>
-        </div>
-
-        {/* Add to Cart */}
-        <Button size="lg" className="flex-1 gap-2" disabled={isOutOfStock} onClick={handleAddToCart}>
-          <ShoppingCart className="h-5 w-5" />
-          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-        </Button>
-
-        {/* Wishlist & Compare */}
-        <Button
-          variant="outline"
-          size="lg"
-          className={cn(inWishlist && "border-[oklch(0.55_0.2_25)] text-[oklch(0.55_0.2_25)]")}
-          onClick={handleWishlistToggle}
-        >
-          <Heart className={cn("h-5 w-5", inWishlist && "fill-current")} />
-        </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          className={cn(inCompare && "border-foreground bg-foreground text-background")}
-          onClick={() => addToCompare(product)}
-        >
-          <BarChart3 className="h-5 w-5" />
-        </Button>
-      </div>
-
-      {/* Buy Now */}
-      <Button variant="secondary" size="lg" className="mt-4 w-full" disabled={isOutOfStock}>
-        Buy Now
-      </Button>
-
-      {/* Notify Product Button */}
-      <Button
-        variant="outline"
-        size="lg"
-        className="mt-3 w-full gap-2"
-        onClick={() => setNotifyDialogOpen(true)}
-      >
-        <AlertCircle className="h-5 w-5" />
-        Notify About Product
-      </Button>
-
-      <Separator className="my-6" />
-
-      {/* Highlights */}
-      {product.highlights.length > 0 && (
-        <div className="mb-6">
-          <h3 className="mb-3 font-semibold">Highlights</h3>
-          <ul className="space-y-2">
-            {product.highlights.map((highlight, index) => (
-              <li key={index} className="flex items-start gap-2 text-sm">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-[oklch(0.45_0.2_145)]" />
-                {highlight}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <Separator className="my-4" />
 
       {/* Warranty & Delivery Info */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         <div className="flex items-center gap-3 rounded-lg bg-muted p-4">
-          <Shield className="h-6 w-6 text-muted-foreground" />
+          <Shield className="h-5 w-5 text-muted-foreground shrink-0" />
           <div>
-            <p className="text-sm font-medium">Warranty</p>
-            <p className="text-xs text-muted-foreground">{product.warranty}</p>
+            <p className="text-xs font-medium text-muted-foreground">Warranty</p>
+            <p className="text-sm font-semibold">{product.warranty}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 rounded-lg bg-muted p-4">
-          <Truck className="h-6 w-6 text-muted-foreground" />
+          <Truck className="h-5 w-5 text-muted-foreground shrink-0" />
           <div>
-            <p className="text-sm font-medium">Free Delivery</p>
-            <p className="text-xs text-muted-foreground">2-5 business days</p>
+            <p className="text-xs font-medium text-muted-foreground">Free Delivery</p>
+            <p className="text-sm font-semibold">2-5 business days</p>
           </div>
         </div>
         <div className="flex items-center gap-3 rounded-lg bg-muted p-4">
-          <RotateCcw className="h-6 w-6 text-muted-foreground" />
+          <RotateCcw className="h-5 w-5 text-muted-foreground shrink-0" />
           <div>
-            <p className="text-sm font-medium">Easy Returns</p>
-            <p className="text-xs text-muted-foreground">7-day return policy</p>
+            <p className="text-xs font-medium text-muted-foreground">Easy Returns</p>
+            <p className="text-sm font-semibold">7-day return policy</p>
           </div>
         </div>
       </div>
 
       {/* Share */}
-      <div className="mt-6 flex items-center gap-3">
+      <div className="flex items-center gap-3">
         <span className="text-sm font-medium">Share:</span>
         <Button variant="ghost" size="icon" className="h-8 w-8">
           <Share2 className="h-4 w-4" />
