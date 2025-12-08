@@ -724,14 +724,14 @@ export function EditProductModal({
       setSelectedCategories(product.categoryIds || (product.categoryId ? [product.categoryId] : []));
       setSelectedBrands(product.brandIds || (product.brandId ? [product.brandId] : []));
 
-      setIsActive(!!product.isActive);
-      setIsOnline(!!product.isOnline);
-      setIsPos(!!product.isPos);
-      setIsPreOrder(!!product.isPreOrder);
-      setIsOfficial(!!product.isOfficial);
-      setFreeShipping(!!product.freeShipping);
-      setIsEmi(!!product.isEmi);
-      setIsCare(!!product.isCare);
+      setIsActive(product.isActive === true || product.isActive === "true");
+      setIsOnline(product.isOnline === true || product.isOnline === "true");
+      setIsPos(product.isPos === true || product.isPos === "true");
+      setIsPreOrder(product.isPreOrder === true || product.isPreOrder === "true");
+      setIsOfficial(product.isOfficial === true || product.isOfficial === "true");
+      setFreeShipping(product.freeShipping === true || product.freeShipping === "true");
+      setIsEmi(product.isEmi === true || product.isEmi === "true");
+      setIsCare(product.isCare === true || product.isCare === "true");
       setDelivery(product.delivery || '');
       setEasyReturns(product.easyReturns || '');
 
@@ -1252,11 +1252,8 @@ export function EditProductModal({
                   <button type="button" onClick={() => formatText('underline')} className="rounded px-3 py-1 text-sm font-medium hover:bg-gray-100">Underline</button>
                 </div>
                 <div
-                  ref={shortDescriptionRef}
-                  contentEditable
-                  onInput={handleShortDescriptionChange}
-                  className="min-h-24 rounded border border-gray-300 p-3 focus:border-blue-500 focus:outline-none"
-                  suppressContentEditableWarning
+                  className="min-h-24 rounded border border-gray-300 p-3"
+                  dangerouslySetInnerHTML={{ __html: shortDescription }}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
