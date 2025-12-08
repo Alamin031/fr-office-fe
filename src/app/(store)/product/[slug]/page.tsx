@@ -19,9 +19,10 @@ export async function generateMetadata({
   try {
     const {slug} = await params;
     const product = await productsService.getBySlug(slug);
+    const productAny = product as any;
 
-    const images = product.images && Array.isArray(product.images)
-      ? product.images.map((img: any) => img.url || img)
+    const images = productAny.images && Array.isArray(productAny.images)
+      ? productAny.images.map((img: any) => img.url || img)
       : [];
 
     return {
@@ -65,9 +66,10 @@ export default async function ProductPage({params}: ProductPageProps) {
   };
 
   // Extract images from the new API format
+  const apiProductAny = apiProduct as any;
   const images = (() => {
-    if (apiProduct.images && Array.isArray(apiProduct.images)) {
-      return apiProduct.images.map((img: any) => img.url || img);
+    if (apiProductAny.images && Array.isArray(apiProductAny.images)) {
+      return apiProductAny.images.map((img: any) => img.url || img);
     }
     return [];
   })();
@@ -84,7 +86,7 @@ export default async function ProductPage({params}: ProductPageProps) {
   })();
 
   // Get category from categories array
-  const category = apiProduct.categories?.[0] || apiProduct.category;
+  const category = apiProductAny.categories?.[0] || apiProduct.category;
 
   const product: Product = {
     id: apiProduct.id,
@@ -96,11 +98,11 @@ export default async function ProductPage({params}: ProductPageProps) {
     category: category
       ? {...category, slug: category.slug ?? ''}
       : {id: '', name: '', slug: '', createdAt: '', updatedAt: ''},
-    brand: apiProduct.brands?.[0] || apiProduct.brand || {id: '', name: '', slug: '', logo: ''},
+    brand: apiProductAny.brands?.[0] || apiProduct.brand || {id: '', name: '', slug: '', logo: ''},
     variants: parseJSON(apiProduct.variants, []),
     highlights: parseJSON(apiProduct.highlights, []),
     specifications: specifications,
-    stock: Number(apiProduct.stock) || Number(apiProduct.totalStock) || 0,
+    stock: Number(apiProduct.stock) || Number(apiProductAny.totalStock) || 0,
     sku: apiProduct.sku ?? '',
     warranty: apiProduct.warranty ?? '',
     rating: Number(apiProduct.rating) || 0,
@@ -125,13 +127,15 @@ export default async function ProductPage({params}: ProductPageProps) {
       );
       relatedProducts = (response.data || [])
         .filter(p => p.id !== product.id && typeof p.slug === 'string')
-        .map(p => ({
+        .map(p => {
+          const pAny = p as any;
+          return {
           id: p.id,
           name: p.name ?? '',
           slug: p.slug ?? '',
           description: p.description ?? '',
           price: typeof p.price === 'number' ? p.price : 0,
-          images: Array.isArray(p.images) ? p.images.map((img: any) => img.url || img) : Array.isArray(p.image) ? p.image : [],
+          images: Array.isArray(pAny.images) ? pAny.images.map((img: any) => img.url || img) : Array.isArray(p.image) ? p.image : [],
           category: p.category
             ? {
                 ...p.category,
@@ -170,7 +174,8 @@ export default async function ProductPage({params}: ProductPageProps) {
           isNew: p.isNew,
           createdAt: p.createdAt ?? '',
           updatedAt: p.updatedAt ?? '',
-        }))
+        };
+        })
         .slice(0, 5);
     }
   } catch {
