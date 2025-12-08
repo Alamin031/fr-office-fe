@@ -367,17 +367,55 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
         )}
       </div>
 
-      {/* Pricing Cards */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-muted/50 p-4 rounded-lg border border-[oklch(0.8_0.1_45)]">
-          <div className="text-xs text-muted-foreground mb-1">Offer Price</div>
-          <div className="text-xl font-bold text-[oklch(0.55_0.2_25)]">{formatPrice(priceData.discountPrice)}</div>
-          <div className="text-xs text-muted-foreground mt-1">Cash/Card/MFS Payment</div>
-        </div>
-        <div className="bg-muted/50 p-4 rounded-lg border border-border">
-          <div className="text-xs text-muted-foreground mb-1">Regular Price</div>
-          <div className="text-xl font-bold">{formatPrice(priceData.regularPrice)}</div>
-          <div className="text-xs text-muted-foreground mt-1">EMI begin at BDT {Math.round(priceData.regularPrice / 12)}/month</div>
+      {/* Price Selection */}
+      <div className="space-y-3 bg-muted/30 p-4 rounded-lg">
+        <label className="text-sm font-bold uppercase tracking-wide">Select Price Type:</label>
+        <div className="grid grid-cols-2 gap-3">
+          {/* Offer Price Option */}
+          <button
+            onClick={() => setSelectedPriceType('offer')}
+            className={cn(
+              "p-4 rounded-lg border-2 text-left transition-all",
+              selectedPriceType === 'offer'
+                ? "border-[oklch(0.55_0.2_25)] bg-[oklch(0.55_0.2_25)]/5"
+                : "border-border hover:border-border/70",
+            )}
+          >
+            <div className="flex items-start justify-between mb-2">
+              <div className="text-xs text-muted-foreground font-medium">Offer Price</div>
+              <input
+                type="radio"
+                checked={selectedPriceType === 'offer'}
+                onChange={() => setSelectedPriceType('offer')}
+                className="cursor-pointer"
+              />
+            </div>
+            <div className="text-xl font-bold text-[oklch(0.55_0.2_25)]">{formatPrice(priceData.discountPrice)}</div>
+            <div className="text-xs text-muted-foreground mt-2">Cash/Card/MFS Payment</div>
+          </button>
+
+          {/* Regular Price Option */}
+          <button
+            onClick={() => setSelectedPriceType('regular')}
+            className={cn(
+              "p-4 rounded-lg border-2 text-left transition-all",
+              selectedPriceType === 'regular'
+                ? "border-foreground bg-foreground/5"
+                : "border-border hover:border-border/70",
+            )}
+          >
+            <div className="flex items-start justify-between mb-2">
+              <div className="text-xs text-muted-foreground font-medium">Regular Price</div>
+              <input
+                type="radio"
+                checked={selectedPriceType === 'regular'}
+                onChange={() => setSelectedPriceType('regular')}
+                className="cursor-pointer"
+              />
+            </div>
+            <div className="text-xl font-bold">{formatPrice(priceData.regularPrice)}</div>
+            <div className="text-xs text-muted-foreground mt-2">EMI begin at BDT {Math.round(priceData.regularPrice / 12)}/month</div>
+          </button>
         </div>
       </div>
 
