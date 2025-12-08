@@ -99,7 +99,19 @@ export function EditProductModal({
   >([]);
 
   // Basic product colors
-  const [basicColors, setBasicColors] = useState<any[]>([]);
+  const [basicColors, setBasicColors] = useState<
+    Array<{
+      id: string;
+      colorName: string;
+      colorImage: string;
+      colorImageFile: File | null;
+      regularPrice: string;
+      discountPrice: string;
+      discountPercent: string;
+      stockQuantity: string;
+      isDefault: boolean;
+    }>
+  >([]);
 
   // Videos
   const [videos, setVideos] = useState<any[]>([{id: 'video-1', url: '', type: 'youtube'}]);
@@ -117,7 +129,7 @@ export function EditProductModal({
   const addNetwork = () => {
     setNetworks([...networks, {
       id: `network-${Date.now()}`,
-      networkName: '',
+      networkType: '',
       isDefault: false,
       hasDefaultStorages: false,
       defaultStorages: [],
@@ -253,7 +265,7 @@ export function EditProductModal({
             n.id === networkId
               ? {
                   ...n,
-                  colors: n.colors.map(c =>
+                  colors: n.colors.map((c: any) =>
                     c.id === colorId
                       ? {
                           ...c,
@@ -277,7 +289,7 @@ export function EditProductModal({
         n.id === networkId
           ? {
               ...n,
-              colors: n.colors.map(c =>
+              colors: n.colors.map((c: any) =>
                 c.id === colorId ? {...c, colorImage: '', colorImageFile: null} : c
               ),
             }
@@ -292,7 +304,7 @@ export function EditProductModal({
         n.id === networkId
           ? {
               ...n,
-              colors: n.colors.map(c =>
+              colors: n.colors.map((c: any) =>
                 c.id === colorId
                   ? {
                       ...c,
@@ -323,7 +335,7 @@ export function EditProductModal({
         n.id === networkId
           ? {
               ...n,
-              colors: n.colors.map(c =>
+              colors: n.colors.map((c: any) =>
                 c.id === colorId
                   ? {...c, storages: c.storages.filter((s: any) => s.id !== storageId)}
                   : c
@@ -346,7 +358,7 @@ export function EditProductModal({
         n.id === networkId
           ? {
               ...n,
-              colors: n.colors.map(c =>
+              colors: n.colors.map((c: any) =>
                 c.id === colorId
                   ? {
                       ...c,
@@ -501,7 +513,7 @@ export function EditProductModal({
             r.id === regionId
               ? {
                   ...r,
-                  colors: r.colors.map(c =>
+                  colors: r.colors.map((c: any) =>
                     c.id === colorId
                       ? {
                           ...c,
@@ -525,7 +537,7 @@ export function EditProductModal({
         r.id === regionId
           ? {
               ...r,
-              colors: r.colors.map(c =>
+              colors: r.colors.map((c: any) =>
                 c.id === colorId ? {...c, colorImage: '', colorImageFile: null} : c
               ),
             }
@@ -540,7 +552,7 @@ export function EditProductModal({
         r.id === regionId
           ? {
               ...r,
-              colors: r.colors.map(c =>
+              colors: r.colors.map((c: any) =>
                 c.id === colorId
                   ? {
                       ...c,
@@ -571,7 +583,7 @@ export function EditProductModal({
         r.id === regionId
           ? {
               ...r,
-              colors: r.colors.map(c =>
+              colors: r.colors.map((c: any) =>
                 c.id === colorId
                   ? {...c, storages: c.storages.filter((s: any) => s.id !== storageId)}
                   : c
@@ -594,7 +606,7 @@ export function EditProductModal({
         r.id === regionId
           ? {
               ...r,
-              colors: r.colors.map(c =>
+              colors: r.colors.map((c: any) =>
                 c.id === colorId
                   ? {
                       ...c,
@@ -711,6 +723,7 @@ export function EditProductModal({
             discountPrice: c.discountPrice?.toString() || '',
             discountPercent: c.discountPercent?.toString() || '',
             stockQuantity: c.stockQuantity?.toString() || '',
+            isDefault: c.isDefault || false,
           })));
         } else {
           setBasicColors([]);
@@ -718,32 +731,40 @@ export function EditProductModal({
       } else if (type === 'network') {
         if (product.networks) {
           setNetworks(product.networks.map((n: any) => ({
-            ...n,
             id: n.id || `network-${Date.now()}-${Math.random()}`,
-            networkName: n.networkName || n.name,
+            networkType: n.networkType || n.networkName || n.name,
+            isDefault: n.isDefault || false,
+            hasDefaultStorages: n.hasDefaultStorages !== false && n.defaultStorages && n.defaultStorages.length > 0,
             defaultStorages: n.defaultStorages?.map((s: any) => ({
-              ...s,
               id: s.id || `ds-${Date.now()}-${Math.random()}`,
+              storageSize: s.storageSize || '',
+              isDefault: s.isDefault || false,
               regularPrice: s.price?.regularPrice?.toString() || s.regularPrice?.toString() || '',
               discountPrice: s.price?.discountPrice?.toString() || s.discountPrice?.toString() || '',
               discountPercent: s.price?.discountPercent?.toString() || s.discountPercent?.toString() || '',
               stockQuantity: s.price?.stockQuantity?.toString() || s.stockQuantity?.toString() || '',
+              lowStockAlert: s.price?.lowStockAlert?.toString() || s.lowStockAlert?.toString() || '5',
             })) || [],
             colors: n.colors?.map((c: any) => ({
-              ...c,
               id: c.id || `color-${Date.now()}-${Math.random()}`,
               colorName: c.colorName || c.name,
               colorImage: c.colorImage || c.image,
-              singlePrice: c.regularPrice?.toString() || '',
-              singleComparePrice: c.comparePrice?.toString() || '',
-              singleStockQuantity: c.stockQuantity?.toString() || '',
+              colorImageFile: null,
+              hasStorage: c.hasStorage !== false,
+              useDefaultStorages: c.useDefaultStorages !== false,
+              isDefault: c.isDefault || false,
+              singlePrice: c.singlePrice?.toString() || c.regularPrice?.toString() || '',
+              singleComparePrice: c.singleComparePrice?.toString() || c.comparePrice?.toString() || '',
+              singleStockQuantity: c.singleStockQuantity?.toString() || c.stockQuantity?.toString() || '',
               storages: c.storages?.map((s: any) => ({
-                ...s,
                 id: s.id || `s-${Date.now()}-${Math.random()}`,
+                storageSize: s.storageSize || '',
+                isDefault: s.isDefault || false,
                 regularPrice: s.price?.regularPrice?.toString() || s.regularPrice?.toString() || '',
                 discountPrice: s.price?.discountPrice?.toString() || s.discountPrice?.toString() || '',
                 discountPercent: s.price?.discountPercent?.toString() || s.discountPercent?.toString() || '',
                 stockQuantity: s.price?.stockQuantity?.toString() || s.stockQuantity?.toString() || '',
+                lowStockAlert: s.price?.lowStockAlert?.toString() || s.lowStockAlert?.toString() || '5',
               })) || []
             })) || []
           })));
@@ -757,28 +778,35 @@ export function EditProductModal({
             id: r.id || `region-${Date.now()}-${Math.random()}`,
             regionName: r.regionName || r.name,
             defaultStorages: r.defaultStorages?.map((s: any) => ({
-              ...s,
               id: s.id || `ds-${Date.now()}-${Math.random()}`,
+              storageSize: s.storageSize || '',
+              isDefault: s.isDefault || false,
               regularPrice: s.price?.regularPrice?.toString() || s.regularPrice?.toString() || '',
               discountPrice: s.price?.discountPrice?.toString() || s.discountPrice?.toString() || '',
               discountPercent: s.price?.discountPercent?.toString() || s.discountPercent?.toString() || '',
               stockQuantity: s.price?.stockQuantity?.toString() || s.stockQuantity?.toString() || '',
+              lowStockAlert: s.price?.lowStockAlert?.toString() || s.lowStockAlert?.toString() || '5',
             })) || [],
             colors: r.colors?.map((c: any) => ({
-              ...c,
               id: c.id || `color-${Date.now()}-${Math.random()}`,
               colorName: c.colorName || c.name,
               colorImage: c.colorImage || c.image,
-              singlePrice: c.regularPrice?.toString() || '',
-              singleComparePrice: c.comparePrice?.toString() || '',
-              singleStockQuantity: c.stockQuantity?.toString() || '',
+              colorImageFile: null,
+              hasStorage: c.hasStorage !== false,
+              useDefaultStorages: c.useDefaultStorages !== false,
+              isDefault: c.isDefault || false,
+              singlePrice: c.singlePrice?.toString() || c.regularPrice?.toString() || '',
+              singleComparePrice: c.singleComparePrice?.toString() || c.comparePrice?.toString() || '',
+              singleStockQuantity: c.singleStockQuantity?.toString() || c.stockQuantity?.toString() || '',
               storages: c.storages?.map((s: any) => ({
-                ...s,
                 id: s.id || `s-${Date.now()}-${Math.random()}`,
+                storageSize: s.storageSize || '',
+                isDefault: s.isDefault || false,
                 regularPrice: s.price?.regularPrice?.toString() || s.regularPrice?.toString() || '',
                 discountPrice: s.price?.discountPrice?.toString() || s.discountPrice?.toString() || '',
                 discountPercent: s.price?.discountPercent?.toString() || s.discountPercent?.toString() || '',
                 stockQuantity: s.price?.stockQuantity?.toString() || s.stockQuantity?.toString() || '',
+                lowStockAlert: s.price?.lowStockAlert?.toString() || s.lowStockAlert?.toString() || '5',
               })) || []
             })) || []
           })));
@@ -859,6 +887,7 @@ export function EditProductModal({
       discountPrice: '',
       discountPercent: '',
       stockQuantity: '',
+      isDefault: false,
     }]);
   };
 
@@ -966,6 +995,7 @@ export function EditProductModal({
           discountPrice: c.discountPrice ? Number(c.discountPrice) : undefined,
           discountPercent: c.discountPercent ? Number(c.discountPercent) : undefined,
           stockQuantity: c.stockQuantity ? Number(c.stockQuantity) : undefined,
+          isDefault: c.isDefault,
           displayOrder: idx,
         }));
       } else if (productType === 'network') {
@@ -974,7 +1004,7 @@ export function EditProductModal({
         const networkColorImages: File[] = [];
         payload.networks = networks.map((network, netIdx) => ({
           id: network.id.startsWith('network-') ? undefined : network.id,
-          networkName: network.networkName,
+          networkType: network.networkType,
           isDefault: network.isDefault,
           hasDefaultStorages: network.hasDefaultStorages,
           displayOrder: netIdx,
@@ -985,6 +1015,7 @@ export function EditProductModal({
             discountPrice: Number(storage.discountPrice) || 0,
             discountPercent: Number(storage.discountPercent) || 0,
             stockQuantity: Number(storage.stockQuantity) || 0,
+            isDefault: storage.isDefault,
             displayOrder: storIdx,
           })) : undefined,
           colors: network.colors.map((color: any, colorIdx: number) => {
@@ -1000,6 +1031,7 @@ export function EditProductModal({
               useDefaultStorages: color.useDefaultStorages,
               displayOrder: colorIdx,
               colorImageIndex: imageIndex > -1 ? imageIndex : undefined,
+              isDefault: color.isDefault,
               singlePrice: !color.hasStorage ? Number(color.singlePrice) || 0 : undefined,
               singleComparePrice: !color.hasStorage ? Number(color.singleComparePrice) || 0 : undefined,
               singleStockQuantity: !color.hasStorage ? Number(color.singleStockQuantity) || 0 : undefined,
@@ -1010,6 +1042,7 @@ export function EditProductModal({
                 discountPrice: Number(storage.discountPrice) || 0,
                 discountPercent: Number(storage.discountPercent) || 0,
                 stockQuantity: Number(storage.stockQuantity) || 0,
+                isDefault: storage.isDefault,
                 displayOrder: storIdx,
               })) : undefined,
             };
@@ -1030,6 +1063,7 @@ export function EditProductModal({
             discountPrice: Number(storage.discountPrice) || 0,
             discountPercent: Number(storage.discountPercent) || 0,
             stockQuantity: Number(storage.stockQuantity) || 0,
+            isDefault: storage.isDefault,
             displayOrder: storIdx,
           })),
           colors: region.colors.map((color: any, colorIdx: number) => {
@@ -1045,6 +1079,7 @@ export function EditProductModal({
               useDefaultStorages: color.useDefaultStorages,
               displayOrder: colorIdx,
               colorImageIndex: imageIndex > -1 ? imageIndex : undefined,
+              isDefault: color.isDefault,
               singlePrice: !color.hasStorage ? Number(color.singlePrice) || 0 : undefined,
               singleComparePrice: !color.hasStorage ? Number(color.singleComparePrice) || 0 : undefined,
               singleStockQuantity: !color.hasStorage ? Number(color.singleStockQuantity) || 0 : undefined,
@@ -1055,6 +1090,7 @@ export function EditProductModal({
                 discountPrice: Number(storage.discountPrice) || 0,
                 discountPercent: Number(storage.discountPercent) || 0,
                 stockQuantity: Number(storage.stockQuantity) || 0,
+                isDefault: storage.isDefault,
                 displayOrder: storIdx,
               })) : undefined,
             };
@@ -1233,9 +1269,25 @@ export function EditProductModal({
                 <div className="space-y-4">
                   {basicColors.map((color) => (
                     <div key={color.id} className="space-y-4 rounded border p-4">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <div><Label>Color Name</Label><Input value={color.colorName} onChange={e => updateBasicColor(color.id, 'colorName', e.target.value)} /></div>
                         <div><Label>Stock</Label><Input type="number" value={color.stockQuantity} onChange={e => updateBasicColor(color.id, 'stockQuantity', e.target.value)} /></div>
+                        <div className="flex items-center gap-2 pt-6">
+                          <Checkbox
+                            id={`basic-color-default-${color.id}`}
+                            checked={color.isDefault}
+                            onCheckedChange={(checked) => {
+                              setBasicColors(prev =>
+                                prev.map(c =>
+                                  c.id === color.id
+                                    ? { ...c, isDefault: !!checked }
+                                    : { ...c, isDefault: false }
+                                )
+                              );
+                            }}
+                          />
+                          <Label htmlFor={`basic-color-default-${color.id}`} className="text-sm">Default</Label>
+                        </div>
                       </div>
                       <div>
                         <Label>Image</Label>
@@ -1272,13 +1324,13 @@ export function EditProductModal({
                       <div key={network.id} className="space-y-4 rounded border p-4 mb-4">
                         <div className="flex items-end gap-4">
                           <div className="flex-1">
-                            <Label>Network Name</Label>
+                            <Label>Network Type</Label>
                             <Input
-                              value={network.networkName}
+                              value={network.networkType}
                               onChange={e =>
-                                updateNetwork(network.id, 'networkName', e.target.value)
+                                updateNetwork(network.id, 'networkType', e.target.value)
                               }
-                              placeholder="e.g., Retail Partner A"
+                              placeholder="e.g., WiFi+ Cellular, WiFi Only"
                             />
                           </div>
                           <div className="flex items-center gap-2">
@@ -1303,9 +1355,40 @@ export function EditProductModal({
                         {network.hasDefaultStorages && (
                           <div className="space-y-3 rounded bg-blue-50 p-3">
                             <Label className="block font-semibold">Default Storages</Label>
-                            {network.defaultStorages.map(storage => (
+                            {network.defaultStorages.map((storage: any) => (
                               <div key={storage.id} className="space-y-2 rounded bg-white p-2">
                                 <div className="grid grid-cols-4 gap-2">
+                                  <div className="flex items-center gap-2">
+                                    <Checkbox
+                                      id={`network-storage-default-${network.id}-${storage.id}`}
+                                      checked={storage.isDefault}
+                                      onCheckedChange={(checked) => {
+                                        setNetworks(prev =>
+                                          prev.map(n =>
+                                            n.id === network.id
+                                              ? {
+                                                  ...n,
+                                                  defaultStorages: n.defaultStorages.map((s: any) =>
+                                                    s.id === storage.id
+                                                      ? { ...s, isDefault: !!checked }
+                                                      : { ...s, isDefault: false }
+                                                  ),
+                                                  colors: n.colors.map((c: any) => ({
+                                                    ...c,
+                                                    storages: c.storages.map((cs: any) =>
+                                                      cs.id === storage.id
+                                                        ? cs
+                                                        : { ...cs, isDefault: false }
+                                                    ),
+                                                  })),
+                                                }
+                                              : n
+                                          )
+                                        );
+                                      }}
+                                    />
+                                    <Label htmlFor={`network-storage-default-${network.id}-${storage.id}`} className="text-xs">Default</Label>
+                                  </div>
                                   <div>
                                     <Label className="text-xs">Storage Size</Label>
                                     <Input
@@ -1407,9 +1490,9 @@ export function EditProductModal({
 
                         <div className="space-y-3">
                           <h4 className="font-semibold text-sm">Colors</h4>
-                          {network.colors.map((color) => (
+                          {network.colors.map((color: any) => (
                             <div key={color.id} className="space-y-3 rounded border p-3 bg-gray-50">
-                              <div className="grid grid-cols-2 gap-3">
+                              <div className="grid grid-cols-3 gap-3">
                                 <div>
                                   <Label className="text-xs">Color Name</Label>
                                   <Input
@@ -1428,6 +1511,29 @@ export function EditProductModal({
                                       updateNetworkColor(network.id, color.id, 'hasStorage', e)
                                     }
                                   />
+                                </div>
+                                <div className="flex items-center gap-2 pt-6">
+                                  <Checkbox
+                                    id={`network-color-default-${network.id}-${color.id}`}
+                                    checked={color.isDefault}
+                                    onCheckedChange={(checked) => {
+                                      setNetworks(prev =>
+                                        prev.map(n =>
+                                          n.id === network.id
+                                            ? {
+                                                ...n,
+                                                colors: n.colors.map((c: any) =>
+                                                  c.id === color.id
+                                                    ? { ...c, isDefault: !!checked }
+                                                    : { ...c, isDefault: false }
+                                                ),
+                                              }
+                                            : n
+                                        )
+                                      );
+                                    }}
+                                  />
+                                  <Label htmlFor={`network-color-default-${network.id}-${color.id}`} className="text-xs">Default</Label>
                                 </div>
                               </div>
 
@@ -1483,7 +1589,7 @@ export function EditProductModal({
                                   </div>
                                   {!color.useDefaultStorages && (
                                     <div className="space-y-2">
-                                      {color.storages.map(storage => (
+                                      {color.storages.map((storage: any) => (
                                         <div
                                           key={storage.id}
                                           className="grid grid-cols-4 gap-2 rounded bg-white p-2 text-xs"
@@ -1633,6 +1739,24 @@ export function EditProductModal({
                               placeholder="e.g., North Region"
                             />
                           </div>
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id={`region-default-${region.id}`}
+                              checked={region.isDefault}
+                              onCheckedChange={(checked) => {
+                                setRegions(prev =>
+                                  prev.map(r =>
+                                    r.id === region.id
+                                      ? { ...r, isDefault: !!checked }
+                                      : { ...r, isDefault: false }
+                                  )
+                                );
+                              }}
+                            />
+                            <Label htmlFor={`region-default-${region.id}`} className="text-sm cursor-pointer">
+                              Default Region
+                            </Label>
+                          </div>
                           <Button
                             type="button"
                             variant="destructive"
@@ -1645,8 +1769,38 @@ export function EditProductModal({
 
                         <div className="space-y-3 rounded bg-blue-50 p-3">
                           <Label className="block font-semibold">Default Storages</Label>
-                          {region.defaultStorages.map(storage => (
+                          {region.defaultStorages.map((storage: any) => (
                             <div key={storage.id} className="space-y-2 rounded bg-white p-2">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Checkbox
+                                  id={`region-storage-default-${region.id}-${storage.id}`}
+                                  checked={storage.isDefault}
+                                  onCheckedChange={(checked) => {
+                                    setRegions(prev =>
+                                      prev.map(r =>
+                                        r.id === region.id
+                                          ? {
+                                              ...r,
+                                              defaultStorages: r.defaultStorages.map((s: any) =>
+                                                s.id === storage.id
+                                                  ? { ...s, isDefault: !!checked }
+                                                  : { ...s, isDefault: false }
+                                              ),
+                                              colors: r.colors.map((c: any) => ({
+                                                ...c,
+                                                storages: c.storages.map((cs: any) => ({
+                                                  ...cs,
+                                                  isDefault: false,
+                                                })),
+                                              })),
+                                            }
+                                          : r
+                                      )
+                                    );
+                                  }}
+                                />
+                                <Label htmlFor={`region-storage-default-${region.id}-${storage.id}`} className="text-xs">Default</Label>
+                              </div>
                               <div className="grid grid-cols-5 gap-2">
                                 <div>
                                   <Label className="text-xs">Storage Size</Label>
@@ -1733,9 +1887,9 @@ export function EditProductModal({
 
                         <div className="space-y-3">
                           <h4 className="font-semibold text-sm">Colors</h4>
-                          {region.colors.map((color) => (
+                          {region.colors.map((color: any) => (
                             <div key={color.id} className="space-y-3 rounded border p-3 bg-gray-50">
-                              <div className="grid grid-cols-2 gap-3">
+                              <div className="grid grid-cols-3 gap-3">
                                 <div>
                                   <Label className="text-xs">Color Name</Label>
                                   <Input
@@ -1754,6 +1908,29 @@ export function EditProductModal({
                                       updateRegionColor(region.id, color.id, 'hasStorage', e)
                                     }
                                   />
+                                </div>
+                                <div className="flex items-center gap-2 pt-6">
+                                  <Checkbox
+                                    id={`region-color-default-${region.id}-${color.id}`}
+                                    checked={color.isDefault}
+                                    onCheckedChange={(checked) => {
+                                      setRegions(prev =>
+                                        prev.map(r =>
+                                          r.id === region.id
+                                            ? {
+                                                ...r,
+                                                colors: r.colors.map((c: any) =>
+                                                  c.id === color.id
+                                                    ? { ...c, isDefault: !!checked }
+                                                    : { ...c, isDefault: false }
+                                                ),
+                                              }
+                                            : r
+                                        )
+                                      );
+                                    }}
+                                  />
+                                  <Label htmlFor={`region-color-default-${region.id}-${color.id}`} className="text-xs">Default</Label>
                                 </div>
                               </div>
 
@@ -1809,7 +1986,7 @@ export function EditProductModal({
                                   </div>
                                   {!color.useDefaultStorages && (
                                     <div className="space-y-2">
-                                      {color.storages.map(storage => (
+                                      {color.storages.map((storage: any) => (
                                         <div
                                           key={storage.id}
                                           className="grid grid-cols-4 gap-2 rounded bg-white p-2 text-xs"

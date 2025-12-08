@@ -83,6 +83,7 @@ export const API_ENDPOINTS = {
   PRODUCTS_CREATE_BASIC: '/products-new/basic',
   PRODUCTS_CREATE_NETWORK: '/products-new/network',
   PRODUCTS_CREATE_REGION: '/products-new/region',
+
   PRODUCTS_UPDATE_BASIC: '/products-new/basic/{id}',
   PRODUCTS_UPDATE_NETWORK: '/products-new/network/{id}',
   PRODUCTS_UPDATE_REGION: '/products-new/region/{id}',

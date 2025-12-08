@@ -98,6 +98,7 @@ function NewProductPage() {
       colorName: string;
       colorImage: string;
       colorImageFile: File | null;
+      isDefault: boolean;
       regularPrice: string;
       discountPrice: string;
       discountPercent: string;
@@ -135,6 +136,7 @@ function NewProductPage() {
       defaultStorages: Array<{
         id: string;
         storageSize: string;
+        isDefault: boolean;
         regularPrice: string;
         discountPrice: string;
         discountPercent: string;
@@ -146,6 +148,7 @@ function NewProductPage() {
         colorName: string;
         colorImage: string;
         colorImageFile: File | null;
+        isDefault: boolean;
         hasStorage: boolean;
         useDefaultStorages: boolean;
         singlePrice: string;
@@ -154,6 +157,7 @@ function NewProductPage() {
         storages: Array<{
           id: string;
           storageSize: string;
+          isDefault: boolean;
           regularPrice: string;
           discountPrice: string;
           discountPercent: string;
@@ -173,6 +177,7 @@ function NewProductPage() {
       defaultStorages: Array<{
         id: string;
         storageSize: string;
+        isDefault: boolean;
         regularPrice: string;
         discountPrice: string;
         discountPercent: string;
@@ -184,6 +189,7 @@ function NewProductPage() {
         colorName: string;
         colorImage: string;
         colorImageFile: File | null;
+        isDefault: boolean;
         hasStorage: boolean;
         useDefaultStorages: boolean;
         singlePrice: string;
@@ -192,6 +198,7 @@ function NewProductPage() {
         storages: Array<{
           id: string;
           storageSize: string;
+          isDefault: boolean;
           regularPrice: string;
           discountPrice: string;
           discountPercent: string;
@@ -209,6 +216,7 @@ function NewProductPage() {
         {
           id: 'default-storage-1',
           storageSize: '256GB',
+          isDefault: false,
           regularPrice: '',
           discountPrice: '',
           discountPercent: '',
@@ -222,6 +230,7 @@ function NewProductPage() {
           colorName: 'Midnight',
           colorImage: '',
           colorImageFile: null,
+          isDefault: true,
           hasStorage: true,
           useDefaultStorages: true,
           singlePrice: '',
@@ -349,6 +358,7 @@ function NewProductPage() {
         colorName: '',
         colorImage: '',
         colorImageFile: null,
+        isDefault: false,
         regularPrice: '',
         discountPrice: '',
         discountPercent: '',
@@ -436,6 +446,7 @@ function NewProductPage() {
           {
             id: `default-storage-${Date.now()}`,
             storageSize: '256GB',
+            isDefault: false,
             regularPrice: '',
             discountPrice: '',
             discountPercent: '',
@@ -449,6 +460,7 @@ function NewProductPage() {
             colorName: '',
             colorImage: '',
             colorImageFile: null,
+            isDefault: false,
             hasStorage: true,
             useDefaultStorages: true,
             singlePrice: '',
@@ -584,6 +596,7 @@ function NewProductPage() {
                   colorName: '',
                   colorImage: '',
                   colorImageFile: null,
+                  isDefault: false,
                   hasStorage: true,
                   useDefaultStorages: true,
                   singlePrice: '',
@@ -643,6 +656,7 @@ function NewProductPage() {
                         {
                           id: `storage-${Date.now()}`,
                           storageSize: '',
+                          isDefault: false,
                           regularPrice: '',
                           discountPrice: '',
                           discountPercent: '',
@@ -723,6 +737,7 @@ function NewProductPage() {
                 {
                   id: `default-storage-${Date.now()}`,
                   storageSize: '',
+                  isDefault: false,
                   regularPrice: '',
                   discountPrice: '',
                   discountPercent: '',
@@ -781,6 +796,7 @@ function NewProductPage() {
           {
             id: `default-storage-${Date.now()}`,
             storageSize: '',
+            isDefault: false,
             regularPrice: '',
             discountPrice: '',
             discountPercent: '',
@@ -794,6 +810,7 @@ function NewProductPage() {
             colorName: '',
             colorImage: '',
             colorImageFile: null,
+            isDefault: false,
             hasStorage: true,
             useDefaultStorages: true,
             singlePrice: '',
@@ -829,6 +846,7 @@ function NewProductPage() {
                   colorName: '',
                   colorImage: '',
                   colorImageFile: null,
+                  isDefault: false,
                   hasStorage: true,
                   useDefaultStorages: true,
                   singlePrice: '',
@@ -888,6 +906,7 @@ function NewProductPage() {
                         {
                           id: `storage-${Date.now()}`,
                           storageSize: '',
+                          isDefault: false,
                           regularPrice: '',
                           discountPrice: '',
                           discountPercent: '',
@@ -967,6 +986,7 @@ function NewProductPage() {
                 {
                   id: `default-storage-${Date.now()}`,
                   storageSize: '',
+                  isDefault: false,
                   regularPrice: '',
                   discountPrice: '',
                   discountPercent: '',
@@ -1057,6 +1077,7 @@ function NewProductPage() {
           {
             id: 'default-storage-1',
             storageSize: '256GB',
+            isDefault: false,
             regularPrice: '',
             discountPrice: '',
             discountPercent: '',
@@ -1070,6 +1091,7 @@ function NewProductPage() {
             colorName: 'Midnight',
             colorImage: '',
             colorImageFile: null,
+            isDefault: false,
             hasStorage: true,
             useDefaultStorages: true,
             singlePrice: '',
@@ -1148,6 +1170,7 @@ function NewProductPage() {
           basicColors.length > 0
             ? basicColors.map((c, idx) => ({
                 colorName: c.colorName,
+                isDefault: c.isDefault,
                 regularPrice: c.regularPrice ? Number(c.regularPrice) : undefined,
                 discountPrice: c.discountPrice ? Number(c.discountPrice) : undefined,
                 discountPercent: c.discountPercent ? Number(c.discountPercent) : undefined,
@@ -1210,6 +1233,7 @@ function NewProductPage() {
         defaultStorages: network.hasDefaultStorages
           ? network.defaultStorages.map((storage, storIdx) => ({
               storageSize: storage.storageSize,
+              isDefault: storage.isDefault,
               regularPrice: storage.regularPrice
                 ? Number(storage.regularPrice)
                 : 0,
@@ -1241,6 +1265,7 @@ function NewProductPage() {
 
           return {
             colorName: color.colorName,
+            isDefault: color.isDefault,
             hasStorage: color.hasStorage,
             useDefaultStorages: color.useDefaultStorages,
             displayOrder: colorIdx,
@@ -1260,6 +1285,7 @@ function NewProductPage() {
               color.hasStorage && !color.useDefaultStorages
                 ? color.storages.map((storage, storIdx) => ({
                     storageSize: storage.storageSize,
+                    isDefault: storage.isDefault,
                     regularPrice: storage.regularPrice
                       ? Number(storage.regularPrice)
                       : 0,
@@ -1385,6 +1411,7 @@ function NewProductPage() {
         // Default storages for this region (always present)
         defaultStorages: region.defaultStorages.map((storage, storIdx) => ({
           storageSize: storage.storageSize,
+          isDefault: storage.isDefault,
           regularPrice: storage.regularPrice
             ? Number(storage.regularPrice)
             : 0,
@@ -1415,6 +1442,7 @@ function NewProductPage() {
 
           return {
             colorName: color.colorName,
+            isDefault: color.isDefault,
             hasStorage: color.hasStorage,
             useDefaultStorages: color.useDefaultStorages,
             displayOrder: colorIdx,
@@ -1434,6 +1462,7 @@ function NewProductPage() {
               color.hasStorage && !color.useDefaultStorages
                 ? color.storages.map((storage, storIdx) => ({
                     storageSize: storage.storageSize,
+                    isDefault: storage.isDefault,
                     regularPrice: storage.regularPrice
                       ? Number(storage.regularPrice)
                       : 0,
@@ -2021,6 +2050,32 @@ function NewProductPage() {
             <CardContent className="space-y-4">
               {basicColors.map((color, idx) => (
                 <div key={color.id} className="space-y-4 rounded border p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={color.isDefault}
+                        onCheckedChange={(checked) => {
+                          // Set this color as default and unset others
+                          setBasicColors(prev => prev.map(c => ({
+                            ...c,
+                            isDefault: c.id === color.id ? !!checked : false
+                          })));
+                        }}
+                        id={`default-${color.id}`}
+                      />
+                      <Label htmlFor={`default-${color.id}`} className="text-sm font-medium cursor-pointer">
+                        Default Price (Show in UI)
+                      </Label>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeBasicColor(color.id)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Color Name</Label>
@@ -2221,6 +2276,36 @@ function NewProductPage() {
                           key={storage.id}
                           className="space-y-2 rounded bg-white p-2"
                         >
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Checkbox
+                              checked={storage.isDefault}
+                              onCheckedChange={(checked) => {
+                                // Set this storage as default and unset ALL other storages (default + custom)
+                                setNetworks(prev => prev.map(n => 
+                                  n.id === network.id
+                                    ? {
+                                        ...n,
+                                        defaultStorages: n.defaultStorages.map(s => ({
+                                          ...s,
+                                          isDefault: s.id === storage.id ? !!checked : false
+                                        })),
+                                        colors: n.colors.map(c => ({
+                                          ...c,
+                                          storages: c.storages.map(cs => ({
+                                            ...cs,
+                                            isDefault: false // Unset all custom storages
+                                          }))
+                                        }))
+                                      }
+                                    : n
+                                ));
+                              }}
+                              id={`network-storage-default-${storage.id}`}
+                            />
+                            <Label htmlFor={`network-storage-default-${storage.id}`} className="text-xs cursor-pointer">
+                              Default Storage
+                            </Label>
+                          </div>
                           <div className="grid grid-cols-4 gap-2">
                             <div>
                               <Label className="text-xs">Storage Size</Label>
@@ -2355,6 +2440,31 @@ function NewProductPage() {
                     <Label className="block font-semibold">Colors</Label>
                     {network.colors.map(color => (
                       <div key={color.id} className="space-y-2 rounded bg-gray-50 p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              checked={color.isDefault}
+                              onCheckedChange={(checked) => {
+                                // Set this color as default and unset others in this network
+                                setNetworks(prev => prev.map(n => 
+                                  n.id === network.id
+                                    ? {
+                                        ...n,
+                                        colors: n.colors.map(c => ({
+                                          ...c,
+                                          isDefault: c.id === color.id ? !!checked : false
+                                        }))
+                                      }
+                                    : n
+                                ));
+                              }}
+                              id={`network-default-${color.id}`}
+                            />
+                            <Label htmlFor={`network-default-${color.id}`} className="text-xs cursor-pointer">
+                              Default
+                            </Label>
+                          </div>
+                        </div>
                         <div className="flex items-end gap-2">
                           <div className="flex-1">
                             <Label className="text-sm">Color Name</Label>
@@ -2509,6 +2619,46 @@ function NewProductPage() {
                                     key={storage.id}
                                     className="space-y-2 rounded bg-white p-2"
                                   >
+                                    <div className="flex items-center space-x-2 mb-2">
+                                      <Checkbox
+                                        checked={storage.isDefault}
+                                        onCheckedChange={(checked) => {
+                                          // Set this storage as default and unset ALL other storages (default + all colors' storages)
+                                          setNetworks(prev => prev.map(n => 
+                                            n.id === network.id
+                                              ? {
+                                                  ...n,
+                                                  defaultStorages: n.defaultStorages.map(ds => ({
+                                                    ...ds,
+                                                    isDefault: false // Unset all default storages
+                                                  })),
+                                                  colors: n.colors.map(c =>
+                                                    c.id === color.id
+                                                      ? {
+                                                          ...c,
+                                                          storages: c.storages.map(s => ({
+                                                            ...s,
+                                                            isDefault: s.id === storage.id ? !!checked : false
+                                                          }))
+                                                        }
+                                                      : {
+                                                          ...c,
+                                                          storages: c.storages.map(s => ({
+                                                            ...s,
+                                                            isDefault: false // Unset other colors' storages
+                                                          }))
+                                                        }
+                                                  )
+                                                }
+                                              : n
+                                          ));
+                                        }}
+                                        id={`network-color-storage-${storage.id}`}
+                                      />
+                                      <Label htmlFor={`network-color-storage-${storage.id}`} className="text-xs cursor-pointer">
+                                        Default
+                                      </Label>
+                                    </div>
                                     <div className="grid grid-cols-4 gap-2">
                                       <div>
                                         <Label className="text-xs">Storage Size</Label>
@@ -2720,6 +2870,36 @@ function NewProductPage() {
                         key={storage.id}
                         className="space-y-2 rounded bg-white p-2"
                       >
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Checkbox
+                            checked={storage.isDefault}
+                            onCheckedChange={(checked) => {
+                              // Set this storage as default and unset ALL other storages (default + custom)
+                              setRegions(prev => prev.map(r => 
+                                r.id === region.id
+                                  ? {
+                                      ...r,
+                                      defaultStorages: r.defaultStorages.map(s => ({
+                                        ...s,
+                                        isDefault: s.id === storage.id ? !!checked : false
+                                      })),
+                                      colors: r.colors.map(c => ({
+                                        ...c,
+                                        storages: c.storages.map(cs => ({
+                                          ...cs,
+                                          isDefault: false // Unset all custom storages
+                                        }))
+                                      }))
+                                    }
+                                  : r
+                              ));
+                            }}
+                            id={`region-storage-default-${storage.id}`}
+                          />
+                          <Label htmlFor={`region-storage-default-${storage.id}`} className="text-xs cursor-pointer">
+                            Default Storage
+                          </Label>
+                        </div>
                         <div className="grid grid-cols-4 gap-2">
                           <div>
                             <Label className="text-xs">Storage Size</Label>
@@ -2853,6 +3033,31 @@ function NewProductPage() {
                     <Label className="block font-semibold">Colors</Label>
                     {region.colors.map(color => (
                       <div key={color.id} className="space-y-2 rounded bg-gray-50 p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              checked={color.isDefault}
+                              onCheckedChange={(checked) => {
+                                // Set this color as default and unset others in this region
+                                setRegions(prev => prev.map(r => 
+                                  r.id === region.id
+                                    ? {
+                                        ...r,
+                                        colors: r.colors.map(c => ({
+                                          ...c,
+                                          isDefault: c.id === color.id ? !!checked : false
+                                        }))
+                                      }
+                                    : r
+                                ));
+                              }}
+                              id={`region-default-${color.id}`}
+                            />
+                            <Label htmlFor={`region-default-${color.id}`} className="text-xs cursor-pointer">
+                              Default
+                            </Label>
+                          </div>
+                        </div>
                         <div className="flex items-end gap-2">
                           <div className="flex-1">
                             <Label className="text-sm">Color Name</Label>
@@ -2952,6 +3157,46 @@ function NewProductPage() {
                                     key={storage.id}
                                     className="space-y-2 rounded bg-white p-2"
                                   >
+                                    <div className="flex items-center space-x-2 mb-2">
+                                      <Checkbox
+                                        checked={storage.isDefault}
+                                        onCheckedChange={(checked) => {
+                                          // Set this storage as default and unset ALL other storages (default + all colors' storages)
+                                          setRegions(prev => prev.map(r => 
+                                            r.id === region.id
+                                              ? {
+                                                  ...r,
+                                                  defaultStorages: r.defaultStorages.map(ds => ({
+                                                    ...ds,
+                                                    isDefault: false // Unset all default storages
+                                                  })),
+                                                  colors: r.colors.map(c =>
+                                                    c.id === color.id
+                                                      ? {
+                                                          ...c,
+                                                          storages: c.storages.map(s => ({
+                                                            ...s,
+                                                            isDefault: s.id === storage.id ? !!checked : false
+                                                          }))
+                                                        }
+                                                      : {
+                                                          ...c,
+                                                          storages: c.storages.map(s => ({
+                                                            ...s,
+                                                            isDefault: false // Unset other colors' storages
+                                                          }))
+                                                        }
+                                                  )
+                                                }
+                                              : r
+                                          ));
+                                        }}
+                                        id={`region-color-storage-${storage.id}`}
+                                      />
+                                      <Label htmlFor={`region-color-storage-${storage.id}`} className="text-xs cursor-pointer">
+                                        Default
+                                      </Label>
+                                    </div>
                                     <div className="grid grid-cols-4 gap-2">
                                       <div>
                                         <Label className="text-xs">Storage</Label>
