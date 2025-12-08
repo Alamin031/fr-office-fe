@@ -86,40 +86,70 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
     ? [params.brands]
     : [];
 
-  // Fetch products with filters
-  let products: Product[] = [];
+  // Fetch all products first
+  let allProducts: Product[] = [];
   try {
-    const filters: any = {};
-
-    if (selectedCategories.length > 0) {
-      filters.categoryId = selectedCategories[0];
-    }
-
-    if (selectedBrands.length > 0) {
-      filters.brandId = selectedBrands[0];
-    }
-
-    const res = await productsService.getAll(filters, 1, 200);
-
-    if (res && typeof res === "object") {
-      if (Array.isArray((res as { data?: unknown[] }).data)) {
-        products = (res as { data?: unknown[] }).data as Product[];
-      } else if (Array.isArray((res as { items?: unknown[] }).items)) {
-        products = (res as { items?: unknown[] }).items as Product[];
-      } else if (Array.isArray(res)) {
-        products = res as Product[];
-      } else {
-        products = [];
+    const allRes = await productsService.getAll({}, 1, 1000);
+    if (allRes && typeof allRes === "object") {
+      if (Array.isArray((allRes as { data?: unknown[] }).data)) {
+        allProducts = (allRes as { data?: unknown[] }).data as Product[];
+      } else if (Array.isArray((allRes as { items?: unknown[] }).items)) {
+        allProducts = (allRes as { items?: unknown[] }).items as Product[];
+      } else if (Array.isArray(allRes)) {
+        allProducts = allRes as Product[];
       }
-    } else if (Array.isArray(res)) {
-      products = res as Product[];
-    } else {
-      products = [];
+    } else if (Array.isArray(allRes)) {
+      allProducts = allRes as Product[];
     }
   } catch (error) {
-    console.error("Failed to fetch products:", error);
-    products = [];
+    console.error("Failed to fetch all products:", error);
   }
+
+  // Filter products based on selected categories and brands
+  let products: Product[] = allProducts;
+
+  if (selectedCategories.length > 0) {
+    const categorySlug = selectedCategories[0];
+    const category = categories.find(c => c.slug === categorySlug);
+    if (category) {
+      products = products.filter((p: any) => {
+        // Check if product has this category in categoryIds array
+        if (Array.isArray(p.categoryIds)) {
+          return p.categoryIds.includes(category.id);
+        }
+        // Fallback to single categoryId
+        return p.categoryId === category.id;
+      });
+    }
+  }
+
+  if (selectedBrands.length > 0) {
+    const brandSlug = selectedBrands[0];
+    const brand = brands.find(b => b.slug === brandSlug);
+    if (brand) {
+      products = products.filter((p: any) => {
+        // Check if product has this brand in brandIds array
+        if (Array.isArray(p.brandIds)) {
+          return p.brandIds.includes(brand.id);
+        }
+        // Fallback to single brandId
+        return p.brandId === brand.id;
+      });
+    }
+  }
+
+  // Calculate product count for each category
+  categories.forEach(cat => {
+    const categoryProducts = allProducts.filter((p: any) => {
+      // Check if product has this category in categoryIds array
+      if (Array.isArray(p.categoryIds)) {
+        return p.categoryIds.includes(cat.id);
+      }
+      // Fallback to single categoryId
+      return p.categoryId === cat.id;
+    });
+    cat.productCount = categoryProducts.length;
+  });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
