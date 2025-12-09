@@ -192,16 +192,17 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
 
   // Price and stock calculation
   const priceData = useMemo(() => {
-    // For basic products, get price from selected color
     let regular = 0;
     let discount = 0;
     let stock = 0;
 
-    if (selectedColor && typeof selectedColor.regularPrice !== 'undefined') {
+    // Check if color has its own price data (not null and greater than 0)
+    if (selectedColor && selectedColor.regularPrice && selectedColor.regularPrice > 0) {
       regular = Number(selectedColor.regularPrice) || 0;
       discount = Number(selectedColor.discountPrice) || 0;
       stock = Number(selectedColor.stockQuantity) || 0;
     } else if (selectedStorage?.price) {
+      // Use storage price as fallback
       const price = selectedStorage.price;
       regular = Number(price.regular || price.regularPrice) || 0;
       discount = Number(price.discount || price.discountPrice || price.final) || 0;
@@ -221,7 +222,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
     };
   }, [selectedColor, selectedStorage]);
 
-  const selectedPrice = selectedPriceType === 'regular' ? priceData.regularPrice : priceData.discountPrice
+  const selectedPrice = selectedPriceType === 'regular' ? priceData.regularPrice : (priceData.discountPrice > 0 ? priceData.discountPrice : priceData.regularPrice)
   const carePlusPrice = carePlusSelected ? Math.round(selectedPrice * 0.08) : 0
   const isOutOfStock = !priceData.inStock
 
@@ -339,19 +340,21 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
           )}
         </div>
 
-        {isOutOfStock ? (
-          <Badge variant="secondary" className="bg-red-100 text-red-900 dark:bg-red-900/20 dark:text-red-400">
-            Out of Stock
-          </Badge>
-        ) : priceData.stock <= 10 ? (
-          <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-900/20 dark:text-amber-400">
-            Only {priceData.stock} left
-          </Badge>
-        ) : (
-          <Badge className="bg-emerald-100 text-emerald-900 dark:bg-emerald-900/20 dark:text-emerald-400">
-            <Check className="mr-1.5 h-3 w-3" /> In Stock
-          </Badge>
-        )}
+        <div suppressHydrationWarning>
+          {isOutOfStock ? (
+            <Badge variant="secondary" className="bg-red-100 text-red-900 dark:bg-red-900/20 dark:text-red-400">
+              Out of Stock
+            </Badge>
+          ) : priceData.stock <= 10 ? (
+            <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-900/20 dark:text-amber-400">
+              Only {priceData.stock} left
+            </Badge>
+          ) : (
+            <Badge className="bg-emerald-100 text-emerald-900 dark:bg-emerald-900/20 dark:text-emerald-400">
+              <Check className="mr-1.5 h-3 w-3" /> In Stock
+            </Badge>
+          )}
+        </div>
       </div>
 
       <Separator className="my-2" />
@@ -359,7 +362,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
       {/* Price Section */}
       <div className="space-y-4">
         <div className="flex items-baseline gap-3">
-          <div className="text-5xl font-bold tracking-tight">{formatPrice(priceData.discountPrice)}</div>
+          <div className="text-5xl font-bold tracking-tight">{formatPrice(priceData.hasDiscount ? priceData.discountPrice : priceData.regularPrice)}</div>
           {priceData.hasDiscount && (
             <>
               <div className="text-xl text-muted-foreground line-through">{formatPrice(priceData.regularPrice)}</div>
@@ -431,7 +434,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
           </label>
           <div className="flex flex-wrap gap-2">
             {regions.map((region: any) => {
-              const regionName = (region.networkType || region.name || '').toString().trim();
+              const regionName = (region.name || '').toString().trim();
               return (
               <button
                 key={region.id}
@@ -463,7 +466,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
           </label>
           <div className="flex flex-wrap gap-2">
             {storages.map((storage: any) => {
-              const storageSize = storage.size || storage.storageSize;
+              const storageSize = storage.storageSize || storage.size;
               return (
               <button
                 key={storage.id}
@@ -475,7 +478,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
                     : "border-border hover:border-foreground/30 hover:bg-muted/50",
                 )}
               >
-                {storageSize}
+                {storageSize || 'Storage'}
               </button>
             );
             })}
@@ -597,7 +600,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
               )}
             >
               <div className="text-xs text-muted-foreground font-medium mb-2">Offer Price</div>
-              <div className="text-xl font-bold text-emerald-600">{formatPrice(priceData.discountPrice)}</div>
+              <div className="text-xl font-bold text-emerald-600">{formatPrice(priceData.hasDiscount ? priceData.discountPrice : priceData.regularPrice)}</div>
             </button>
 
             <button
