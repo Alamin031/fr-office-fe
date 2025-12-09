@@ -128,11 +128,24 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
 
       {/* Content */}
       <div className="flex flex-col gap-8 lg:flex-row">
+        {/* Sidebar Filters */}
+        <aside className="w-full lg:w-64 flex-shrink-0">
+          <AllProductsFilters
+            categories={categories}
+            brands={brands}
+            selectedCategories={selectedCategories}
+            selectedBrands={selectedBrands}
+          />
+        </aside>
+
         {/* Products Grid */}
-        <main className="flex-1">
+        <main className="flex-1 min-w-0">
           <ProductsListClient
             initialProducts={products.slice(0, 20)}
             totalProducts={products.length}
+            selectedCategories={selectedCategories}
+            selectedBrands={selectedBrands}
+            allProducts={products}
           />
         </main>
       </div>
