@@ -375,14 +375,14 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
       )}
 
       {/* Region/Network Selection */}
-      {regions.length > 1 && (
+      {regions.length > 0 && (
         <div className="space-y-4">
           <label className="text-sm font-semibold uppercase tracking-wider text-foreground" suppressHydrationWarning>
             {isNetworkProduct ? 'Network' : 'Variant'}
           </label>
           <div className="flex flex-wrap gap-2">
             {regions.map((region: any) => {
-              const regionName = (region.name || region.networkType || '').toString().trim();
+              const regionName = (region.networkType || region.name || '').toString().trim();
               return (
               <button
                 key={region.id}
