@@ -357,14 +357,11 @@ export function Navbar() {
                             </Link>
                           </SheetClose>
                         )}
-                        <button
-                          onClick={handleLogout}
-                          className="w-full"
-                        >
-                          <Button variant="destructive" className="w-full">
+                        <SheetClose asChild>
+                          <Button onClick={handleLogout} variant="destructive" className="w-full">
                             Sign Out
                           </Button>
-                        </button>
+                        </SheetClose>
                       </div>
                     ) : (
                       <div className="grid gap-2">

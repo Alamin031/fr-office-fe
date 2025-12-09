@@ -118,7 +118,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
   // Get the network to access its colors and storages directly
   const networks = isNetworkProduct ? (rawProduct?.networks || []) : [];
 
-  const regions: Region[] = isNetworkProduct
+  let regions: Region[] = isNetworkProduct
     ? networks.map((n: Network) => ({
         id: n.id,
         name: n.networkType,
@@ -126,6 +126,34 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
         defaultStorages: n.defaultStorages || [],
       }))
     : (rawProduct?.regions || []);
+
+  // For basic products, convert directColors to a default region structure
+  if (isBasicProduct && (!regions || regions.length === 0) && rawProduct?.directColors) {
+    regions = [{
+      id: "default",
+      name: "Default",
+      colors: rawProduct.directColors.map((color: any) => ({
+        id: color.id,
+        name: color.colorName,
+        colorName: color.colorName,
+        colorImage: color.colorImage,
+        image: color.colorImage,
+        regularPrice: color.regularPrice,
+        discountPrice: color.discountPrice,
+        stockQuantity: color.stockQuantity,
+      })),
+      defaultStorages: [{
+        id: "default-storage",
+        size: "Standard",
+        storageSize: "Standard",
+        price: {
+          regularPrice: rawProduct.directColors[0]?.regularPrice || 0,
+          discountPrice: rawProduct.directColors[0]?.discountPrice || 0,
+          stockQuantity: rawProduct.directColors[0]?.stockQuantity || 0,
+        }
+      }]
+    }]
+  }
 
   const selectedRegion = selectedRegionId
     ? regions.find((r: Region) => r.id === selectedRegionId)
