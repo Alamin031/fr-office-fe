@@ -369,11 +369,11 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
         </div>
       )}
 
-      {/* Region Selection */}
+      {/* Region/Network Selection */}
       {regions.length > 1 && (
         <div className="space-y-4">
           <label className="text-sm font-semibold uppercase tracking-wider text-foreground">
-            Variant
+            {isNetworkProduct ? 'Network' : 'Variant'}
           </label>
           <div className="flex flex-wrap gap-2">
             {regions.map((region: Region) => (
