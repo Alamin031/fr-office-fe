@@ -204,19 +204,7 @@ export default async function ProductPage({params}: ProductPageProps) {
         </nav>
 
         {/* Product Details Grid */}
-        <div className="grid gap-8 lg:gap-12 lg:grid-cols-2 mb-12">
-          <div className="flex justify-center">
-            <ProductGallery
-              images={product.images ?? []}
-              name={product.name ?? ''}
-              isEmi={!!apiProductAny.isEmi}
-              isCare={!!apiProductAny.isCare}
-            />
-          </div>
-          <div className="flex items-start">
-            <ProductInfoRegion product={product} />
-          </div>
-        </div>
+        <ProductDetailClient product={product} />
 
         {/* Divider */}
         <div className="border-t border-border/40 my-12" />
