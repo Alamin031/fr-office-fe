@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useMemo } from "react"
@@ -6,7 +7,8 @@ import { usePagination } from "@/app/hooks/use-pagination"
 import { productsService } from "@/app/lib/api/services/products"
 import { CategoryProducts } from "@/app/components/category/category-products"
 import { Button } from "@/app/components/ui/button"
-import type { ProductListResponse, Product } from "@/app/types"
+import type { Product } from "@/app/types"
+import { ProductListResponse } from "@/app/lib/api/services"
 
 interface CategoryProductsClientProps {
   categoryId: string
@@ -59,10 +61,14 @@ export function CategoryProductsClient({
 
   // Use either fetched data or initial data
   const products = useMemo(() => {
+    const mapProduct = (product: any): Product => ({
+      ...product,
+      images: product.images ?? [], // Ensure 'images' exists
+    })
     if (paginatedData?.data && paginatedData.data.length > 0) {
-      return paginatedData.data
+      return paginatedData.data.map(mapProduct)
     }
-    return currentPage === 1 ? initialProducts : []
+    return currentPage === 1 ? initialProducts.map(mapProduct) : []
   }, [paginatedData, initialProducts, currentPage])
 
   const displayTotalProducts = useMemo(() => {
