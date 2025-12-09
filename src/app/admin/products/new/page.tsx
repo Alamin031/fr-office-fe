@@ -1589,16 +1589,15 @@ function NewProductPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <Link
-        href="/admin/products"
-        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900">
-        <ArrowLeft className="h-4 w-4" />
-        Back to Products
-      </Link>
-
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Add New Product</h1>
-        <p className="mt-2 text-gray-600">Create a new product listing</p>
+        <Link
+          href="/admin/products"
+          className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mb-4">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Products
+        </Link>
+        <h1 className="text-4xl font-bold text-gray-900 tracking-tight">Add New Product</h1>
+        <p className="mt-3 text-base text-gray-600">Create and configure a new product listing for your store</p>
       </div>
 
       <Tabs
@@ -1608,10 +1607,10 @@ function NewProductPage() {
           resetForm();
         }}
         className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="basic">Basic Product</TabsTrigger>
-          <TabsTrigger value="network">Network Product</TabsTrigger>
-          <TabsTrigger value="region">Region Product</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 mb-8 bg-gray-100 p-1 rounded-lg">
+          <TabsTrigger value="basic" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Basic Product</TabsTrigger>
+          <TabsTrigger value="network" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Network Product</TabsTrigger>
+          <TabsTrigger value="region" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Region Product</TabsTrigger>
         </TabsList>
 
         <form
@@ -1623,11 +1622,11 @@ function NewProductPage() {
               : handleRegionProductSubmit
           }
           className="space-y-6 pt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="border-b bg-gray-50/50">
+              <CardTitle className="text-xl font-semibold text-gray-900">Basic Information</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 pt-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="name">Product Name *</Label>
@@ -1689,15 +1688,15 @@ function NewProductPage() {
                   ref={shortDescriptionRef}
                   contentEditable
                   onInput={handleShortDescriptionChange}
-                  className="min-h-24 rounded border border-gray-300 p-3 focus:border-blue-500 focus:outline-none"
+                  className="min-h-24 rounded-lg border-2 border-gray-200 p-4 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-opacity-10 transition-all"
                   suppressContentEditableWarning
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Category *</Label>
-                  <div className="mt-2 rounded border border-gray-300 bg-white p-3 max-h-48 overflow-y-auto">
+                  <Label className="text-sm font-medium text-gray-900">Category *</Label>
+                  <div className="mt-2 rounded-lg border-2 border-gray-200 bg-white p-4 max-h-48 overflow-y-auto shadow-sm hover:border-gray-300 transition-colors">
                     {categories.length > 0 ? (
                       <div className="space-y-2">
                         {categories.map(cat => (
@@ -1728,8 +1727,8 @@ function NewProductPage() {
                   )}
                 </div>
                 <div>
-                  <Label>Brand *</Label>
-                  <div className="mt-2 rounded border border-gray-300 bg-white p-3 max-h-48 overflow-y-auto">
+                  <Label className="text-sm font-medium text-gray-900">Brand *</Label>
+                  <div className="mt-2 rounded-lg border-2 border-gray-200 bg-white p-4 max-h-48 overflow-y-auto shadow-sm hover:border-gray-300 transition-colors">
                     {brands.length > 0 ? (
                       <div className="space-y-2">
                         {brands.map(br => (
@@ -1791,11 +1790,11 @@ function NewProductPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Product Status</CardTitle>
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="border-b bg-gray-50/50">
+              <CardTitle className="text-xl font-semibold text-gray-900">Product Status</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="isActive">Active</Label>
@@ -1857,14 +1856,14 @@ function NewProductPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Media</CardTitle>
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="border-b bg-gray-50/50">
+              <CardTitle className="text-xl font-semibold text-gray-900">Media</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 pt-6">
               <div>
-                <Label>Thumbnail Image</Label>
-                <div className="mt-2 rounded border-2 border-dashed border-gray-300 p-6">
+                <Label className="text-sm font-medium text-gray-900">Thumbnail Image</Label>
+                <div className="mt-2 rounded-lg border-2 border-dashed border-gray-300 p-8 hover:border-gray-400 transition-all bg-gray-50/50">
                   {thumbnailPreview ? (
                     <div className="relative inline-block">
                       <img
@@ -1897,8 +1896,8 @@ function NewProductPage() {
               </div>
 
               <div>
-                <Label>Gallery Images</Label>
-                <div className="mt-2 rounded border-2 border-dashed border-gray-300 p-6">
+                <Label className="text-sm font-medium text-gray-900">Gallery Images</Label>
+                <div className="mt-2 rounded-lg border-2 border-dashed border-gray-300 p-8 hover:border-gray-400 transition-all bg-gray-50/50">
                   {galleryImagePreviews.length > 0 ? (
                     <div className="grid grid-cols-4 gap-4">
                       {galleryImagePreviews.map((preview, idx) => (
@@ -1947,11 +1946,11 @@ function NewProductPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>SEO Settings</CardTitle>
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="border-b bg-gray-50/50">
+              <CardTitle className="text-xl font-semibold text-gray-900">SEO Settings</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div>
                 <Label htmlFor="seoTitle">SEO Title</Label>
                 <Input
@@ -1994,11 +1993,11 @@ function NewProductPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Specifications</CardTitle>
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="border-b bg-gray-50/50">
+              <CardTitle className="text-xl font-semibold text-gray-900">Specifications</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               {specifications.map((spec, idx) => (
                 <div key={spec.id} className="flex gap-2">
                   <Input
@@ -2026,17 +2025,18 @@ function NewProductPage() {
               <button
                 type="button"
                 onClick={addSpecification}
-                className="mt-2 rounded bg-blue-100 px-4 py-2 text-blue-600 hover:bg-blue-200">
-                + Add Specification
+                className="mt-2 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm">
+                <Plus className="h-4 w-4" />
+                Add Specification
               </button>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Additional Info</CardTitle>
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="border-b bg-gray-50/50">
+              <CardTitle className="text-xl font-semibold text-gray-900">Additional Info</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="rewardPoints">Reward Points</Label>
@@ -2072,11 +2072,11 @@ function NewProductPage() {
           </Card>
 
           <TabsContent value="basic" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Colors</CardTitle>
+            <Card className="shadow-sm border-gray-200">
+              <CardHeader className="border-b bg-gray-50/50">
+                <CardTitle className="text-xl font-semibold text-gray-900">Colors & Pricing</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-6">
                 {basicColors.map((color, idx) => (
                   <div key={color.id} className="space-y-4 rounded border p-4">
                     <div className="flex items-center justify-between mb-4">
@@ -2264,19 +2264,20 @@ function NewProductPage() {
                 <button
                   type="button"
                   onClick={addBasicColor}
-                  className="rounded bg-blue-100 px-4 py-2 text-blue-600 hover:bg-blue-200">
-                  + Add Color
+                  className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm">
+                  <Plus className="h-4 w-4" />
+                  Add Color
                 </button>
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="network" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Networks & Colors</CardTitle>
+            <Card className="shadow-sm border-gray-200">
+              <CardHeader className="border-b bg-gray-50/50">
+                <CardTitle className="text-xl font-semibold text-gray-900">Networks & Colors</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-6">
                 {networks.map(network => (
                   <div
                     key={network.id}
@@ -2314,7 +2315,7 @@ function NewProductPage() {
                     </div>
 
                     {network.hasDefaultStorages && (
-                      <div className="space-y-3 rounded bg-blue-50 p-3">
+                      <div className="space-y-3 rounded-lg bg-gray-50 border-2 border-gray-200 p-4">
                         <Label className="block font-semibold">
                           Default Storages (for this Network)
                         </Label>
@@ -2498,8 +2499,9 @@ function NewProductPage() {
                         <button
                           type="button"
                           onClick={() => addDefaultStorageToNetwork(network.id)}
-                          className="text-xs text-blue-600 hover:underline">
-                          + Add Default Storage
+                          className="inline-flex items-center gap-1 text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors">
+                          <Plus className="h-3 w-3" />
+                          Add Default Storage
                         </button>
                       </div>
                     )}
@@ -2920,8 +2922,9 @@ function NewProductPage() {
                                     onClick={() =>
                                       addStorageToNetwork(network.id, color.id)
                                     }
-                                    className="text-xs text-blue-600 hover:underline">
-                                    + Add Storage
+                                    className="inline-flex items-center gap-1 text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors">
+                                    <Plus className="h-3 w-3" />
+                                    Add Storage
                                   </button>
                                 </>
                               )}
@@ -2933,8 +2936,9 @@ function NewProductPage() {
                       <button
                         type="button"
                         onClick={() => addColorToNetwork(network.id)}
-                        className="text-sm text-blue-600 hover:underline">
-                        + Add Color
+                        className="inline-flex items-center gap-1 text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors">
+                        <Plus className="h-4 w-4" />
+                        Add Color
                       </button>
                     </div>
                   </div>
@@ -2943,19 +2947,20 @@ function NewProductPage() {
                 <button
                   type="button"
                   onClick={addNetwork}
-                  className="rounded bg-blue-100 px-4 py-2 text-blue-600 hover:bg-blue-200">
-                  + Add Network
+                  className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm">
+                  <Plus className="h-4 w-4" />
+                  Add Network
                 </button>
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="region" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Regions</CardTitle>
+            <Card className="shadow-sm border-gray-200">
+              <CardHeader className="border-b bg-gray-50/50">
+                <CardTitle className="text-xl font-semibold text-gray-900">Regions</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-6">
                 {regions.map(region => (
                   <div key={region.id} className="space-y-4 rounded border p-4">
                     <div className="flex items-end gap-4">
@@ -2992,7 +2997,7 @@ function NewProductPage() {
                       )}
                     </div>
 
-                    <div className="space-y-3 rounded bg-blue-50 p-3">
+                    <div className="space-y-3 rounded-lg bg-gray-50 border-2 border-gray-200 p-4">
                       <Label className="block font-semibold">
                         Default Storages
                       </Label>
@@ -3170,8 +3175,9 @@ function NewProductPage() {
                       <button
                         type="button"
                         onClick={() => addDefaultStorageToRegion(region.id)}
-                        className="text-xs text-blue-600 hover:underline">
-                        + Add Default Storage
+                        className="inline-flex items-center gap-1 text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors">
+                        <Plus className="h-3 w-3" />
+                        Add Default Storage
                       </button>
                     </div>
 
@@ -3534,8 +3540,9 @@ function NewProductPage() {
                                     onClick={() =>
                                       addStorageToRegion(region.id, color.id)
                                     }
-                                    className="text-xs text-blue-600 hover:underline">
-                                    + Add Storage
+                                    className="inline-flex items-center gap-1 text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors">
+                                    <Plus className="h-3 w-3" />
+                                    Add Storage
                                   </button>
                                 </>
                               )}
@@ -3547,8 +3554,9 @@ function NewProductPage() {
                       <button
                         type="button"
                         onClick={() => addColorToRegion(region.id)}
-                        className="text-sm text-blue-600 hover:underline">
-                        + Add Color
+                        className="inline-flex items-center gap-1 text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors">
+                        <Plus className="h-4 w-4" />
+                        Add Color
                       </button>
                     </div>
                   </div>
@@ -3557,20 +3565,21 @@ function NewProductPage() {
                 <button
                   type="button"
                   onClick={addRegion}
-                  className="rounded bg-blue-100 px-4 py-2 text-blue-600 hover:bg-blue-200">
-                  + Add Region
+                  className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm">
+                  <Plus className="h-4 w-4" />
+                  Add Region
                 </button>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 pt-6 border-t">
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50">
+              className="bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-50 px-8 py-6 text-base font-medium shadow-lg hover:shadow-xl transition-all">
               {isSubmitting
-                ? 'Creating...'
+                ? 'Creating Product...'
                 : `Create ${
                     productType === 'basic'
                       ? 'Basic'
@@ -3583,7 +3592,7 @@ function NewProductPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="text-gray-600 hover:bg-gray-100">
+                className="text-gray-700 hover:bg-gray-50 border-2 px-8 py-6 text-base font-medium transition-all">
                 Cancel
               </Button>
             </Link>
