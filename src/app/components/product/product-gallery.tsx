@@ -63,7 +63,7 @@ export function ProductGallery({ images, name, isEmi, isCare, selectedColorImage
           onClick={() => setIsLightboxOpen(true)}
         >
           <Image
-            src={displayImages[selectedIndex] || "/placeholder.svg"}
+            src={mainImageUrl}
             alt={`${name} - Image ${selectedIndex + 1}`}
             fill
             priority
