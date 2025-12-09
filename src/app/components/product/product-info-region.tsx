@@ -38,6 +38,7 @@ type Network = {
 
 type ProductInfoRegionProps = {
   product: Product & {rawProduct?: {regions?: Region[]; networks?: Network[]; [key: string]: any}; productType?: string};
+  onColorChange?: (colorImage: string | null) => void;
 };
 
 export function ProductInfoRegion({product}: ProductInfoRegionProps) {
