@@ -414,7 +414,7 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
           </label>
           <div className="flex flex-wrap gap-2">
             {storages.map((storage: any) => {
-              const storageSize = storage.size || (storage as any).storageSize || 'Storage';
+              const storageSize = storage.size || storage.storageSize;
               return (
               <button
                 key={storage.id}
