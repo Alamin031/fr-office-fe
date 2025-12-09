@@ -341,7 +341,10 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
             <p className="text-sm text-muted-foreground mt-1">{selectedColor?.name || 'Select a color'}</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            {colors.map((color: {id: string; name: string; image?: string}) => (
+            {colors.map((color: any) => {
+              const colorName = color.name || (color as any).colorName || 'Color';
+              const colorImage = color.image || (color as any).colorImage;
+              return (
               <button
                 key={color.id}
                 onClick={() => setSelectedColorId(color.id)}
@@ -350,11 +353,11 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
                   selectedColorId === color.id ? "ring-2 ring-foreground ring-offset-2" : "hover:ring-1 hover:ring-muted-foreground",
                 )}
               >
-                {color.image ? (
+                {colorImage ? (
                   <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-muted border border-border">
                     <Image
-                      src={color.image}
-                      alt={color.name}
+                      src={colorImage}
+                      alt={colorName}
                       fill
                       className="object-cover"
                     />
@@ -362,9 +365,10 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
                 ) : (
                   <div className="h-16 w-16 rounded-lg bg-muted border border-border" />
                 )}
-                <span className="text-xs font-medium text-center max-w-[70px]">{color.name}</span>
+                <span className="text-xs font-medium text-center max-w-[70px]">{colorName}</span>
               </button>
-            ))}
+            );
+            })}
           </div>
         </div>
       )}
