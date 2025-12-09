@@ -64,91 +64,24 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
     })
   );
 
-  // Fetch all brands
-  let brands: Brand[] = [];
-  try {
-    brands = await brandsService.findAll();
-  } catch {
-    brands = [];
-  }
-
-  // Extract search params
-  const selectedCategories = Array.isArray(params.categories)
-    ? params.categories
-    : params.categories
-    ? [params.categories]
-    : [];
-
-  const selectedBrands = Array.isArray(params.brands)
-    ? params.brands
-    : params.brands
-    ? [params.brands]
-    : [];
-
-  // Fetch all products first
-  let allProducts: Product[] = [];
+  // Fetch all products
+  let products: Product[] = [];
   try {
     const allRes = await productsService.getAll({}, 1, 1000);
     if (allRes && typeof allRes === "object") {
       if (Array.isArray((allRes as { data?: unknown[] }).data)) {
-        allProducts = (allRes as { data?: unknown[] }).data as Product[];
+        products = (allRes as { data?: unknown[] }).data as Product[];
       } else if (Array.isArray((allRes as { items?: unknown[] }).items)) {
-        allProducts = (allRes as { items?: unknown[] }).items as Product[];
+        products = (allRes as { items?: unknown[] }).items as Product[];
       } else if (Array.isArray(allRes)) {
-        allProducts = allRes as Product[];
+        products = allRes as Product[];
       }
     } else if (Array.isArray(allRes)) {
-      allProducts = allRes as Product[];
+      products = allRes as Product[];
     }
   } catch (error) {
     console.error("Failed to fetch all products:", error);
   }
-
-  // Filter products based on selected categories and brands
-  let products: Product[] = allProducts;
-
-  if (selectedCategories.length > 0) {
-    const categorySlug = selectedCategories[0];
-    const category = categories.find(c => c.slug === categorySlug);
-    if (category) {
-      products = products.filter((p: any) => {
-        // Check if product has this category in categoryIds array
-        if (Array.isArray(p.categoryIds)) {
-          return p.categoryIds.includes(category.id);
-        }
-        // Fallback to single categoryId
-        return p.categoryId === category.id;
-      });
-    }
-  }
-
-  if (selectedBrands.length > 0) {
-    const brandSlug = selectedBrands[0];
-    const brand = brands.find(b => b.slug === brandSlug);
-    if (brand) {
-      products = products.filter((p: any) => {
-        // Check if product has this brand in brandIds array
-        if (Array.isArray(p.brandIds)) {
-          return p.brandIds.includes(brand.id);
-        }
-        // Fallback to single brandId
-        return p.brandId === brand.id;
-      });
-    }
-  }
-
-  // Calculate product count for each category
-  categories.forEach(cat => {
-    const categoryProducts = allProducts.filter((p: any) => {
-      // Check if product has this category in categoryIds array
-      if (Array.isArray(p.categoryIds)) {
-        return p.categoryIds.includes(cat.id);
-      }
-      // Fallback to single categoryId
-      return p.categoryId === cat.id;
-    });
-    cat.productCount = categoryProducts.length;
-  });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
