@@ -221,7 +221,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
     };
   }, [selectedColor, selectedStorage]);
 
-  const selectedPrice = selectedPriceType === 'regular' ? priceData.regularPrice : priceData.discountPrice
+  const selectedPrice = selectedPriceType === 'regular' ? priceData.regularPrice : (priceData.discountPrice > 0 ? priceData.discountPrice : priceData.regularPrice)
   const carePlusPrice = carePlusSelected ? Math.round(selectedPrice * 0.08) : 0
   const isOutOfStock = !priceData.inStock
 
