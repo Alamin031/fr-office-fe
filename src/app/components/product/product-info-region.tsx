@@ -25,22 +25,23 @@ import Image from "next/image"
 type Region = {
   id: string;
   name: string;
-  colors?: Array<{id: string; name: string; image?: string}>;
-  defaultStorages?: Array<{id: string; size: string; price: any; stock?: number}>;
+  colors?: Array<{id: string; name?: string; colorName?: string; image?: string; colorImage?: string; regularPrice?: number; discountPrice?: number; stockQuantity?: number}>;
+  defaultStorages?: Array<{id: string; size: string; storageSize?: string; price: any; stock?: number}>;
 };
 
 type Network = {
   id: string;
   networkType: string;
-  colors?: Array<{id: string; colorName: string; colorImage?: string}>;
+  colors?: Array<{id: string; colorName: string; colorImage?: string; regularPrice?: number; discountPrice?: number; stockQuantity?: number}>;
   defaultStorages?: Array<{id: string; storageSize: string; price: any; stock?: number}>;
 };
 
 type ProductInfoRegionProps = {
   product: Product & {rawProduct?: {regions?: Region[]; networks?: Network[]; [key: string]: any}; productType?: string};
+  onColorChange?: (colorImage: string | null) => void;
 };
 
-export function ProductInfoRegion({product}: ProductInfoRegionProps) {
+export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionProps) {
   const router = useRouter()
   const rawProduct = product.rawProduct
   // const productType = product.productType || 'basic' // unused
@@ -112,6 +113,7 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
 
   // Region/Network-based logic
   const isNetworkProduct = rawProduct?.productType === 'network';
+  const isBasicProduct = rawProduct?.productType === 'basic';
 
   // Get the network to access its colors and storages directly
   const networks = isNetworkProduct ? (rawProduct?.networks || []) : [];
@@ -141,21 +143,21 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
 
   // Price and stock calculation
   const priceData = useMemo(() => {
-    if (!selectedStorage?.price) {
-      return {
-        regularPrice: 0,
-        discountPrice: 0,
-        hasDiscount: false,
-        discount: 0,
-        stock: 0,
-        inStock: false,
-      }
-    }
+    // For basic products, get price from selected color
+    let regular = 0
+    let discount = 0
+    let stock = 0
 
-    const price = selectedStorage.price
-    const regular = Number(price.regular || price.regularPrice) || 0
-    const discount = Number(price.discount || price.discountPrice || price.final) || 0
-    const stock = Number(price.stockQuantity || selectedStorage.stock) || 0
+    if (selectedColor?.regularPrice !== undefined) {
+      regular = Number(selectedColor.regularPrice) || 0
+      discount = Number(selectedColor.discountPrice) || 0
+      stock = Number(selectedColor.stockQuantity) || 0
+    } else if (selectedStorage?.price) {
+      const price = selectedStorage.price
+      regular = Number(price.regular || price.regularPrice) || 0
+      discount = Number(price.discount || price.discountPrice || price.final) || 0
+      stock = Number(price.stockQuantity || selectedStorage.stock) || 0
+    }
 
     const hasDiscount = regular > 0 && discount > 0 && discount < regular
     const discountPercent = hasDiscount ? Math.round(((regular - discount) / regular) * 100) : 0
@@ -168,7 +170,7 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
       stock,
       inStock: stock > 0,
     }
-  }, [selectedStorage])
+  }, [selectedColor, selectedStorage])
 
   const selectedPrice = selectedPriceType === 'regular' ? priceData.regularPrice : priceData.discountPrice
   const carePlusPrice = carePlusSelected ? Math.round(selectedPrice * 0.08) : 0
@@ -342,7 +344,12 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
               return (
                 <button
                   key={color?.id}
-                  onClick={() => setSelectedColorId(color?.id)}
+                  onClick={() => {
+                    setSelectedColorId(color?.id)
+                    if (onColorChange && colorImage) {
+                      onColorChange(colorImage)
+                    }
+                  }}
                   className={cn(
                     "flex flex-col items-center gap-2 rounded-xl p-2 transition-all duration-200",
                     selectedColorId === color?.id ? "ring-2 ring-foreground ring-offset-2" : "hover:ring-1 hover:ring-muted-foreground",
@@ -369,14 +376,14 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
       )}
 
       {/* Region/Network Selection */}
-      {regions.length > 1 && (
+      {regions.length > 0 && !isBasicProduct && (
         <div className="space-y-4">
           <label className="text-sm font-semibold uppercase tracking-wider text-foreground" suppressHydrationWarning>
             {isNetworkProduct ? 'Network' : 'Variant'}
           </label>
           <div className="flex flex-wrap gap-2">
             {regions.map((region: any) => {
-              const regionName = (region.name || region.networkType || '').toString().trim();
+              const regionName = (region.networkType || region.name || '').toString().trim();
               return (
               <button
                 key={region.id}
@@ -401,7 +408,7 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
       )}
 
       {/* Storage Selection */}
-      {storages.length > 0 && (
+      {storages.length > 0 && !isBasicProduct && (
         <div className="space-y-4">
           <label className="text-sm font-semibold uppercase tracking-wider text-foreground">
             Storage
@@ -610,16 +617,18 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
       />
 
       {/* Additional Actions */}
-      <div className="flex gap-3 pt-4">
-        <Button
-          variant="outline"
-          size="lg"
-          className="flex-1 gap-2"
-          onClick={() => setNotifyDialogOpen(true)}
-        >
-          <AlertCircle className="h-4 w-4" />
-          Notify Me
-        </Button>
+      <div className="flex gap-3 pt-4" suppressHydrationWarning>
+        {isOutOfStock && (
+          <Button
+            variant="outline"
+            size="lg"
+            className="flex-1 gap-2"
+            onClick={() => setNotifyDialogOpen(true)}
+          >
+            <AlertCircle className="h-4 w-4" />
+            Notify Me
+          </Button>
+        )}
         <Button
           variant="outline"
           size="lg"

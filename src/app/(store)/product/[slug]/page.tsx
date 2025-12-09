@@ -2,8 +2,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type {Metadata} from 'next';
 import {productsService} from '../../../lib/api/services/products';
-import {ProductGallery} from '../../../components/product/product-gallery';
-import {ProductInfoRegion} from '../../../components/product/product-info-region';
+import {ProductDetailClient} from '../../../components/product/product-detail-client';
 import {ProductTabs} from '../../../components/product/product-tabs';
 import {ProductSection} from '../../../components/home/product-section';
 import type {Product} from '../../../types';
@@ -205,19 +204,7 @@ export default async function ProductPage({params}: ProductPageProps) {
         </nav>
 
         {/* Product Details Grid */}
-        <div className="grid gap-8 lg:gap-12 lg:grid-cols-2 mb-12">
-          <div className="flex justify-center">
-            <ProductGallery
-              images={product.images ?? []}
-              name={product.name ?? ''}
-              isEmi={!!apiProductAny.isEmi}
-              isCare={!!apiProductAny.isCare}
-            />
-          </div>
-          <div className="flex items-start">
-            <ProductInfoRegion product={product} />
-          </div>
-        </div>
+        <ProductDetailClient product={product} />
 
         {/* Divider */}
         <div className="border-t border-border/40 my-12" />
