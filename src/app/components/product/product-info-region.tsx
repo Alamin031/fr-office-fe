@@ -66,11 +66,6 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
   const {addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist} = useWishlistStore()
   const {addItem: addToCompare, isInCompare} = useCompareStore()
 
-  // Set hydration flag to prevent hydration mismatch
-  useEffect(() => {
-    setIsHydrated(true)
-  }, [])
-
   // Fetch care plans if isCare is true
   useEffect(() => {
     const fetchCarePlans = async () => {
