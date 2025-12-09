@@ -13,15 +13,19 @@ interface ProductGalleryProps {
   name: string
   isEmi?: boolean
   isCare?: boolean
+  selectedColorImage?: string | null
 }
 
-export function ProductGallery({ images, name, isEmi, isCare }: ProductGalleryProps) {
+export function ProductGallery({ images, name, isEmi, isCare, selectedColorImage }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 })
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
   const displayImages = images.length > 0 ? images : ["/placeholder.svg?height=600&width=600"]
+
+  // Use color image as the main image if available, otherwise use the first image
+  const mainImageUrl = selectedColorImage || displayImages[selectedIndex] || "/placeholder.svg"
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isZoomed) return
