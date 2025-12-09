@@ -36,6 +36,18 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
   // Await searchParams
   const params = await searchParams;
 
+  // Extract filter parameters from URL
+  const selectedCategories = params.categories
+    ? Array.isArray(params.categories)
+      ? params.categories
+      : [params.categories]
+    : [];
+  const selectedBrands = params.brands
+    ? Array.isArray(params.brands)
+      ? params.brands
+      : [params.brands]
+    : [];
+
   // Fetch all categories
   const categoriesRaw = await categoriesService.getAll();
   const categories: Category[] = (categoriesRaw as unknown as RawCategory[]).map(
@@ -65,6 +77,14 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
       updatedAt: c.updatedAt ?? "",
     })
   );
+
+  // Fetch all brands
+  let brands: Brand[] = [];
+  try {
+    brands = await brandsService.findAll();
+  } catch (error) {
+    console.error("Failed to fetch brands:", error);
+  }
 
   // Fetch all products
   let products: Product[] = [];
