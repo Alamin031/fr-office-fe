@@ -228,10 +228,6 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
 
   // Initialize selections
   useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
     if (!selectedRegionId && regions.length > 0) {
       setSelectedRegionId(regions[0].id);
     }
