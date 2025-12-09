@@ -597,7 +597,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
               )}
             >
               <div className="text-xs text-muted-foreground font-medium mb-2">Offer Price</div>
-              <div className="text-xl font-bold text-emerald-600">{formatPrice(priceData.discountPrice)}</div>
+              <div className="text-xl font-bold text-emerald-600">{formatPrice(priceData.hasDiscount ? priceData.discountPrice : priceData.regularPrice)}</div>
             </button>
 
             <button
