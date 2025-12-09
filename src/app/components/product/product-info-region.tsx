@@ -28,8 +28,16 @@ type Region = {
   colors?: Array<{id: string; name: string; image?: string}>;
   defaultStorages?: Array<{id: string; size: string; price: any; stock?: number}>;
 };
+
+type Network = {
+  id: string;
+  networkType: string;
+  colors?: Array<{id: string; colorName: string; colorImage?: string}>;
+  defaultStorages?: Array<{id: string; storageSize: string; price: any; stock?: number}>;
+};
+
 type ProductInfoRegionProps = {
-  product: Product & {rawProduct?: {regions?: Region[]; [key: string]: any}; productType?: string};
+  product: Product & {rawProduct?: {regions?: Region[]; networks?: Network[]; [key: string]: any}; productType?: string};
 };
 
 export function ProductInfoRegion({product}: ProductInfoRegionProps) {
@@ -102,8 +110,21 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
   const inWishlist = isInWishlist(product.id)
   const inCompare = isInCompare(product.id)
 
-  // Region-based logic
-  const regions: Region[] = rawProduct?.regions || [];
+  // Region/Network-based logic
+  const isNetworkProduct = rawProduct?.productType === 'network';
+
+  // Get the network to access its colors and storages directly
+  const networks = isNetworkProduct ? (rawProduct?.networks || []) : [];
+
+  const regions: Region[] = isNetworkProduct
+    ? networks.map((n: Network) => ({
+        id: n.id,
+        name: n.networkType,
+        colors: n.colors || [],
+        defaultStorages: n.defaultStorages || [],
+      }))
+    : (rawProduct?.regions || []);
+
   const selectedRegion = selectedRegionId
     ? regions.find((r: Region) => r.id === selectedRegionId)
     : regions[0];
@@ -134,7 +155,7 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
     const price = selectedStorage.price
     const regular = Number(price.regular || price.regularPrice) || 0
     const discount = Number(price.discount || price.discountPrice || price.final) || 0
-    const stock = Number(selectedStorage.stock) || 0
+    const stock = Number(price.stockQuantity || selectedStorage.stock) || 0
 
     const hasDiscount = regular > 0 && discount > 0 && discount < regular
     const discountPercent = hasDiscount ? Math.round(((regular - discount) / regular) * 100) : 0
@@ -218,9 +239,10 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
           )}
           <h1 className="text-4xl font-bold tracking-tight mt-2 leading-tight">{product.name}</h1>
           {rawProduct?.shortDescription && (
-            <div 
-              className="mt-3 text-sm text-muted-foreground leading-relaxed"
+            <div
+              className="mt-4 text-sm text-foreground leading-relaxed space-y-2 [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mt-1"
               dangerouslySetInnerHTML={{__html: rawProduct.shortDescription}}
+              suppressHydrationWarning
             />
           )}
         </div>
@@ -305,51 +327,57 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
       <Separator className="my-2" />
 
       {/* Color Selection */}
-      {colors.length > 0 && (
+      {selectedRegion && selectedRegion.colors && selectedRegion.colors.length > 0 && (
         <div className="space-y-4">
           <div>
             <label className="text-sm font-semibold uppercase tracking-wider text-foreground">
               Color
             </label>
-            <p className="text-sm text-muted-foreground mt-1">{selectedColor?.name || 'Select a color'}</p>
+            <p className="text-sm text-muted-foreground mt-1">{selectedColor?.name || selectedColor?.colorName || 'Select a color'}</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            {colors.map((color: {id: string; name: string; image?: string}) => (
-              <button
-                key={color.id}
-                onClick={() => setSelectedColorId(color.id)}
-                className={cn(
-                  "flex flex-col items-center gap-2 rounded-xl p-2 transition-all duration-200",
-                  selectedColorId === color.id ? "ring-2 ring-foreground ring-offset-2" : "hover:ring-1 hover:ring-muted-foreground",
-                )}
-              >
-                {color.image ? (
-                  <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-muted border border-border">
-                    <Image
-                      src={color.image}
-                      alt={color.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-16 w-16 rounded-lg bg-muted border border-border" />
-                )}
-                <span className="text-xs font-medium text-center max-w-[70px]">{color.name}</span>
-              </button>
-            ))}
+            {selectedRegion.colors.map((color: any) => {
+              const colorName = color?.name || color?.colorName;
+              const colorImage = color?.image || color?.colorImage;
+              return (
+                <button
+                  key={color?.id}
+                  onClick={() => setSelectedColorId(color?.id)}
+                  className={cn(
+                    "flex flex-col items-center gap-2 rounded-xl p-2 transition-all duration-200",
+                    selectedColorId === color?.id ? "ring-2 ring-foreground ring-offset-2" : "hover:ring-1 hover:ring-muted-foreground",
+                  )}
+                >
+                  {colorImage ? (
+                    <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-muted border border-border">
+                      <Image
+                        src={colorImage}
+                        alt={colorName || 'Color'}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-16 w-16 rounded-lg bg-muted border border-border" />
+                  )}
+                  <span className="text-xs font-medium text-center max-w-[70px]">{colorName}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* Region Selection */}
+      {/* Region/Network Selection */}
       {regions.length > 1 && (
         <div className="space-y-4">
-          <label className="text-sm font-semibold uppercase tracking-wider text-foreground">
-            Variant
+          <label className="text-sm font-semibold uppercase tracking-wider text-foreground" suppressHydrationWarning>
+            {isNetworkProduct ? 'Network' : 'Variant'}
           </label>
           <div className="flex flex-wrap gap-2">
-            {regions.map((region: Region) => (
+            {regions.map((region: any) => {
+              const regionName = (region.name || region.networkType || '').toString().trim();
+              return (
               <button
                 key={region.id}
                 onClick={() => {
@@ -364,9 +392,10 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
                     : "border-border hover:border-foreground/30 hover:bg-muted/50",
                 )}
               >
-                {region.name}
+                {regionName || 'Option'}
               </button>
-            ))}
+            );
+            })}
           </div>
         </div>
       )}
@@ -378,7 +407,9 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
             Storage
           </label>
           <div className="flex flex-wrap gap-2">
-            {storages.map((storage: {id: string; size: string; price: any; stock?: number}) => (
+            {storages.map((storage: any) => {
+              const storageSize = storage.size || storage.storageSize;
+              return (
               <button
                 key={storage.id}
                 onClick={() => setSelectedStorageId(storage.id)}
@@ -389,9 +420,10 @@ export function ProductInfoRegion({product}: ProductInfoRegionProps) {
                     : "border-border hover:border-foreground/30 hover:bg-muted/50",
                 )}
               >
-                {storage.size}
+                {storageSize}
               </button>
-            ))}
+            );
+            })}
           </div>
         </div>
       )}
