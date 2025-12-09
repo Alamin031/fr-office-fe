@@ -137,7 +137,6 @@ export default async function Page({ params }: CategoryPageProps) {
     products = [];
   }
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
