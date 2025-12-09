@@ -99,18 +99,20 @@ export default async function Page() {
 
         {/* Dynamic Homecategory Sections (first 2) using ProductSectionLazy */}
         {sortedHomecategories.slice(0, 2).map((hc) => (
-          <LazySection key={hc.id}>
-            <ProductSectionLazy
-              title={hc.name}
-              subtitle={hc.description}
-              productIds={hc.productIds}
-              viewAllLink={
-                hc.productIds && hc.productIds.length > 0
-                  ? `/products?homecategory=${hc.id}`
-                  : undefined
-              }
-            />
-          </LazySection>
+          <section key={hc.id} className="mx-auto w-full max-w-7xl px-4 py-8">
+            <LazySection>
+              <ProductSectionLazy
+                title={hc.name}
+                subtitle={hc.description}
+                productIds={hc.productIds}
+                viewAllLink={
+                  hc.productIds && hc.productIds.length > 0
+                    ? `/products?homecategory=${hc.id}`
+                    : undefined
+                }
+              />
+            </LazySection>
+          </section>
         ))}
 
         {/* Middle Banner after first 2 homecategory sections */}
@@ -120,18 +122,20 @@ export default async function Page() {
 
         {/* Dynamic Homecategory Sections (remaining) using LazySection and ProductSectionLazy */}
         {sortedHomecategories.slice(2).map((hc) => (
-          <LazySection key={hc.id}>
-            <ProductSectionLazy
-              title={hc.name}
-              subtitle={hc.description}
-              productIds={hc.productIds}
-              viewAllLink={
-                hc.productIds && hc.productIds.length > 0
-                  ? `/products?homecategory=${hc.id}`
-                  : undefined
-              }
-            />
-          </LazySection>
+          <section key={hc.id} className="mx-auto w-full max-w-7xl px-4 py-8">
+            <LazySection>
+              <ProductSectionLazy
+                title={hc.name}
+                subtitle={hc.description}
+                productIds={hc.productIds}
+                viewAllLink={
+                  hc.productIds && hc.productIds.length > 0
+                    ? `/products?homecategory=${hc.id}`
+                    : undefined
+                }
+              />
+            </LazySection>
+          </section>
         ))}
 
         {/* Bottom Hero Banner before CTA Section */}
