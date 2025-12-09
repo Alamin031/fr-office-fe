@@ -133,17 +133,17 @@ export default async function Page() {
           </section>
         ))}
 
+        {/* Bottom Hero Banner before CTA Section */}
+        <section className="mx-auto w-full max-w-7xl px-4 py-6">
+          <BottomBanner />
+        </section>
+
         {/* Show Brands section only if brands exist */}
         {brands.length > 0 && (
           <section className="mx-auto w-full max-w-7xl px-4 py-12">
             <BrandSlider brands={brands} />
           </section>
         )}
-
-        {/* Bottom Hero Banner before CTA Section */}
-        <section className="mx-auto w-full max-w-7xl px-4 py-6">
-          <BottomBanner />
-        </section>
 
         {/* Newsletter / CTA Section */}
         <section className="bg-muted">
