@@ -8,7 +8,7 @@ import { CategoryFAQ } from "@/app/components/category/category-faq";
 import type { Category, Product } from "@/app/types/index";
 
 interface CategoryPageProps {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
@@ -30,7 +30,7 @@ type RawCategory = {
 export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug } = params;
   const categoriesRaw = await categoriesService.getAll();
   const categories: Category[] = (
     categoriesRaw as unknown as RawCategory[]
@@ -73,7 +73,7 @@ export async function generateMetadata({
 }
 
 export default async function Page({ params }: CategoryPageProps) {
-  const { slug } = await params;
+  const { slug } = params;
   const categoriesRaw = await categoriesService.getAll();
   const categories: Category[] = (
     categoriesRaw as unknown as RawCategory[]
@@ -109,19 +109,11 @@ export default async function Page({ params }: CategoryPageProps) {
   // Fetch products for this category using the dedicated category endpoint
   let products: Product[] = [];
   try {
-    const res = await categoriesService.getProducts(slug, {}, 1, 100);
-    // The response should contain a data array with products
-    if (
-      res &&
-      typeof res === "object" &&
-      Array.isArray((res as { data?: unknown[] }).data)
-    ) {
-      products = (res as { data?: unknown[] }).data as Product[];
-    } else if (Array.isArray(res)) {
-      products = res as Product[];
-    } else {
-      products = [];
-    }
+    // Call endpoint /api/categories/[slug]/products
+    const res = await categoriesService.getProductsBySlug(slug);
+    products = Array.isArray(res)
+      ? res.map((p) => ({ ...p, images: p.images ?? [] }))
+      : [];
   } catch (error) {
     console.error(`Failed to fetch products for category ${slug}:`, error);
     products = [];

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Helper to normalize API category objects to the app's Category type
 interface ApiCategory {
   id?: string | number;
@@ -50,6 +51,20 @@ type UpdateCategoryWithFile = Omit<UpdateCategoryRequest, 'banner'> & {
 };
 
 export const categoriesService = {
+    /**
+     * Get products in category by slug (no pagination/filter)
+     */
+    getProductsBySlug: async (slug: string): Promise<any[]> => {
+      const endpoint = API_ENDPOINTS.CATEGORIES_PRODUCTS.replace('{slug}', slug);
+      const response = await apiClient.get(endpoint);
+      // If response.data is an array, return it; if it's an object with data, return data
+      if (Array.isArray(response.data)) {
+        return response.data;
+      } else if (response.data && Array.isArray(response.data.data)) {
+        return response.data.data;
+      }
+      return [];
+    },
   /**
    * ✅ Create Category (Admin only) — Brand style
    */
