@@ -111,9 +111,13 @@ export default async function Page({ params }: CategoryPageProps) {
   try {
     // Call endpoint /api/categories/[slug]/products
     const res = await categoriesService.getProductsBySlug(slug);
+    console.log(`[Category ${slug}] Raw response:`, res);
+    console.log(`[Category ${slug}] Is array:`, Array.isArray(res));
+    console.log(`[Category ${slug}] Response type:`, typeof res);
     products = Array.isArray(res)
       ? res.map((p) => ({ ...p, images: p.images ?? [] }))
       : [];
+    console.log(`[Category ${slug}] Mapped products:`, products.length);
   } catch (error) {
     console.error(`Failed to fetch products for category ${slug}:`, error);
     products = [];
