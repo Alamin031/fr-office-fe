@@ -107,18 +107,30 @@ export default async function Page({ params }: CategoryPageProps) {
   if (!category) {
     notFound();
   }
-  // Fetch products for this category using the dedicated category endpoint
+  // Fetch all products with full details
   let products: Product[] = [];
   try {
-    // Call endpoint /api/categories/[slug]/products
-    const res = await categoriesService.getProductsBySlug(slug);
-    console.log(`[Category ${slug}] Raw response:`, res);
-    console.log(`[Category ${slug}] Is array:`, Array.isArray(res));
-    console.log(`[Category ${slug}] Response type:`, typeof res);
-    products = Array.isArray(res)
-      ? res.map((p) => ({ ...p, images: p.images ?? [] }))
-      : [];
-    console.log(`[Category ${slug}] Mapped products:`, products.length);
+    const allRes = await productsService.getAll({}, 1, 1000);
+    let allProducts: Product[] = [];
+    if (allRes && typeof allRes === "object") {
+      if (Array.isArray((allRes as { data?: unknown[] }).data)) {
+        allProducts = (allRes as { data?: unknown[] }).data as Product[];
+      } else if (Array.isArray((allRes as { items?: unknown[] }).items)) {
+        allProducts = (allRes as { items?: unknown[] }).items as Product[];
+      } else if (Array.isArray(allRes)) {
+        allProducts = allRes as Product[];
+      }
+    } else if (Array.isArray(allRes)) {
+      allProducts = allRes as Product[];
+    }
+
+    // Filter products for this category
+    products = allProducts.filter((p: any) => {
+      if (Array.isArray(p.categoryIds)) {
+        return p.categoryIds.includes(category.id);
+      }
+      return p.categoryId === category.id;
+    });
   } catch (error) {
     console.error(`Failed to fetch products for category ${slug}:`, error);
     products = [];
