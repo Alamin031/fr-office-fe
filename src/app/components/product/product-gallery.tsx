@@ -47,16 +47,26 @@ export function ProductGallery({ images, name, isEmi, isCare, selectedColorImage
 
   const nextImage = (e?: React.MouseEvent) => {
     e?.stopPropagation()
-    setSelectedIndex((prev) => (prev + 1) % displayImages.length)
+    const nextIdx = (selectedIndex + 1) % displayImages.length
+    setSelectedIndex(nextIdx)
+    setManuallySelectedIndex(nextIdx)
   }
 
   const prevImage = (e?: React.MouseEvent) => {
     e?.stopPropagation()
-    setSelectedIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length)
+    const prevIdx = (selectedIndex - 1 + displayImages.length) % displayImages.length
+    setSelectedIndex(prevIdx)
+    setManuallySelectedIndex(prevIdx)
+  }
+
+  const handleThumbnailClick = (index: number) => {
+    setSelectedIndex(index)
+    setManuallySelectedIndex(index)
   }
 
   const handleLightboxImageChange = (index: number) => {
     setSelectedIndex(index)
+    setManuallySelectedIndex(index)
   }
 
   return (
