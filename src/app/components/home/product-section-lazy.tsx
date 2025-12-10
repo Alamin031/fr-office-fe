@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useSWRCache } from "@/app/hooks/use-swr-cache"
