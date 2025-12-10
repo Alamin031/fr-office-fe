@@ -19,6 +19,7 @@ import {Button} from '../ui/button';
 import {Badge} from '../ui/badge';
 import {Separator} from '../ui/separator';
 import {useCartStore} from '@/app/store/cart-store';
+import {useAuthStore} from '@/app/store/auth-store';
 import {useWishlistStore} from '@/app/store/wishlist-store';
 import {useCompareStore} from '@/app/store/compare-store';
 import {formatPrice} from '@/app/lib/utils/format';
