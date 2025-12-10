@@ -49,15 +49,13 @@ import {
 } from '../../components/ui/dropdown-menu';
 import {Textarea} from '../../components/ui/textarea';
 import {toast} from 'sonner';
-import {
-  homecategoriesService,
-  type Homecategory,
-} from '../../lib/api/services/homecategories';
+
 import {useEffect, useState} from 'react';
 import {categoriesService} from '../../lib/api/services/categories';
 import {productsService} from '../../lib/api/services/products';
 import type {Category, Product} from '../../lib/api/types';
-import { withProtectedRoute } from '../../lib/auth/protected-route';
+import {withProtectedRoute} from '../../lib/auth/protected-route';
+import homecategoriesService from '@/app/lib/api/services/homecategories';
 
 // Custom MultiSelect Component
 interface MultiSelectProps {
@@ -189,6 +187,16 @@ function MultiSelect({
 }
 
 function HomeshowCategoryPage() {
+  // Define Homecategory type based on usage in this file
+  interface Homecategory {
+    id: string;
+    name: string;
+    description?: string;
+    priority?: number;
+    categoryIds?: string[];
+    productIds?: string[];
+  }
+
   const [categories, setCategories] = useState<Homecategory[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<Homecategory[]>(
     [],
@@ -239,8 +247,7 @@ function HomeshowCategoryPage() {
           productsArr = prodsRes.data as Product[];
         }
         setAllProducts(productsArr);
-      } catch (e) {
-      }
+      } catch (e) {}
     };
     fetchDropdownData();
   }, []);
@@ -628,7 +635,7 @@ function HomeshowCategoryPage() {
 }
 
 export default withProtectedRoute(HomeshowCategoryPage, {
-  requiredRoles: ["admin"],
-  fallbackTo: "/login",
+  requiredRoles: ['admin'],
+  fallbackTo: '/login',
   showLoader: true,
 });
