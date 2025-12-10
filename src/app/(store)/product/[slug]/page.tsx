@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type {Metadata} from 'next';
-import {productsService} from '../../../lib/api/services/products';
+import {productsService, faqsService} from '../../../lib/api/services';
 import {ProductDetailClient} from '../../../components/product/product-detail-client';
 import {ProductTabs} from '../../../components/product/product-tabs';
 import {ProductSection} from '../../../components/home/product-section';
 import type {Product} from '../../../types';
+import type {FAQ} from '../../../lib/api/types';
 import {notFound} from 'next/navigation';
 
 interface ProductPageProps {
@@ -56,6 +57,16 @@ export default async function ProductPage({params}: ProductPageProps) {
 
   if (!apiProduct || !apiProduct.slug || !apiProduct.name) {
     notFound();
+  }
+
+  // Fetch FAQs using product ID
+  let productFaqs: FAQ[] = [];
+  try {
+    if (apiProduct.id) {
+      productFaqs = await faqsService.getByProduct(apiProduct.id);
+    }
+  } catch {
+    productFaqs = [];
   }
 
   const parseJSON = (val: any, fallback: any) => {
@@ -252,12 +263,14 @@ export default async function ProductPage({params}: ProductPageProps) {
         {/* Product Details Grid */}
         <ProductDetailClient product={product} />
 
+
+
         {/* Divider */}
         <div className="border-t border-border/40 my-12" />
 
         {/* Product Tabs */}
         <div className="py-8">
-          <ProductTabs product={product} />
+          <ProductTabs product={product} faqs={productFaqs} />
         </div>
 
         {/* Related Products */}

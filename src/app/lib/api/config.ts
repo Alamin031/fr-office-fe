@@ -134,7 +134,7 @@ export const API_ENDPOINTS = {
   FAQS_GET: '/faqs',
   FAQS_GET_ONE: '/faqs/{id}',
   FAQS_GET_BY_CATEGORY: '/faqs/category',
-  FAQS_GET_BY_PRODUCT: '/faqs/product',
+  FAQS_GET_BY_PRODUCT: '/faqs/product/{productId}',
   FAQS_GET_PUBLISHED: '/faqs/published',
   FAQS_UPDATE: '/faqs/{id}',
   FAQS_DELETE: '/faqs/{id}',

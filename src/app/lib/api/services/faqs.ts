@@ -47,9 +47,8 @@ export const faqsService = {
    * Get FAQs by product
    */
   getByProduct: async (productId: string): Promise<FAQ[]> => {
-    const response = await apiClient.get<FAQ[]>(API_ENDPOINTS.FAQS_GET_BY_PRODUCT || "/faqs/product", {
-      params: { productId },
-    })
+    const endpoint = API_ENDPOINTS.FAQS_GET_BY_PRODUCT?.replace("{productId}", productId) || `/faqs/product/${productId}`;
+    const response = await apiClient.get<FAQ[]>(endpoint)
     return response.data
   },
 

@@ -7,24 +7,30 @@ import { cn } from "@/app/lib/utils"
 import type { Product } from "@/app/types"
 
 interface ProductTabsProps {
-  product: Product
+  product: Product;
+  faqs?: Array<{
+    id: string;
+    question: string;
+    answer: string;
+    productIds?: string[];
+    categoryIds?: string[];
+    orderIndex?: number;
+    createdAt?: string;
+  }>;
 }
 
 
 
-export function ProductTabs({ product }: ProductTabsProps) {
-  const [activeTab, setActiveTab] = useState("specifications")
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null)
-
-  // Use product.faqs if available, otherwise empty array
-  const faqs = Array.isArray((product as any).faqs) ? (product as any).faqs : [];
+export function ProductTabs({ product, faqs = [] }: ProductTabsProps) {
+  const [activeTab, setActiveTab] = useState("specifications");
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
   const tabs = [
     { id: "specifications", label: "Specifications" },
     { id: "description", label: "Description" },
     { id: "warranty", label: "Warranty & Support" },
     { id: "faq", label: "FAQ" },
-  ]
+  ];
 
   return (
     <div className="w-full">
@@ -104,9 +110,9 @@ export function ProductTabs({ product }: ProductTabsProps) {
 
         {activeTab === "faq" && faqs.length > 0 && (
           <div className="space-y-3 max-w-3xl">
-            {faqs.map((faq: any, index: number) => (
+            {faqs.map((faq, index) => (
               <div
-                key={index}
+                key={faq.id || index}
                 className="overflow-hidden rounded-2xl border border-border transition-all duration-200 hover:border-border/70 hover:shadow-sm"
               >
                 <button
@@ -140,5 +146,5 @@ export function ProductTabs({ product }: ProductTabsProps) {
         )}
       </div>
     </div>
-  )
+  );
 }
