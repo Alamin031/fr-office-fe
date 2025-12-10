@@ -60,10 +60,8 @@ type UIProduct = {
   name: string;
   image: string;
   sku: string;
-  category: string;
-  price: number;
-  stock: number;
-  status: string;
+  productCode?: string;
+  slug?: string;
   description?: string;
   type: 'basic' | 'network' | 'region';
 };
@@ -220,10 +218,8 @@ function AdminProductsPage() {
             name: p.name,
             image: imageUrl,
             sku: p.sku || '',
-            category: categoryObj ? categoryObj.name : 'Uncategorized',
-            price: priceNum,
-            stock: stockNum,
-            status: status,
+            productCode: p.productCode || '',
+            slug: p.slug || '',
             description: p.description || '',
             type,
           };
@@ -417,10 +413,8 @@ function AdminProductsPage() {
                   </th>
                   <th className="pb-3 pr-4">Product</th>
                   <th className="pb-3 pr-4">SKU</th>
-                  <th className="pb-3 pr-4">Category</th>
-                  <th className="pb-3 pr-4">Price</th>
-                  <th className="pb-3 pr-4">Stock</th>
-                  <th className="pb-3 pr-4">Status</th>
+                  <th className="pb-3 pr-4">Product Code</th>
+                  <th className="pb-3 pr-4">URL Slug</th>
                   <th className="pb-3">Actions</th>
                 </tr>
               </thead>
@@ -428,7 +422,7 @@ function AdminProductsPage() {
                 {loading ? (
                   <tr>
                     <td
-                      colSpan={8}
+                      colSpan={6}
                       className="py-8 text-center text-muted-foreground">
                       Loading products...
                     </td>
@@ -436,7 +430,7 @@ function AdminProductsPage() {
                 ) : filteredProducts.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={8}
+                      colSpan={6}
                       className="py-8 text-center text-muted-foreground">
                       No products found in this category.
                     </td>
@@ -464,25 +458,11 @@ function AdminProductsPage() {
                       <td className="py-4 pr-4 text-sm text-muted-foreground">
                         {product.sku}
                       </td>
-                      <td className="py-4 pr-4 text-sm">{product.category}</td>
-                      <td className="py-4 pr-4 font-medium">
-                        {formatPrice(product.price ?? 0)}
+                      <td className="py-4 pr-4 text-sm text-muted-foreground">
+                        {product.productCode || '-'}
                       </td>
-                      <td className="py-4 pr-4">{product.stock}</td>
-                      <td className="py-4 pr-4">
-                        <Badge
-                          variant="secondary"
-                          className={
-                            product.status === 'Active'
-                              ? 'bg-green-500/10 text-green-600'
-                              : product.status === 'Low Stock'
-                              ? 'bg-yellow-500/10 text-yellow-600'
-                              : product.status === 'Out of Stock'
-                              ? 'bg-red-500/10 text-red-600'
-                              : 'bg-gray-500/10 text-gray-600'
-                          }>
-                          {product.status}
-                        </Badge>
+                      <td className="py-4 pr-4 text-sm text-muted-foreground">
+                        {product.slug || '-'}
                       </td>
                       <td className="py-4">
                         <DropdownMenu>
