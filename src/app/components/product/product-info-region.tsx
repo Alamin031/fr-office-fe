@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
@@ -14,26 +15,24 @@ import {formatPrice} from "@/app/lib/utils/format"
 import {cn} from "@/app/lib/utils"
 import {CarePlusAddon} from "./care-plus-addon"
 import {NotifyProductDialog} from "./notify-product-dialog"
-// import {EmiTable} from "./emi-table" // Unused
 import {EmiOptionsModal} from "./emi-options-modal"
 import {CarePlansDisplay} from "./care-plans-display"
 import {careService, type ProductCarePlan} from "@/app/lib/api/services/care"
 import {emiService, type EmiPlan} from "@/app/lib/api/services/emi"
 import type {Product} from "@/app/types"
-import Image from "next/image"
 
 type Region = {
   id: string;
   name: string;
-  colors?: Array<{id: string; name?: string; colorName?: string; image?: string; colorImage?: string; regularPrice?: number; discountPrice?: number; stockQuantity?: number}>;
+  colors?: Array<{id: string; name?: string; colorName?: string; image?: string; colorImage?: string; regularPrice?: number; discountPrice?: number; stockQuantity?: number; hasStorage?: boolean; useDefaultStorages?: boolean; storages?: Array<{id: string; storageSize?: string; price?: any; stock?: number}>}>;
   defaultStorages?: Array<{id: string; size: string; storageSize?: string; price: any; stock?: number}>;
 };
 
 type Network = {
   id: string;
   networkType: string;
-  colors?: Array<{id: string; colorName: string; colorImage?: string; regularPrice?: number; discountPrice?: number; stockQuantity?: number}>;
-  defaultStorages?: Array<{id: string; storageSize: string; price: any; stock?: number}>;
+  colors?: Array<{id: string; colorName: string; colorImage?: string; regularPrice?: number; discountPrice?: number; stockQuantity?: number; hasStorage?: boolean; useDefaultStorages?: boolean; storages?: Array<{id: string; storageSize?: string; price?: any; stock?: number}>}>;
+  defaultStorages?: Array<{id: string; storageSize: string; price: any; stock?: number; isDefault?: boolean}>;
 };
 
 type ProductInfoRegionProps = {
@@ -44,7 +43,6 @@ type ProductInfoRegionProps = {
 export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionProps) {
   const router = useRouter()
   const rawProduct = product.rawProduct
-  // const productType = product.productType || 'basic' // unused
 
   const [quantity, setQuantity] = useState(1)
   const [carePlusSelected, setCarePlusSelected] = useState(false)
@@ -87,7 +85,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
     fetchCarePlans()
   }, [product.id, rawProduct?.isCare])
 
-  // Fetch EMI plans if isEmi is true (lazy loaded on scroll/interaction)
+  // Fetch EMI plans if isEmi is true
   useEffect(() => {
     const fetchEmiPlans = async () => {
       if (rawProduct?.isEmi && emiPlans.length === 0) {
@@ -104,8 +102,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
         }
       }
     }
-    // Only fetch when user opens EMI modal (not on page load)
-    // This is handled by onOpenChange in EmiTable
+    fetchEmiPlans()
   }, [rawProduct?.isEmi, emiPlans.length])
 
   const inWishlist = isInWishlist(product.id)
@@ -115,84 +112,165 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
   const isNetworkProduct = rawProduct?.productType === 'network';
   const isBasicProduct = rawProduct?.productType === 'basic';
 
-  // Get the network to access its colors and storages directly
-  const networks = isNetworkProduct ? (rawProduct?.networks || []) : [];
+  // Parse regions/networks data
+  const regions: Region[] = useMemo(() => {
+    if (isNetworkProduct && rawProduct?.networks) {
+      // Network type: use networks array
+      return rawProduct.networks.map((n: Network) => ({
+        id: n.id,
+        name: n.networkType?.trim() || 'Network',
+        networkType: n.networkType?.trim() || '',
+        colors: (n.colors || []).map((color: any) => ({
+          id: color.id,
+          name: color.colorName?.trim() || 'Color',
+          colorName: color.colorName?.trim() || '',
+          colorImage: color.colorImage,
+          image: color.colorImage,
+          regularPrice: color.regularPrice,
+          discountPrice: color.discountPrice,
+          stockQuantity: color.stockQuantity,
+          hasStorage: color.hasStorage,
+          useDefaultStorages: color.useDefaultStorages,
+        })),
+        defaultStorages: (n.defaultStorages || []).map((storage: any) => ({
+          id: storage.id,
+          size: storage.storageSize?.trim() || '',
+          storageSize: storage.storageSize?.trim() || '',
+          price: storage.price,
+          stock: storage.price?.stockQuantity,
+          isDefault: storage.isDefault,
+        })),
+      }));
+    } else if (isBasicProduct && rawProduct?.directColors) {
+      // Basic type: use directColors
+      return [{
+        id: "default",
+        name: "Default",
+        colors: rawProduct.directColors.map((color: any) => ({
+          id: color.id,
+          name: color.colorName?.trim() || 'Color',
+          colorName: color.colorName?.trim() || '',
+          colorImage: color.colorImage,
+          image: color.colorImage,
+          regularPrice: color.regularPrice,
+          discountPrice: color.discountPrice,
+          stockQuantity: color.stockQuantity,
+        })),
+        defaultStorages: [{
+          id: "default-storage",
+          size: "Standard",
+          storageSize: "Standard",
+          price: {
+            regularPrice: rawProduct.directColors[0]?.regularPrice || 0,
+            discountPrice: rawProduct.directColors[0]?.discountPrice || 0,
+            stockQuantity: rawProduct.directColors[0]?.stockQuantity || 0,
+          }
+        }],
+      }];
+    } else if (rawProduct?.regions) {
+      // Region type: use regions array
+      return rawProduct.regions.map((r: any) => ({
+        id: r.id,
+        name: r.name?.trim() || 'Region',
+        colors: (r.colors || []).map((color: any) => ({
+          id: color.id,
+          name: color.colorName?.trim() || 'Color',
+          colorName: color.colorName?.trim() || '',
+          colorImage: color.colorImage,
+          image: color.colorImage,
+          regularPrice: color.regularPrice,
+          discountPrice: color.discountPrice,
+          stockQuantity: color.stockQuantity,
+        })),
+        defaultStorages: (r.defaultStorages || []).map((storage: any) => ({
+          id: storage.id,
+          size: storage.storageSize?.trim() || '',
+          storageSize: storage.storageSize?.trim() || '',
+          price: storage.price,
+          stock: storage.stock,
+        })),
+      }));
+    }
+    return [];
+  }, [rawProduct, isNetworkProduct, isBasicProduct]);
 
-  let regions: Region[] = isNetworkProduct
-    ? networks.map((n: Network) => {
-        const trimmedNetworkType = (n.networkType || '').trim();
-        return {
-          id: n.id,
-          name: trimmedNetworkType,
-          networkType: trimmedNetworkType,
-          colors: (n.colors || []).map((color: any) => ({
-            id: color.id,
-            name: (color.colorName || '').trim(),
-            image: color.colorImage,
-            regularPrice: color.regularPrice,
-            discountPrice: color.discountPrice,
-            stockQuantity: color.stockQuantity,
-          })),
-          defaultStorages: (n.defaultStorages || []).map((storage: any) => ({
-            id: storage.id,
-            size: (storage.storageSize || '').trim(),
-            storageSize: (storage.storageSize || '').trim(),
-            price: storage.price,
-            stock: storage.stock,
-          })),
-        };
-      })
-    : (rawProduct?.regions || []);
+  // Get selected region
+  const selectedRegion = useMemo(() => {
+    if (selectedRegionId) {
+      return regions.find(r => r.id === selectedRegionId);
+    }
+    return regions[0] || null;
+  }, [regions, selectedRegionId]);
 
-  // For basic products, convert directColors to a default region structure
-  if (isBasicProduct && (!regions || regions.length === 0) && rawProduct?.directColors) {
-    regions = [{
-      id: "default",
-      name: "Default",
-      colors: rawProduct.directColors.map((color: any) => ({
+  // Get colors for selected region
+  const colors = useMemo(() => {
+    if (!selectedRegion) return [];
+    return (selectedRegion.colors || []).map((color: any) => {
+      // Fix: prefer color.colorImage, fallback to color.image, and prefer color.colorName, fallback to color.name
+      const colorImage = color.colorImage || color.image || null;
+      const colorName = color.colorName && color.colorName.trim() ? color.colorName.trim() : (color.name && color.name.trim() ? color.name.trim() : 'Color');
+      return {
         id: color.id,
-        name: color.colorName,
-        colorName: color.colorName,
-        colorImage: color.colorImage,
-        image: color.colorImage,
+        name: colorName,
+        image: colorImage,
         regularPrice: color.regularPrice,
         discountPrice: color.discountPrice,
         stockQuantity: color.stockQuantity,
-      })),
-      defaultStorages: [{
-        id: "default-storage",
-        size: "Standard",
-        storageSize: "Standard",
-        price: {
-          regularPrice: rawProduct.directColors[0]?.regularPrice || 0,
-          discountPrice: rawProduct.directColors[0]?.discountPrice || 0,
-          stockQuantity: rawProduct.directColors[0]?.stockQuantity || 0,
-        }
-      }]
-    }]
-  }
+        hasStorage: color.hasStorage,
+        useDefaultStorages: color.useDefaultStorages,
+        storages: color.storages || [],
+      };
+    });
+  }, [selectedRegion]);
 
-  const selectedRegion = selectedRegionId
-    ? regions.find((r: Region) => r.id === selectedRegionId)
-    : regions[0];
+  // Get selected color
+  const selectedColor = useMemo(() => {
+    if (selectedColorId) {
+      return colors.find(c => c.id === selectedColorId);
+    }
+    return colors[0] || null;
+  }, [colors, selectedColorId]);
 
-  const colors: Array<{id: string; name: string; image?: string; regularPrice?: number; discountPrice?: number; stockQuantity?: number}> =
-    (selectedRegion?.colors || []).map((color: any) => ({
-      id: color.id,
-      name: color.name || color.colorName || '',
-      image: color.image || color.colorImage,
-      regularPrice: color.regularPrice,
-      discountPrice: color.discountPrice,
-      stockQuantity: color.stockQuantity,
+  // Get storages for selected region
+  const storages = useMemo(() => {
+    if (!selectedRegion) return [];
+    
+    // Check if selected color has storage or uses default storages
+    if (selectedColor) {
+      if (selectedColor.hasStorage === false) {
+        return []; // This color has no storage options
+      }
+      if (selectedColor.useDefaultStorages === false && selectedColor.storages) {
+        // Use color-specific storages
+        return (selectedColor.storages || []).map((storage: any) => ({
+          id: storage.id,
+          size: storage.storageSize?.trim() || '',
+          price: storage.price,
+          stock: storage.price?.stockQuantity,
+        }));
+      }
+    }
+    
+    // Use region's default storages
+    return (selectedRegion.defaultStorages || []).map((storage: any) => ({
+      id: storage.id,
+      size: storage.storageSize?.trim() || storage.size?.trim() || '',
+      price: storage.price,
+      stock: storage.stock || storage.price?.stockQuantity,
+      isDefault: storage.isDefault,
     }));
-  const selectedColor = selectedColorId
-    ? colors.find((c) => c.id === selectedColorId)
-    : colors[0];
+  }, [selectedRegion, selectedColor]);
 
-  const storages: Array<{id: string; size: string; price: any; stock?: number}> = selectedRegion?.defaultStorages || [];
-  const selectedStorage = selectedStorageId
-    ? storages.find((s) => s.id === selectedStorageId)
-    : storages[0];
+  // Get selected storage
+  const selectedStorage = useMemo(() => {
+    if (selectedStorageId) {
+      return storages.find((s: { id: string }) => s.id === selectedStorageId);
+    }
+    
+    // Try to find default storage
+    const defaultStorage = storages.find((s: { id: string; isDefault?: boolean }) => s.isDefault);
+    return defaultStorage || storages[0] || null;
+  }, [storages, selectedStorageId]);
 
   // Price and stock calculation
   const priceData = useMemo(() => {
@@ -200,17 +278,24 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
     let discount = 0;
     let stock = 0;
 
-    // Check if color has its own price data (not null and greater than 0)
-    if (selectedColor && selectedColor.regularPrice && selectedColor.regularPrice > 0) {
+    // First check storage price
+    if (selectedStorage?.price) {
+      const price = selectedStorage.price;
+      regular = Number(price.regularPrice || price.regular) || 0;
+      discount = Number(price.discountPrice || price.discount || price.final) || 0;
+      stock = Number(price.stockQuantity || selectedStorage.stock) || 0;
+    }
+    // Fallback to color price
+    else if (selectedColor) {
       regular = Number(selectedColor.regularPrice) || 0;
       discount = Number(selectedColor.discountPrice) || 0;
       stock = Number(selectedColor.stockQuantity) || 0;
-    } else if (selectedStorage?.price) {
-      // Use storage price as fallback
-      const price = selectedStorage.price;
-      regular = Number(price.regular || price.regularPrice) || 0;
-      discount = Number(price.discount || price.discountPrice || price.final) || 0;
-      stock = Number(price.stockQuantity || selectedStorage.stock) || 0;
+    }
+    // Fallback to product price
+    else {
+      regular = Number(product.price) || 0;
+      discount = Number(product.comparePrice) || 0;
+      stock = Number(product.stockQuantity) || 0;
     }
 
     const hasDiscount = regular > 0 && discount > 0 && discount < regular;
@@ -224,7 +309,7 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
       stock,
       inStock: stock > 0,
     };
-  }, [selectedColor, selectedStorage]);
+  }, [selectedColor, selectedStorage, product]);
 
   const selectedPrice = selectedPriceType === 'regular' ? priceData.regularPrice : (priceData.discountPrice > 0 ? priceData.discountPrice : priceData.regularPrice)
   const carePlusPrice = carePlusSelected ? Math.round(selectedPrice * 0.08) : 0
@@ -232,25 +317,31 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
 
   // Initialize selections
   useEffect(() => {
-    if (!selectedRegionId && regions.length > 0) {
+    if (regions.length > 0 && !selectedRegionId) {
       setSelectedRegionId(regions[0].id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [regions]);
+  }, [regions, selectedRegionId]);
 
   useEffect(() => {
-    if (!selectedColorId && colors.length > 0) {
-      setSelectedColorId(colors[0].id);
+    if (colors.length > 0 && !selectedColorId) {
+      const defaultColor = colors.find(c => c.id === (selectedRegion?.colors?.[0]?.id || ''));
+      setSelectedColorId(defaultColor?.id || colors[0].id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colors]);
+  }, [colors, selectedColorId, selectedRegion]);
 
   useEffect(() => {
-    if (!selectedStorageId && storages.length > 0) {
-      setSelectedStorageId(storages[0].id);
+    if (storages.length > 0 && !selectedStorageId) {
+      const defaultStorage = storages.find((s: { id: string; isDefault?: boolean }) => s.isDefault);
+      setSelectedStorageId(defaultStorage?.id || storages[0].id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storages]);
+  }, [storages, selectedStorageId]);
+
+  // Handle color change and update image
+  useEffect(() => {
+    if (selectedColor?.image && onColorChange) {
+      onColorChange(selectedColor.image);
+    }
+  }, [selectedColor, onColorChange]);
 
   const handleAddToCart = () => {
     if (!isOutOfStock && selectedRegion && selectedColor && selectedStorage) {
@@ -278,6 +369,15 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
     addToCompare(product)
     router.push("/compare")
   }
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Selected Region:', selectedRegion);
+    console.log('Selected Color:', selectedColor);
+    console.log('Selected Storage:', selectedStorage);
+    console.log('Colors:', colors);
+    console.log('Storages:', storages);
+  }, [selectedRegion, selectedColor, selectedStorage, colors, storages]);
 
   return (
     <div className="flex flex-col space-y-8">
@@ -383,45 +483,31 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
 
       <Separator className="my-2" />
 
-      {/* Color Selection */}
-      {selectedRegion && selectedRegion.colors && selectedRegion.colors.length > 0 && (
+      {/* Region/Network Selection */}
+      {regions.length > 0 && (
         <div className="space-y-4">
-          <div>
-            <label className="text-sm font-semibold uppercase tracking-wider text-foreground">
-              Color
-            </label>
-            <p className="text-sm text-muted-foreground mt-1">{selectedColor?.name || 'Select a color'}</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {selectedRegion.colors.map((color: any) => {
-              const colorName = color?.name || color?.colorName;
-              const colorImage = color?.image || color?.colorImage;
+          <label className="text-sm font-semibold uppercase tracking-wider text-foreground" suppressHydrationWarning>
+            {isNetworkProduct ? 'NETWORK' : 'VARIANT'}
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {regions.map((region) => {
+              const regionName = region.name && region.name.trim() ? region.name.trim() : '';
               return (
                 <button
-                  key={color?.id}
+                  key={region.id}
                   onClick={() => {
-                    setSelectedColorId(color?.id)
-                    if (onColorChange && colorImage) {
-                      onColorChange(colorImage)
-                    }
+                    setSelectedRegionId(region.id);
+                    setSelectedColorId('');
+                    setSelectedStorageId('');
                   }}
                   className={cn(
-                    "flex flex-col items-center gap-2 rounded-xl p-2 transition-all duration-200",
-                    selectedColorId === color?.id ? "ring-2 ring-foreground ring-offset-2" : "hover:ring-1 hover:ring-muted-foreground",
+                    "px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all duration-200",
+                    selectedRegionId === region.id
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border hover:border-foreground/30 hover:bg-muted/50",
                   )}
                 >
-                  {colorImage ? (
-                    <div className="h-16 w-16 overflow-hidden rounded-lg bg-muted border border-border">
-                      <img
-                        src={colorImage}
-                        alt={colorName || 'Color'}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-16 w-16 rounded-lg bg-muted border border-border" />
-                  )}
-                  <span className="text-xs font-medium text-center max-w-[70px]">{colorName}</span>
+                  {regionName || 'Option'}
                 </button>
               );
             })}
@@ -429,61 +515,105 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
         </div>
       )}
 
-      {/* Region/Network Selection */}
-      {regions.length > 0 && !isBasicProduct && (
+      {/* Color Selection */}
+      {colors.length > 0 && (
         <div className="space-y-4">
-          <label className="text-sm font-semibold uppercase tracking-wider text-foreground" suppressHydrationWarning>
-            {isNetworkProduct ? 'Network' : 'Variant'}
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {regions.map((region: any) => {
-              const regionName = region.name || region.networkType || '';
+          <div>
+            <label className="text-sm font-semibold uppercase tracking-wider text-foreground">
+              COLOR
+            </label>
+            <p className="text-sm text-muted-foreground mt-1">
+              {selectedColor?.name || 'Select a color'}
+              {selectedColor && selectedColor.stockQuantity !== undefined && (
+                <span className="ml-2 text-xs">
+                  ({selectedColor.stockQuantity} in stock)
+                </span>
+              )}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {colors.map((color) => {
+              const colorName = color.name && color.name.trim() ? color.name.trim() : 'Color';
+              const colorImage = color.image;
               return (
-              <button
-                key={region.id}
-                onClick={() => {
-                  setSelectedRegionId(region.id)
-                  setSelectedColorId('')
-                  setSelectedStorageId('')
-                }}
-                className={cn(
-                  "px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all duration-200",
-                  selectedRegionId === region.id
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border hover:border-foreground/30 hover:bg-muted/50",
-                )}
-              >
-                {regionName || 'Option'}
-              </button>
-            );
+                <button
+                  key={color.id}
+                  onClick={() => {
+                    setSelectedColorId(color.id);
+                    if (onColorChange && colorImage) {
+                      onColorChange(colorImage);
+                    }
+                  }}
+                  className={cn(
+                    "flex flex-col items-center gap-2 rounded-xl p-2 transition-all duration-200",
+                    selectedColorId === color.id ? "ring-2 ring-foreground ring-offset-2" : "hover:ring-1 hover:ring-muted-foreground",
+                  )}
+                  title={colorName}
+                >
+                  {colorImage ? (
+                    <div className="h-16 w-16 overflow-hidden rounded-lg bg-muted border border-border">
+                      <img
+                        src={colorImage}
+                        alt={colorName}
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder-color.png';
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-16 w-16 rounded-lg bg-muted border border-border flex items-center justify-center">
+                      <span className="text-xs text-muted-foreground">No Image</span>
+                    </div>
+                  )}
+                  <span className="text-xs font-medium text-center max-w-[70px] truncate">{colorName}</span>
+                </button>
+              );
             })}
           </div>
         </div>
       )}
 
       {/* Storage Selection */}
-      {storages.length > 0 && !isBasicProduct && (
+      {storages.length > 0 && (
         <div className="space-y-4">
           <label className="text-sm font-semibold uppercase tracking-wider text-foreground">
-            Storage
+            STORAGE
           </label>
           <div className="flex flex-wrap gap-2">
             {storages.map((storage: any) => {
-              const storageSize = (storage.storageSize || storage.size || '').toString().trim();
+              const storageSize = storage.size && typeof storage.size === 'string' ? storage.size.trim() : 'Storage';
+              const price = storage.price;
+              const regularPrice = price?.regularPrice || 0;
+              const discountPrice = price?.discountPrice || 0;
+              const hasDiscount = regularPrice > 0 && discountPrice > 0 && discountPrice < regularPrice;
               return (
-              <button
-                key={storage.id}
-                onClick={() => setSelectedStorageId(storage.id)}
-                className={cn(
-                  "px-4 py-2.5 rounded-lg border-2 text-sm font-medium transition-all duration-200",
-                  selectedStorageId === storage.id
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border hover:border-foreground/30 hover:bg-muted/50",
-                )}
-              >
-                {storageSize || 'Storage'}
-              </button>
-            );
+                <button
+                  key={storage.id}
+                  onClick={() => setSelectedStorageId(storage.id)}
+                  className={cn(
+                    "px-4 py-2.5 rounded-lg border-2 text-left transition-all duration-200 min-w-[120px]",
+                    selectedStorageId === storage.id
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border hover:border-foreground/30 hover:bg-muted/50",
+                  )}
+                >
+                  <div className="font-medium">{storageSize}</div>
+                  {hasDiscount ? (
+                    <>
+                      <div className="text-sm font-bold">{formatPrice(discountPrice)}</div>
+                      <div className="text-xs text-muted-foreground line-through">{formatPrice(regularPrice)}</div>
+                    </>
+                  ) : regularPrice > 0 ? (
+                    <div className="text-sm font-bold">{formatPrice(regularPrice)}</div>
+                  ) : null}
+                  {typeof storage.stock === 'number' && (
+                    <div className="text-xs mt-1">
+                      {storage.stock <= 10 ? `Only ${storage.stock} left` : 'In stock'}
+                    </div>
+                  )}
+                </button>
+              );
             })}
           </div>
         </div>
@@ -567,21 +697,21 @@ export function ProductInfoRegion({product, onColorChange}: ProductInfoRegionPro
           <Truck className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Delivery</p>
-            <p className="text-sm font-medium mt-1">2-5 days</p>
+            <p className="text-sm font-medium mt-1">{rawProduct?.delivery || "2-5 days"}</p>
           </div>
         </div>
         <div className="flex gap-3 rounded-xl border border-border p-4 hover:bg-muted/50 transition-colors">
           <RotateCcw className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Return</p>
-            <p className="text-sm font-medium mt-1">7-day policy</p>
+            <p className="text-sm font-medium mt-1">{rawProduct?.easyReturns || "7-day policy"}</p>
           </div>
         </div>
         <div className="flex gap-3 rounded-xl border border-border p-4 hover:bg-muted/50 transition-colors">
           <Shield className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Warranty</p>
-            <p className="text-sm font-medium mt-1">{product.warranty}</p>
+            <p className="text-sm font-medium mt-1">{product.warranty || rawProduct?.warranty || "No warranty"}</p>
           </div>
         </div>
       </div>

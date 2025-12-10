@@ -5,6 +5,8 @@ export interface Product {
   description: string
   price: number
   originalPrice?: number
+  comparePrice?: number
+  stockQuantity?: number
   images: string[]
   category: Category
   brand: Brand
