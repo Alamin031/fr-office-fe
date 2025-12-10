@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { ProductGallery } from "./product-gallery"
 import { ProductInfoRegion } from "./product-info-region"
 import type { Product } from "@/app/types"
