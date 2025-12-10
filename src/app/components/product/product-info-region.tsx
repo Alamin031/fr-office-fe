@@ -574,7 +574,7 @@ export function ProductInfoRegion({
         <div suppressHydrationWarning />
       </div>
 
-      <Separator className="my-2" />
+      <Separator className="mb-2" />
 
       {/* Price Section */}
       <div className="space-y-4">
@@ -651,16 +651,6 @@ export function ProductInfoRegion({
             </label>
             <p className="text-sm text-muted-foreground mt-1">
               {selectedColor?.name || 'Select a color'}
-              {selectedColor && selectedColor.stockQuantity !== undefined && (
-                <span className="ml-2 text-xs">
-                  (
-                  {selectedColor.stockQuantity !== null &&
-                  selectedColor.stockQuantity !== undefined
-                    ? selectedColor.stockQuantity
-                    : '—'}{' '}
-                  in stock)
-                </span>
-              )}
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
