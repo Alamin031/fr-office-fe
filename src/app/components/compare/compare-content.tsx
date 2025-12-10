@@ -84,7 +84,7 @@ export function CompareContent() {
                 <div className="mb-3 h-32 w-32 overflow-hidden rounded-lg bg-muted">
                   <Image
                     src={
-                      Array.isArray(product.images) && product.images.length > 0
+                      Array.isArray(product.images) && product.images.length > 0 && product.images[0]
                         ? product.images[0]
                         : "/placeholder.svg?height=128&width=128"
                     }

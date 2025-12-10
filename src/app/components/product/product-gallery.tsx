@@ -22,10 +22,12 @@ export function ProductGallery({ images, name, isEmi, isCare, selectedColorImage
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 })
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
-  const displayImages = images.length > 0 ? images : ["/placeholder.svg?height=600&width=600"]
+  // Filter out empty strings from images
+  const validImages = images.filter((img) => img && img !== "") || []
+  const displayImages = validImages.length > 0 ? validImages : ["/placeholder.svg?height=600&width=600"]
 
   // Use color image as the main image if available, otherwise use the first image
-  const mainImageUrl = selectedColorImage || displayImages[selectedIndex] || "/placeholder.svg"
+  const mainImageUrl = (selectedColorImage && selectedColorImage !== "") ? selectedColorImage : (displayImages[selectedIndex] && displayImages[selectedIndex] !== "") ? displayImages[selectedIndex] : "/placeholder.svg"
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isZoomed) return

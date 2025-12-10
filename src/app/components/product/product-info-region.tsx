@@ -19,6 +19,7 @@ import {Button} from '../ui/button';
 import {Badge} from '../ui/badge';
 import {Separator} from '../ui/separator';
 import {useCartStore} from '@/app/store/cart-store';
+import {useAuthStore} from '@/app/store/auth-store';
 import {useWishlistStore} from '@/app/store/wishlist-store';
 import {useCompareStore} from '@/app/store/compare-store';
 import {formatPrice} from '@/app/lib/utils/format';
@@ -471,6 +472,33 @@ export function ProductInfoRegion({
     }
   };
 
+  const handleBuyNow = () => {
+    const authStore = useAuthStore.getState();
+
+    // Check if user is authenticated
+    if (!authStore.isAuthenticated) {
+      // Redirect to login with the current product page as the return URL
+      router.push(`/login?from=/product/${product.slug}`);
+      return;
+    }
+
+    // Add to cart and redirect to checkout
+    if (!isOutOfStock && selectedRegion && selectedColor && selectedStorage) {
+      addToCart(product, quantity, {
+        region: selectedRegion.id,
+        regionName: selectedRegion.name,
+        color: selectedColor.id,
+        colorName: selectedColor.name,
+        storage: selectedStorage.id,
+        storageName: selectedStorage.size,
+        priceType: selectedPriceType,
+      });
+
+      // Redirect to checkout
+      router.push('/checkout');
+    }
+  };
+
   const handleWishlistToggle = () => {
     if (inWishlist) {
       removeFromWishlist(product.id);
@@ -850,7 +878,8 @@ export function ProductInfoRegion({
           variant="secondary"
           size="lg"
           className="w-full h-12 text-base font-semibold rounded-lg"
-          disabled={isOutOfStock}>
+          disabled={isOutOfStock}
+          onClick={handleBuyNow}>
           Buy Now
         </Button>
       </div>

@@ -2,15 +2,19 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from "lucide-react"
 import { Button } from "../ui/button"
 import { Separator } from "../ui/separator"
 import { formatPrice } from "@/app/lib/utils/format"
 import { useCartStore } from "@/app/store/cart-store"
+import { useAuthStore } from "@/app/store/auth-store"
 import { getProductDisplayPrice } from "@/app/lib/utils/product"
 
 export function CartContent() {
+  const router = useRouter()
   const { items, removeItem, updateQuantity, getTotal } = useCartStore()
+  const { isAuthenticated } = useAuthStore()
 
   if (items.length === 0) {
     return (
@@ -34,6 +38,18 @@ export function CartContent() {
   const shipping = subtotal > 5000 ? 0 : 120
   const total = subtotal + shipping
 
+  const handleProceedToCheckout = () => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to login with cart as the return URL
+      router.push('/login?from=/cart')
+      return
+    }
+
+    // If authenticated, redirect to checkout
+    router.push('/checkout')
+  }
+
   return (
     <div className="grid gap-8 lg:grid-cols-3">
       {/* Cart Items */}
@@ -47,7 +63,7 @@ export function CartContent() {
                 className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-muted"
               >
                 <Image
-                  src={Array.isArray(item.product.images) && item.product.images.length > 0 ? item.product.images[0] : "/placeholder.svg?height=100&width=100"}
+                  src={Array.isArray(item.product.images) && item.product.images.length > 0 && item.product.images[0] ? item.product.images[0] : "/placeholder.svg?height=100&width=100"}
                   alt={item.product.name}
                   fill
                   className="object-cover"
@@ -135,7 +151,7 @@ export function CartContent() {
             <span className="text-xl">{formatPrice(total)}</span>
           </div>
 
-          <Button className="mt-6 w-full" size="lg">
+          <Button className="mt-6 w-full" size="lg" onClick={handleProceedToCheckout}>
             Proceed to Checkout
           </Button>
 
