@@ -139,32 +139,24 @@ export function CompareContent() {
 
             {/* Specifications */}
             <div className="flex-1 space-y-3 p-4">
-              <div className="border-b border-border pb-3">
-                <p className="text-xs font-medium text-muted-foreground">Brand</p>
-                <p className="text-sm font-medium">{product.brand ? product.brand.name : "N/A"}</p>
-              </div>
-
-              <div className="border-b border-border pb-3">
-                <p className="text-xs font-medium text-muted-foreground">Rating</p>
-                <p className="text-sm font-medium">
-                  {product.rating} <span className="text-muted-foreground">({product.reviewCount})</span>
-                </p>
-              </div>
-
-              {sortedSpecKeys.map((specKey) => {
-                const specItem = Array.isArray(product.specifications)
-                  ? product.specifications.find((s: any) => s.specKey === specKey)
-                  : null
-                const displayValue = specItem?.specValue || "N/A"
-                return (
-                  <div key={specKey} className="border-b border-border pb-3 last:border-b-0">
-                    <p className="text-xs font-medium text-muted-foreground">{specKey}</p>
-                    <p className="text-sm font-medium">
-                      {displayValue}
-                    </p>
-                  </div>
-                )
-              })}
+              {sortedSpecKeys.length > 0 ? (
+                sortedSpecKeys.map((specKey) => {
+                  const specItem = Array.isArray(product.specifications)
+                    ? product.specifications.find((s: any) => s.specKey === specKey)
+                    : null
+                  const displayValue = specItem?.specValue || "N/A"
+                  return (
+                    <div key={specKey} className="border-b border-border pb-3 last:border-b-0">
+                      <p className="text-xs font-medium text-muted-foreground">{specKey}</p>
+                      <p className="text-sm font-medium">
+                        {displayValue}
+                      </p>
+                    </div>
+                  )
+                })
+              ) : (
+                <p className="text-xs text-muted-foreground">No specifications available</p>
+              )}
             </div>
 
             {/* Action Button */}
