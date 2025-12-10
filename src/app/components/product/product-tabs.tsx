@@ -70,7 +70,7 @@ export function ProductTabs({ product, faqs = [] }: ProductTabsProps) {
                     )}
                   >
                     <td className="px-6 py-4 text-sm font-semibold text-muted-foreground w-1/3 uppercase tracking-wide">{key}</td>
-                    <td className="px-6 py-4 text-sm font-medium text-foreground">{value}</td>
+                    <td className="px-6 py-4 text-sm font-medium text-foreground">{String(value)}</td>
                   </tr>
                 ))}
               </tbody>

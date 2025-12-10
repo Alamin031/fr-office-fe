@@ -83,7 +83,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     <div className="grid gap-8 lg:gap-12 lg:grid-cols-2 mb-12">
       <div className="flex justify-center">
         <ProductGallery
-          images={product.images ?? []}
+          images={Array.isArray(product.images)
+            ? (typeof product.images[0] === "string"
+                ? product.images as string[]
+                : (product.images as any[]).map(img => img.imageUrl))
+            : []}
           name={product.name ?? ""}
           isEmi={!!rawProduct?.isEmi}
           isCare={!!rawProduct?.isCare}

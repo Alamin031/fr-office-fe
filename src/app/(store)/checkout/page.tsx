@@ -372,7 +372,15 @@ export default function CheckoutPage() {
                 <div key={item.product.id} className="flex gap-3 pb-4 border-b border-border last:border-0">
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
                     <Image
-                      src={Array.isArray(item.product.images) && item.product.images.length > 0 && item.product.images[0] ? item.product.images[0] : "/placeholder.svg"}
+                      src={
+                        Array.isArray(item.product.images) &&
+                        item.product.images.length > 0 &&
+                        item.product.images[0]
+                          ? typeof item.product.images[0] === "string"
+                            ? item.product.images[0]
+                            : item.product.images[0].imageUrl
+                          : "/placeholder.svg"
+                      }
                       alt={item.product.name}
                       fill
                       className="object-cover"

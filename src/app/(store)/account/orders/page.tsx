@@ -159,7 +159,7 @@ function OrderCard({ order }: { order: OrderWithStatus }) {
           brand: { id: "1", name: "Brand", slug: "brand", logo: "" },
           variants: [],
           highlights: [],
-          specifications: {},
+          specifications: [],
           stock: 10,
           sku: "",
           warranty: "",

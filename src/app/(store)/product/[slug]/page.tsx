@@ -218,9 +218,17 @@ export default async function ProductPage({params}: ProductPageProps) {
             : [],
           highlights: Array.isArray(p.highlights) ? p.highlights : [],
           specifications:
-            typeof p.specifications === 'object' && p.specifications !== null
-              ? p.specifications
-              : {},
+            Array.isArray(p.specifications)
+              ? p.specifications.map((s: any, idx: number) => ({
+                  id: s.id ?? `${p.id}-spec-${idx}`,
+                  productId: p.id,
+                  specKey: s.key ?? s.specKey ?? '',
+                  specValue: s.value ?? s.specValue ?? '',
+                  displayOrder: typeof s.displayOrder === 'number' ? s.displayOrder : idx,
+                  createdAt: s.createdAt ?? '',
+                  updatedAt: s.updatedAt ?? '',
+                }))
+              : [],
           stock: typeof p.stock === 'number' ? p.stock : 0,
           sku: p.sku ?? '',
           warranty: p.warranty ?? '',
