@@ -2,15 +2,19 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from "lucide-react"
 import { Button } from "../ui/button"
 import { Separator } from "../ui/separator"
 import { formatPrice } from "@/app/lib/utils/format"
 import { useCartStore } from "@/app/store/cart-store"
+import { useAuthStore } from "@/app/store/auth-store"
 import { getProductDisplayPrice } from "@/app/lib/utils/product"
 
 export function CartContent() {
+  const router = useRouter()
   const { items, removeItem, updateQuantity, getTotal } = useCartStore()
+  const { isAuthenticated } = useAuthStore()
 
   if (items.length === 0) {
     return (
