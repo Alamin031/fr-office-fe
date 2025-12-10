@@ -1204,7 +1204,6 @@ function NewProductPage() {
       toast.success('Basic product created successfully!');
       resetForm();
     } catch (err: any) {
-      console.error('Error creating basic product:', err);
       toast.error(
         `Error: ${
           err?.response?.data?.message || err?.message || 'Unknown error'
@@ -1389,7 +1388,6 @@ function NewProductPage() {
       toast.success('Network product created successfully!');
       resetForm();
     } catch (err: any) {
-      console.error('Error creating network product:', err);
       toast.error(
         `Error: ${
           err?.response?.data?.message || err?.message || 'Unknown error'
@@ -1567,7 +1565,6 @@ function NewProductPage() {
       toast.success('Region product created successfully!');
       resetForm();
     } catch (err: any) {
-      console.error('Error creating region product:', err);
       toast.error(
         `Error: ${
           err?.response?.data?.message || err?.message || 'Unknown error'

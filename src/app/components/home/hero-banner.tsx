@@ -25,17 +25,13 @@ export function HeroBanner() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Fetch banners from API
   useEffect(() => {
     async function fetchBanners() {
       try {
         const apiBanners: Herobanner[] = await herobannerService.findAll();
-        console.log("Fetched banners:", apiBanners);
-        // Map API banners to Banner type (add fallback for missing fields)
         const mapped = apiBanners.map((b) => ({
           id: b.id,
           image: b.img || "/placeholder.svg",
-          // Optionally add title, subtitle, link, cta if your API provides them
         }));
         setBanners(mapped);
       } catch {
@@ -91,13 +87,11 @@ export function HeroBanner() {
 
   return (
     <div className="space-y-4">
-      {/* Banner Slider */}
       <div
         className="relative overflow-hidden rounded-2xl bg-muted"
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
-        {/* Slides */}
         <div className="relative w-full" style={{ aspectRatio: "1920/600" }}>
           {banners.map((banner, index) => (
             <div
@@ -116,7 +110,6 @@ export function HeroBanner() {
                 priority={index === 0}
                 className="object-cover"
               />
-              {/* Content (optional, only if you have title/subtitle/cta in API) */}
               <div className="absolute inset-0 flex items-center">
                 <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
                   <div className="max-w-lg">
@@ -143,7 +136,6 @@ export function HeroBanner() {
             </div>
           ))}
         </div>
-        {/* Dots */}
         <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
           {banners.map((_, index) => (
             <button
@@ -160,23 +152,24 @@ export function HeroBanner() {
           ))}
         </div>
       </div>
-
-      {/* Features Section */}
       <div className="rounded-lg bg-background border border-border overflow-hidden">
         <div className="grid grid-cols-2 md:grid-cols-4">
           {features.map((feature, index) => (
-            <div 
-              key={feature.title} 
+            <div
+              key={feature.title}
               className={cn(
                 "flex flex-col items-center justify-center text-center p-6 hover:bg-muted/50 transition-colors border-border",
                 index < 2 && "border-b md:border-b-0",
                 index === 0 && "border-r",
                 index === 1 && "md:border-r",
-                index === 2 && "border-r md:border-r",
+                index === 2 && "border-r md:border-r"
               )}
             >
               <div className="flex items-center justify-center mb-3">
-                <feature.icon className="h-6 w-6 text-foreground" strokeWidth={1.5} />
+                <feature.icon
+                  className="h-6 w-6 text-foreground"
+                  strokeWidth={1.5}
+                />
               </div>
               <div>
                 <p className="text-sm font-semibold mb-1">{feature.title}</p>

@@ -21,7 +21,6 @@ import {withProtectedRoute} from '../../lib/auth/protected-route';
 import {Card, CardContent} from '../../components/ui/card';
 import {Button} from '../../components/ui/button';
 import {Input} from '../../components/ui/input';
-import {Badge} from '../../components/ui/badge';
 import {Checkbox} from '../../components/ui/checkbox';
 import {
   DropdownMenu,
@@ -46,15 +45,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../../components/ui/alert-dialog';
-import {formatPrice} from '../../lib/utils/format';
-// Note: transformProductForModal removed - backend returns correct format
-// import {transformProductForModal} from '../../lib/utils/product-transformer';
 
 import productsService from '../../lib/api/services/products';
 import categoriesService from '../../lib/api/services/categories';
 import {EditProductModal} from '@/app/components/admin/edit-product-modal';
 
-// UI Product type for display
 type UIProduct = {
   id: string;
   name: string;
@@ -178,11 +173,6 @@ function AdminProductsPage() {
         }
 
         const mapped: UIProduct[] = apiProducts.map((p: any) => {
-          const categoryObj = categories.find(c => c.id === p.categoryId);
-
-          const stockNum = p.totalStock ?? p.stockQuantity ?? 0;
-          const priceNum = p.price ?? p.priceRange?.min ?? 0;
-
           // Handle images - they should come from API response
           let imageUrl = '/placeholder.svg';
           if (Array.isArray(p.images) && p.images.length > 0) {
@@ -198,13 +188,7 @@ function AdminProductsPage() {
             imageUrl = p.image;
           }
 
-          let status = 'Inactive';
-          if (p.isActive) {
-            if (stockNum <= (p.lowStockAlert || 5) && stockNum > 0)
-              status = 'Low Stock';
-            else if (stockNum > 0) status = 'Active';
-            else status = 'Out of Stock';
-          }
+          // Status calculation removed as it was unused
 
           let type: 'basic' | 'network' | 'region' = 'basic';
           if (p.productType) {
@@ -233,8 +217,7 @@ function AdminProductsPage() {
 
         setProducts(mapped);
         setTotalCount(total);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
+      } catch {
         setProducts([]);
       } finally {
         setLoading(false);
@@ -250,8 +233,7 @@ function AdminProductsPage() {
       const fullProduct = await productsService.getById(product.id);
       setSelectedProduct(fullProduct);
       setViewOpen(true);
-    } catch (error) {
-      console.error('Failed to fetch product details:', error);
+    } catch {
       setSelectedProduct(product);
       setViewOpen(true);
     } finally {
@@ -265,9 +247,7 @@ function AdminProductsPage() {
       const fullProduct = await productsService.getById(product.id);
       setSelectedProduct(fullProduct);
       setEditOpen(true);
-    } catch (error) {
-      console.error('Failed to fetch product details for editing:', error);
-      // Fallback: pass the UI product with proper type mapping
+    } catch {
       setSelectedProduct({
         ...product,
         productType: product.type, // Ensure productType is set
@@ -290,8 +270,7 @@ function AdminProductsPage() {
         setProducts(products.filter(p => p.id !== selectedProduct.id));
         setDeleteOpen(false);
         setSelectedProduct(null);
-      } catch (error) {
-        console.error('Failed to delete product', error);
+      } catch {
         // You might want to add a toast notification here
       }
     }
@@ -529,14 +508,16 @@ function AdminProductsPage() {
       </Card>
 
       {/* View Modal */}
-      {(selectedProduct?.productType === 'network' || selectedProduct?.type === 'network') ? (
+      {selectedProduct?.productType === 'network' ||
+      selectedProduct?.type === 'network' ? (
         <ViewProductModalNetwork
           open={viewOpen}
           onOpenChange={setViewOpen}
           product={selectedProduct}
           loading={viewLoading}
         />
-      ) : (selectedProduct?.productType === 'region' || selectedProduct?.type === 'region') ? (
+      ) : selectedProduct?.productType === 'region' ||
+        selectedProduct?.type === 'region' ? (
         <ViewProductModalRegion
           open={viewOpen}
           onOpenChange={setViewOpen}

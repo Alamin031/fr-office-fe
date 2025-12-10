@@ -47,13 +47,10 @@ export default async function ProductPage({params}: ProductPageProps) {
   let apiProduct;
   try {
     apiProduct = await productsService.getBySlug(slug);
-    // Debug: log the fetched product and its rawProduct field
-    console.log('Fetched apiProduct:', apiProduct);
     if (apiProduct && (apiProduct as any).rawProduct) {
       console.log('apiProduct.rawProduct:', (apiProduct as any).rawProduct);
     }
-  } catch (error) {
-    console.error('Product fetch error:', error);
+  } catch {
     notFound();
   }
 

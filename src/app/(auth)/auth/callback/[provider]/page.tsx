@@ -52,8 +52,7 @@ export default function OAuthCallbackPage({ params }: { params: { provider: stri
           toast.error(oauthError || "Failed to complete OAuth login")
           router.push("/login")
         }
-      } catch (error) {
-        console.error("OAuth callback error:", error)
+      } catch {
         toast.error("An unexpected error occurred")
         router.push("/login")
       } finally {

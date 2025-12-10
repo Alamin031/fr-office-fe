@@ -141,7 +141,6 @@ export function ProductInfoRegion({
             setSelectedCarePlanId(plans[0].id);
           }
         } catch (error) {
-          console.error('Error fetching care plans:', error);
         } finally {
           setLoadingCarePlans(false);
         }
@@ -157,10 +156,8 @@ export function ProductInfoRegion({
         try {
           setLoadingEmiPlans(true);
           const plans = await emiService.getPlans();
-          console.log('Fetched EMI plans:', plans);
           setEmiPlans(plans);
         } catch (error) {
-          console.error('Error fetching EMI plans:', error);
           setEmiPlans([]);
         } finally {
           setLoadingEmiPlans(false);
@@ -270,7 +267,6 @@ export function ProductInfoRegion({
     if (!selectedRegion) return [];
     const mappedColors = (selectedRegion.colors || []).map((color: any) => {
       // Debug log to inspect color object
-      console.log('Color object:', color);
       let colorName = '';
       if (
         typeof color.colorName === 'string' &&
@@ -315,7 +311,6 @@ export function ProductInfoRegion({
         storages: color.storages || [],
       };
     });
-    console.log('Mapped colors:', mappedColors);
     return mappedColors;
   }, [selectedRegion]);
 
@@ -491,11 +486,6 @@ export function ProductInfoRegion({
 
   // Debug logging
   useEffect(() => {
-    console.log('Selected Region:', selectedRegion);
-    console.log('Selected Color:', selectedColor);
-    console.log('Selected Storage:', selectedStorage);
-    console.log('Colors:', colors);
-    console.log('Storages:', storages);
   }, [selectedRegion, selectedColor, selectedStorage, colors, storages]);
 
   return (

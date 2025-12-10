@@ -55,8 +55,7 @@ export const useAuthStore = create<AuthStore>()(
             addresses: userData.addresses ?? [],
           }
           set({ user: mappedUser, isAuthenticated: true, isInitialized: true })
-        } catch (error) {
-          console.error("Failed to hydrate user:", error)
+        } catch {
           set({ user: null, isAuthenticated: false, isInitialized: true })
         } finally {
           set({ isHydrating: false })

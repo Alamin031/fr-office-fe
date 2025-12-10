@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
@@ -237,7 +238,6 @@ function ProductFAQsPage() {
       }
       setAllCategories(categoriesArr);
     } catch (e) {
-      console.error('Error fetching categories:', e);
     }
   };
 
@@ -252,7 +252,6 @@ function ProductFAQsPage() {
       }
       setAllProducts(productsArr);
     } catch (e) {
-      console.error('Error fetching products:', e);
     }
   };
 
@@ -264,11 +263,9 @@ function ProductFAQsPage() {
     setLoading(true);
     try {
       const response = await faqsService.getAll();
-      console.log('Fetched FAQs:', response);
       setFaqs(Array.isArray(response) ? response : (response?.data ?? []));
     } catch (error) {
       toast.error('Failed to fetch FAQs');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -356,7 +353,6 @@ function ProductFAQsPage() {
       setIsModalOpen(false);
     } catch (error) {
       toast.error('Failed to save FAQ');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -373,7 +369,6 @@ function ProductFAQsPage() {
       setIsDeleteDialogOpen(false);
     } catch (error) {
       toast.error('Failed to delete FAQ');
-      console.error(error);
     } finally {
       setLoading(false);
     }

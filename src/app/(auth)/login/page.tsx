@@ -117,9 +117,8 @@ export default function LoginPage() {
   const handleOAuthClick = async (provider: "google" | "facebook") => {
     try {
       initiateOAuth(provider);
-    } catch (error) {
+    } catch {
       toast.error(`Failed to initiate ${provider} login`);
-      console.error(`${provider} OAuth error:`, error);
     }
   };
 

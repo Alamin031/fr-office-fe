@@ -56,7 +56,6 @@ export function CareersForm() {
       // Simulate form submission
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      console.log("Application submitted:", formData)
       setSubmitSuccess(true)
 
       // Reset form
@@ -84,7 +83,7 @@ export function CareersForm() {
             <div className="mb-3 text-4xl">✓</div>
             <h3 className="font-semibold text-green-900">Application Received!</h3>
             <p className="mt-2 text-sm text-green-800">
-              Thank you for applying to TechStore. We'll review your application and get back to you within 5-7 business days.
+              Thank you for applying to TechStore. We&apos;ll review your application and get back to you within 5-7 business days.
             </p>
           </div>
         ) : (

@@ -232,7 +232,6 @@ function HomeshowCategoryPage() {
 
         // Fetch products
         const prodsRes = await productsService.getAll();
-        console.log('Fetched products for dropdown:', prodsRes);
         let productsArr: Product[] = [];
         if (Array.isArray(prodsRes)) {
           productsArr = prodsRes as Product[];
@@ -241,7 +240,6 @@ function HomeshowCategoryPage() {
         }
         setAllProducts(productsArr);
       } catch (e) {
-        console.error('Error fetching dropdown data:', e);
       }
     };
     fetchDropdownData();
@@ -262,7 +260,6 @@ function HomeshowCategoryPage() {
       setCategories(data || []);
     } catch (error) {
       toast.error('Failed to fetch homeshow categories');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -350,7 +347,6 @@ function HomeshowCategoryPage() {
       setIsModalOpen(false);
     } catch (error) {
       toast.error('Failed to save homeshow category');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -367,7 +363,6 @@ function HomeshowCategoryPage() {
       setIsDeleteDialogOpen(false);
     } catch (error) {
       toast.error('Failed to delete homeshow category');
-      console.error(error);
     } finally {
       setLoading(false);
     }

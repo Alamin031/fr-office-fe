@@ -1512,7 +1512,6 @@ export function EditProductModal({
       onSuccess?.(response);
       onOpenChange(false);
     } catch (err: any) {
-      console.error('Error updating product:', err);
       toast.error(
         `Error: ${
           err?.response?.data?.message || err?.message || 'Unknown error'

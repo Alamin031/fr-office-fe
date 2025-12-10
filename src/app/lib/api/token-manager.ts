@@ -67,8 +67,7 @@ export class TokenManager {
 
       const payload = JSON.parse(atob(parts[1]))
       return payload
-    } catch (error) {
-      console.error("Failed to decode token:", error)
+    } catch {
       return null
     }
   }
@@ -83,7 +82,7 @@ export class TokenManager {
 
       const expirationTime = (payload.exp as number) * 1000
       return Date.now() >= expirationTime
-    } catch (error) {
+    } catch {
       return true
     }
   }
@@ -99,7 +98,7 @@ export class TokenManager {
       const expirationTime = (payload.exp as number) * 1000
       const timeUntilExpiration = Math.floor((expirationTime - Date.now()) / 1000)
       return Math.max(0, timeUntilExpiration)
-    } catch (error) {
+    } catch {
       return -1
     }
   }
@@ -111,7 +110,7 @@ export class TokenManager {
     try {
       const payload = this.decodeToken(token)
       return (payload?.sub || payload?.userId || payload?.id) as string | null
-    } catch (error) {
+    } catch {
       return null
     }
   }
@@ -134,7 +133,7 @@ export class TokenManager {
       }
 
       return null
-    } catch (error) {
+    } catch {
       return null
     }
   }
@@ -156,8 +155,7 @@ export class TokenManager {
       const authService = new AuthService()
       const decoded = await authService.decodeToken(token)
       return decoded || null
-    } catch (error) {
-      console.error("Token validation failed:", error)
+    } catch {
       return null
     }
   }
@@ -176,8 +174,7 @@ export class TokenManager {
 
       const expirationTime = (decoded.exp as number) * 1000
       return Date.now() >= expirationTime
-    } catch (error) {
-      // Fallback to local expiry check
+    } catch {
       return this.isTokenExpired(token)
     }
   }
@@ -202,8 +199,7 @@ export class TokenManager {
         email: (decoded.email || null) as string | null,
         role: (decoded.role || null) as string | null,
       }
-    } catch (error) {
-      console.error("Failed to get user info from token:", error)
+    } catch {
       return { id: null, email: null, role: null }
     }
   }

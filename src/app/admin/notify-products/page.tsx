@@ -37,13 +37,12 @@ function NotifyProductsPage() {
     try {
       const response = await apiClient.get('/products/notify')
       const data = Array.isArray(response.data) ? response.data : []
-      const normalizedData = data.map((n: any) => ({
+      const normalizedData = data.map((n: ProductNotifyRequest) => ({
         ...n,
         createdAt: new Date(n.createdAt)
       }))
       setNotifications(normalizedData)
     } catch (error) {
-      console.error('Failed to fetch notifications:', error)
       setNotifications([])
     } finally {
       setLoading(false)
@@ -96,7 +95,6 @@ function NotifyProductsPage() {
       )
     } catch (error) {
       toast.error('Failed to update notification')
-      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -114,7 +112,6 @@ function NotifyProductsPage() {
       setIsModalOpen(false)
     } catch (error) {
       toast.error('Failed to delete notification')
-      console.error(error)
     } finally {
       setLoading(false)
     }

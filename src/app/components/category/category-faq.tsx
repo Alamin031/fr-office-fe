@@ -56,7 +56,6 @@ export function CategoryFAQ(props: CategoryFAQProps) {
           setDynamicFaqs(apiFaqs);
         } catch (e) {
           if (process.env.NODE_ENV === 'development') {
-            console.error('Failed to fetch category FAQs:', e);
           }
           if (!cancelled) {
             setDynamicFaqs([]);

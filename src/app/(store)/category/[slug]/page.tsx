@@ -131,8 +131,7 @@ export default async function Page({ params }: CategoryPageProps) {
       }
       return p.categoryId === category.id;
     });
-  } catch (error) {
-    console.error(`Failed to fetch products for category ${slug}:`, error);
+  } catch {
     products = [];
   }
 

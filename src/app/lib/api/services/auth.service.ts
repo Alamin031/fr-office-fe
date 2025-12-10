@@ -109,7 +109,6 @@ export class AuthService {
       const response = await apiClient.get<User>(API_ENDPOINTS.USERS_ME)
       return response.data
     } catch (error) {
-      console.error("Failed to fetch current user:", error)
       throw error
     }
   }
@@ -161,7 +160,6 @@ export class AuthService {
       const response = await apiClient.post<Record<string, unknown>>(endpoint)
       return response.data
     } catch (error) {
-      console.error("Failed to decode token:", error)
       throw error
     }
   }

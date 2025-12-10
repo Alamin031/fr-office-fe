@@ -127,7 +127,7 @@ async function syncUserWithBackend(
   profile: OAuthUserProfile,
   accessToken: string,
 ): Promise<{
-  user: any
+  user: OAuthUserProfile
   token: string
 }> {
   // Call your backend API to create/update user
@@ -205,7 +205,6 @@ export async function POST(request: NextRequest) {
       },
     )
   } catch (error) {
-    console.error("OAuth callback error:", error)
 
     const message = error instanceof Error ? error.message : "Internal server error"
 

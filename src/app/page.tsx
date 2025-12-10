@@ -22,7 +22,6 @@ export default async function Page() {
   const brands = await brandsService.findAll();
   // Fetch categories for the slider
   const categories = await categoriesService.getAll();
-  console.log("Fetched categories:", categories);
   // Ensure slug is always a string to match the app types
   const normalizedCategories: import("./types").Category[] = categories.map(
     (c) => ({

@@ -86,7 +86,6 @@ function AdminCategoriesPage() {
   const fetchCategories = async () => {
     try {
       const res = await categoriesService.getAll();
-      console.log("Fetched categories:", res);
       setCategories(res);
     } catch {
       setCategories([]);

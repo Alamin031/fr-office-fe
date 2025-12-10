@@ -50,13 +50,10 @@ export function ContactFormClient() {
     setIsSubmitting(true)
 
     try {
-      // Simulate form submission
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      console.log("Form submitted:", formData)
       setSubmitSuccess(true)
 
-      // Reset form
       setFormData({
         name: "",
         email: "",
@@ -86,7 +83,7 @@ export function ContactFormClient() {
             <div className="mb-3 text-4xl">✓</div>
             <h3 className="font-semibold text-green-900">Message Sent Successfully!</h3>
             <p className="mt-2 text-sm text-green-800">
-              Thank you for contacting us. We'll get back to you within 24 hours.
+              Thank you for contacting us. We&apos;ll get back to you within 24 hours.
             </p>
           </div>
         ) : (

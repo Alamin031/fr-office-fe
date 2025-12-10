@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Metadata } from "next";
 import Link from "next/link";
 import { categoriesService } from "@/app/lib/api/services/categories";
@@ -83,7 +83,6 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
   try {
     brands = await brandsService.findAll();
   } catch (error) {
-    console.error("Failed to fetch brands:", error);
   }
 
   // Fetch all products
@@ -102,7 +101,6 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
       products = allRes as Product[];
     }
   } catch (error) {
-    console.error("Failed to fetch all products:", error);
   }
 
   return (

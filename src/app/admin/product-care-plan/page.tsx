@@ -206,8 +206,7 @@ function ProductCarePlanPage() {
           categoriesArr = (catsRes as { data: Category[] }).data;
         }
         setAllCategories(categoriesArr);
-      } catch (err) {
-        console.error('Dropdown fetch error', err);
+      } catch {
       }
     };
     fetchDropdowns();
@@ -218,9 +217,8 @@ function ProductCarePlanPage() {
     try {
       const plans = await careService.getAll();
       setCarePlans(Array.isArray(plans) ? plans : []);
-    } catch (err) {
+    } catch {
       setCarePlans([]);
-      console.error('Failed to fetch care plans', err);
       toast.error('Failed to load care plans');
     } finally {
       setLoading(false);
@@ -346,7 +344,6 @@ function ProductCarePlanPage() {
         message = err;
       }
       toast.error(message);
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -363,7 +360,6 @@ function ProductCarePlanPage() {
       setSelectedPlan(null);
     } catch (error) {
       toast.error('Failed to delete care plan');
-      console.error(error);
     } finally {
       setLoading(false);
     }

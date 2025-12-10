@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import {useState, useEffect, useCallback} from 'react';
@@ -162,7 +163,6 @@ function PrivacyPolicyPage() {
       setPolicies(Array.isArray(response) ? response : response?.data ?? []);
     } catch (error) {
       toast.error('Failed to fetch policies');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -224,7 +224,6 @@ function PrivacyPolicyPage() {
       } else {
         toast.error('Failed to save policy');
       }
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -243,7 +242,6 @@ function PrivacyPolicyPage() {
       setIsDeleteDialogOpen(false);
     } catch (error) {
       toast.error('Failed to delete policy');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -262,7 +260,6 @@ function PrivacyPolicyPage() {
       await fetchPolicies();
     } catch (error) {
       toast.error('Failed to toggle publish status');
-      console.error(error);
     } finally {
       setLoading(false);
     }

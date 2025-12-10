@@ -38,7 +38,6 @@ export function EmiOptionsModal({
         try {
           await onOpen()
         } catch (error) {
-          console.error("Error loading EMI plans:", error)
         } finally {
           setIsLoadingPlans(false)
         }
@@ -49,7 +48,6 @@ export function EmiOptionsModal({
 
   // Debug log
   if (open) {
-    console.log("Modal opened with plans:", plans)
   }
 
   // Group plans by bank
