@@ -7,7 +7,7 @@ import {useState, useMemo, useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import {
   Heart,
-  BarChart3,
+  ArrowLeftRight,
   Ban,
   ShoppingCart,
   Shield,
@@ -803,7 +803,7 @@ export function ProductInfoRegion({
             className="h-11 w-11 rounded-lg"
             onClick={() => addToCompare(product)}
             aria-label="Add to compare">
-            <BarChart3
+            <ArrowLeftRight
               className={cn('h-5 w-5', inCompare && 'text-blue-600')}
             />
           </Button>

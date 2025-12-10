@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, BarChart3, ShoppingCart, Eye } from "lucide-react";
+import { Heart, ArrowLeftRight, ShoppingCart, Eye } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { useCartStore } from "@/app/store/cart-store";
@@ -13,6 +13,7 @@ import { useWishlistStore } from "@/app/store/wishlist-store";
 import { useCompareStore } from "@/app/store/compare-store";
 import {
   formatPrice,
+  formatPriceParts, // added
 } from "@/app/lib/utils/format";
 import { cn } from "@/app/lib/utils";
 import { Product } from "@/app/types";
@@ -183,7 +184,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             )}
             onClick={handleCompareToggle}
           >
-            <BarChart3 className="h-4 w-4" />
+            <ArrowLeftRight className="h-4 w-4" />
           </Button>
           <Link href={`/product/${product.slug}`}>
             <Button
@@ -263,9 +264,17 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {/* Price */}
         <div className="mt-auto pt-3">
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-green-600">
-              {formatPrice(salePrice)}
-            </span>
+            {/* sale price with larger bold symbol */}
+            {(() => {
+              const { symbol, amount } = formatPriceParts(salePrice)
+              return (
+                <span className="flex items-baseline gap-1">
+                  <span className="text-xl font-extrabold leading-none text-green-800">{symbol}</span>
+                  <span className="text-lg font-bold text-green-800 leading-none">{amount}</span>
+                </span>
+              )
+            })()}
+
             {hasDiscount && (
               <span className="text-sm text-muted-foreground line-through">
                 {formatPrice(regularPrice)}
