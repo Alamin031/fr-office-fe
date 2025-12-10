@@ -21,13 +21,21 @@ export function ProductGallery({ images, name, isEmi, isCare, selectedColorImage
   const [isZoomed, setIsZoomed] = useState(false)
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 })
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
+  const [manuallySelectedIndex, setManuallySelectedIndex] = useState<number | null>(null)
 
   // Filter out empty strings from images
   const validImages = images.filter((img) => img && img !== "") || []
   const displayImages = validImages.length > 0 ? validImages : ["/placeholder.svg?height=600&width=600"]
 
-  // Use color image as the main image if available, otherwise use the first image
-  const mainImageUrl = (selectedColorImage && selectedColorImage !== "") ? selectedColorImage : (displayImages[selectedIndex] && displayImages[selectedIndex] !== "") ? displayImages[selectedIndex] : "/placeholder.svg"
+  // Use manually selected image if available, otherwise color image, otherwise selected index
+  const mainImageUrl =
+    (manuallySelectedIndex !== null && displayImages[manuallySelectedIndex])
+      ? displayImages[manuallySelectedIndex]
+      : (selectedColorImage && selectedColorImage !== "")
+        ? selectedColorImage
+        : (displayImages[selectedIndex] && displayImages[selectedIndex] !== "")
+          ? displayImages[selectedIndex]
+          : "/placeholder.svg"
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isZoomed) return
