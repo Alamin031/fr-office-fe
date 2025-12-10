@@ -135,8 +135,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {/* Badges */}
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
           {hasDiscount && (
-            <Badge className="bg-[oklch(0.55_0.2_25)] text-[oklch(1_0_0)] hover:bg-[oklch(0.55_0.2_25)]">
-              -{discount}%
+            <Badge className="bg-blue-800 text-white hover:bg-blue-900">
+              {discount}%
             </Badge>
           )}
           {product.isNew && (
@@ -167,7 +167,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             className={cn(
               "h-9 w-9 rounded-full shadow-md",
               inWishlist &&
-                "bg-[oklch(0.55_0.2_25)] text-[oklch(1_0_0)] hover:bg-[oklch(0.55_0.2_25)]/90"
+                "bg-blue-600 text-white hover:bg-blue-700"
             )}
             onClick={handleWishlistToggle}
           >
@@ -263,7 +263,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {/* Price */}
         <div className="mt-auto pt-3">
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold">
+            <span className="text-lg font-bold text-green-600">
               {formatPrice(salePrice)}
             </span>
             {hasDiscount && (
