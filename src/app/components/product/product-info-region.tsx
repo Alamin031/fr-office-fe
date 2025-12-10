@@ -878,7 +878,8 @@ export function ProductInfoRegion({
           variant="secondary"
           size="lg"
           className="w-full h-12 text-base font-semibold rounded-lg"
-          disabled={isOutOfStock}>
+          disabled={isOutOfStock}
+          onClick={handleBuyNow}>
           Buy Now
         </Button>
       </div>
