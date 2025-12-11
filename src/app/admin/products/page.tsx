@@ -11,7 +11,6 @@ import Image from 'next/image';
 import {
   Plus,
   Search,
-  Filter,
   MoreVertical,
   Edit,
   Trash2,
