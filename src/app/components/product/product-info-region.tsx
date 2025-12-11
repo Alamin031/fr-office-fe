@@ -802,7 +802,7 @@ export function ProductInfoRegion({
 
       {/* Quantity Selector & Action Buttons */}
       <div className="space-y-3 rounded-2xl border border-border/80 bg-white/60 dark:bg-background/60 p-4 shadow-sm">
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-3 flex-wrap" suppressHydrationWarning>
           {/* Quantity Control */}
           <div className="flex items-center border border-border rounded-xl shadow-sm bg-white/80">
             <button
@@ -864,14 +864,14 @@ export function ProductInfoRegion({
           {/* Company Deal Button */}
           <Button
             variant="greentransparent"
-            className="h-11 px-5 rounded-lg whitespace-nowrap"
+            size="icon"
+            className="h-11 px-5 rounded-lg"
             onClick={() => setCompanyDealModalOpen(true)}>
             <span className="text-emerald-600 font-semibold text-sm">Company Deal</span>
           </Button>
         </div>
 
         {/* Add to Cart or Notify Button */}
-        <div suppressHydrationWarning>
         {isOutOfStock ? (
           <Button
             size="lg"
@@ -909,7 +909,6 @@ export function ProductInfoRegion({
             Add to Cart
           </Button>
         )}
-        </div>
 
         {/* Buy Now Button */}
         <Button
