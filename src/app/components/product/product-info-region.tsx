@@ -111,6 +111,8 @@ export function ProductInfoRegion({
   const [notifyDialogOpen, setNotifyDialogOpen] = useState(false);
   const [emiModalOpen, setEmiModalOpen] = useState(false);
   const [companyDealModalOpen, setCompanyDealModalOpen] = useState(false);
+  const [notifyLoading, setNotifyLoading] = useState(false);
+  const [notifySuccess, setNotifySuccess] = useState(false);
   const [selectedPriceType, setSelectedPriceType] = useState<
     'offer' | 'regular'
   >('offer');
