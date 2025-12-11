@@ -9,6 +9,7 @@ import { Button } from "../../components/ui/button"
 
 interface BlogPost {
   id: number
+  slug: string
   title: string
   excerpt: string
   content: string
@@ -110,7 +111,7 @@ export function BlogSearchClient({ posts, categories }: BlogSearchClientProps) {
                     <span>{post.readTime}</span>
                   </div>
                   <a
-                    href={`/blog/${post.id}`}
+                    href={`/blog/${post.slug}`}
                     className="mt-4 inline-block text-primary hover:underline font-medium text-sm"
                   >
                     Read Article →
