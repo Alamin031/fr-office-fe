@@ -39,24 +39,6 @@ export function ProductsListClient({
   const selectedBrandIds = selectedBrands
     .map(slug => brands.find((b: any) => b.slug === slug)?.id)
     .filter(Boolean) as string[]
-  // Filter products based on selected categories and brands
-  const filteredProducts = useMemo(() => {
-    let filtered = allProducts.length > 0 ? allProducts : initialProducts
-
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter((product) =>
-        selectedCategories.includes(product.category?.slug)
-      )
-    }
-
-    if (selectedBrands.length > 0) {
-      filtered = filtered.filter((product) =>
-        selectedBrands.includes(product.brand?.slug)
-      )
-    }
-
-    return filtered
-  }, [allProducts, initialProducts, selectedCategories, selectedBrands])
 
   const {
     currentPage,
