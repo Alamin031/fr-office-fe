@@ -63,7 +63,7 @@ export function CategoryProducts({ products, isLoading = false }: CategoryProduc
     <div>
       {/* Toolbar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground" suppressHydrationWarning>
           {sortedProducts.length > 0
             ? `Showing ${paginatedProducts.length} of ${sortedProducts.length} products`
             : "No products available"}
