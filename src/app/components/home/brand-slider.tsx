@@ -24,7 +24,7 @@ export function BrandSlider({ brands }: BrandSliderProps) {
 
     let rafId: number | null = null;
     let lastTime = performance.now();
-    const speed = 50; // pixels per second
+    const speed = 150; // pixels per second
 
     const step = (now: number) => {
       const delta = now - lastTime;
@@ -56,12 +56,21 @@ export function BrandSlider({ brands }: BrandSliderProps) {
         Shop by Brand
       </h2>
 
+      <style>{`
+        .brand-slider-container::-webkit-scrollbar {
+          display: none;
+        }
+        .brand-slider-container {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+
       <div
         ref={containerRef}
-        className="overflow-hidden"
+        className="brand-slider-container overflow-hidden"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
-        // allow touch to pause on mobile
         onTouchStart={() => setIsPaused(true)}
         onTouchEnd={() => setIsPaused(false)}
       >

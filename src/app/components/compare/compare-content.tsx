@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { X, ArrowLeftRight, ArrowRight, Search } from "lucide-react"
@@ -24,6 +24,22 @@ export function CompareContent() {
   const { items, removeItem, clearCompare } = useCompareStore()
   const addToCart = useCartStore((state) => state.addItem)
   const [searchQueries, setSearchQueries] = useState<Record<string, string>>({})
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
+  if (!isHydrated) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-foreground" />
+        </div>
+        <h2 className="text-xl font-semibold">Loading...</h2>
+      </div>
+    )
+  }
 
   if (items.length === 0) {
     return (
