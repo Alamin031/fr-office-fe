@@ -57,21 +57,19 @@ export default async function Page() {
           </section>
         )}
 
-        {/* Dynamic Homecategory Sections (first 2) using ProductSectionLazy */}
+        {/* Dynamic Homecategory Sections (first 2) using ProductSectionLazy - Eager render (above fold) */}
         {sortedHomecategories.slice(0, 2).map((hc) => (
           <section key={hc.id} className="mx-auto w-full max-w-7xl px-4 py-8">
-            <LazySection>
-              <ProductSectionLazy
-                title={hc.name}
-                subtitle={hc.description}
-                products={hc.products}
-                viewAllLink={
-                  hc.products && hc.products.length > 0
-                    ? `/products?homecategory=${hc.id}`
-                    : undefined
-                }
-              />
-            </LazySection>
+            <ProductSectionLazy
+              title={hc.name}
+              subtitle={hc.description}
+              products={hc.products}
+              viewAllLink={
+                hc.products && hc.products.length > 0
+                  ? `/products?homecategory=${hc.id}`
+                  : undefined
+              }
+            />
           </section>
         ))}
 
