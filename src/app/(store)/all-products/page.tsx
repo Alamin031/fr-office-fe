@@ -98,6 +98,25 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
     products = productsRaw as Product[];
   }
 
+  // Filter products based on selected categories and brands
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      selectedCategories.some((categorySlug) => {
+        const category = categories.find((c) => c.slug === categorySlug);
+        return category && product.categoryId === category.id;
+      });
+
+    const matchesBrand =
+      selectedBrands.length === 0 ||
+      selectedBrands.some((brandSlug) => {
+        const brand = brands.find((b) => b.slug === brandSlug);
+        return brand && product.brandId === brand.id;
+      });
+
+    return matchesCategory && matchesBrand;
+  });
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
