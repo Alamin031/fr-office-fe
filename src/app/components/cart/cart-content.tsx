@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -15,6 +16,11 @@ export function CartContent() {
   const router = useRouter()
   const { items, removeItem, updateQuantity, getTotal } = useCartStore()
   const { isAuthenticated } = useAuthStore()
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   if (items.length === 0) {
     return (
