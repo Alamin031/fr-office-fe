@@ -57,7 +57,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   // Show notification if session expired
-  useState(() => {
+  useEffect(() => {
     if (searchParams.get("token-expired") || searchParams.get("session-expired")) {
       toast.info("Your session has expired. Please log in again.");
     }
