@@ -30,6 +30,17 @@ export function CompareContent() {
     setIsHydrated(true)
   }, [])
 
+  if (!isHydrated) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-foreground" />
+        </div>
+        <h2 className="text-xl font-semibold">Loading...</h2>
+      </div>
+    )
+  }
+
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
