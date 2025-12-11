@@ -27,6 +27,7 @@ import {cn} from '@/app/lib/utils';
 import {EmiOptionsModal} from './emi-options-modal';
 import {CarePlansDisplay} from './care-plans-display';
 import {NotifyProductDialog} from './notify-product-dialog';
+import {CompanyDealModal} from './company-deal-modal';
 import {careService, type ProductCarePlan} from '@/app/lib/api/services/care';
 import {emiService, type EmiPlan} from '@/app/lib/api/services/emi';
 import type {Product} from '@/app/types';
@@ -108,6 +109,7 @@ export function ProductInfoRegion({
   const [carePlusSelected, setCarePlusSelected] = useState(false);
   const [notifyDialogOpen, setNotifyDialogOpen] = useState(false);
   const [emiModalOpen, setEmiModalOpen] = useState(false);
+  const [companyDealModalOpen, setCompanyDealModalOpen] = useState(false);
   const [selectedPriceType, setSelectedPriceType] = useState<
     'offer' | 'regular'
   >('offer');
@@ -826,6 +828,14 @@ export function ProductInfoRegion({
               <span className="text-emerald-600 font-semibold">EMI</span>
             </Button>
           )}
+          {/* Company Deal Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-11 px-4 rounded-lg"
+            onClick={() => setCompanyDealModalOpen(true)}>
+            <span className="text-foreground font-semibold text-sm">Company Deal</span>
+          </Button>
         </div>
 
         {/* Add to Cart Button */}
@@ -950,22 +960,23 @@ export function ProductInfoRegion({
         </div>
       )}
       {/* EMI Options Modal */}
-      {emiModalOpen && (
-        <EmiOptionsModal
-          open={emiModalOpen}
-          onOpenChange={setEmiModalOpen}
-          plans={emiPlans}
-          price={priceData.regularPrice}
-        />
-      )}
+      <EmiOptionsModal
+        open={emiModalOpen}
+        onOpenChange={setEmiModalOpen}
+        plans={emiPlans}
+        price={priceData.regularPrice}
+      />
       {/* Notify Product Dialog */}
-      {notifyDialogOpen && (
-        <NotifyProductDialog
-          open={notifyDialogOpen}
-          onOpenChange={setNotifyDialogOpen}
-          product={product}
-        />
-      )}
+      <NotifyProductDialog
+        open={notifyDialogOpen}
+        onOpenChange={setNotifyDialogOpen}
+        product={product}
+      />
+      {/* Company Deal Modal */}
+      <CompanyDealModal
+        open={companyDealModalOpen}
+        onOpenChange={setCompanyDealModalOpen}
+      />
     </div>
   );
 }
