@@ -3,7 +3,6 @@
 
 import { useSWRCache } from "@/app/hooks/use-swr-cache"
 import { ProductSection } from "@/app/components/home/product-section"
-import { LazySection } from "@/app/components/home/lazy-section"
 import { productsService } from "@/app/lib/api/services/products"
 import type { Product } from "@/app/types"
 
