@@ -866,7 +866,8 @@ export function ProductInfoRegion({
             variant="greentransparent"
             size="icon"
             className="h-11 px-5 rounded-lg"
-            onClick={() => setCompanyDealModalOpen(true)}>
+            onClick={() => setCompanyDealModalOpen(true)}
+            suppressHydrationWarning>
             <span className="text-emerald-600 font-semibold text-sm">Company Deal</span>
           </Button>
         </div>
