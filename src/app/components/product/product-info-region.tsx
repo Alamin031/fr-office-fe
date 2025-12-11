@@ -517,6 +517,28 @@ export function ProductInfoRegion({
     router.push('/compare');
   };
 
+  const handleNotifyMe = async () => {
+    const authStore = useAuthStore.getState();
+
+    try {
+      setNotifyLoading(true);
+      await productNotifyService.create(product.id, {
+        productId: product.id,
+        productName: product.name,
+        email: user?.email || '',
+        userId: user?.id || '',
+        status: 'pending',
+      });
+      setNotifySuccess(true);
+      setTimeout(() => {
+        setNotifySuccess(false);
+      }, 3000);
+    } catch (error) {
+    } finally {
+      setNotifyLoading(false);
+    }
+  };
+
   // Debug logging
   useEffect(() => {
   }, [selectedRegion, selectedColor, selectedStorage, colors, storages]);
