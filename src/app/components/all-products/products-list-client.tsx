@@ -53,22 +53,50 @@ export function ProductsListClient({
       const filters: any = {}
 
       // Send category and brand IDs - the API expects comma-separated values
-      // But we should also handle the case where it might not accept any filters (fallback)
+      if (selectedCategoryIds.length > 0) {
+        filters.categoryIds = selectedCategoryIds.join(',')
+      }
+
+      if (selectedBrandIds.length > 0) {
+        filters.brandIds = selectedBrandIds.join(',')
+      }
+
       try {
-        if (selectedCategoryIds.length > 0) {
-          filters.categoryIds = selectedCategoryIds.join(',')
-        }
-
-        if (selectedBrandIds.length > 0) {
-          filters.brandIds = selectedBrandIds.join(',')
-        }
-
         const response = await productsService.getAll(filters, currentPage, PAGE_SIZE)
         return response
       } catch (err) {
-        // If the API call fails with filters, try without them
-        console.error('Error fetching products with filters:', err)
-        throw err
+        // If API call fails, fall back to local filtering of allProducts
+        console.warn('API filtering failed, using local filtering:', err)
+        const start = (currentPage - 1) * PAGE_SIZE
+        const end = start + PAGE_SIZE
+
+        const filteredByCategory = allProducts.filter((product: any) => {
+          if (selectedCategoryIds.length === 0) return true
+          const productCategoryId = product.categoryId
+          const productCategoryIds = product.categoryIds as string[] | undefined
+          return selectedCategoryIds.some(id =>
+            productCategoryId === id || productCategoryIds?.includes(id)
+          )
+        })
+
+        const filteredByBrand = filteredByCategory.filter((product: any) => {
+          if (selectedBrandIds.length === 0) return true
+          const productBrandId = product.brandId
+          const productBrandIds = product.brandIds as string[] | undefined
+          return selectedBrandIds.some(id =>
+            productBrandId === id || productBrandIds?.includes(id)
+          )
+        })
+
+        return {
+          data: filteredByBrand.slice(start, end),
+          pagination: {
+            total: filteredByBrand.length,
+            page: currentPage,
+            limit: PAGE_SIZE,
+            pages: Math.ceil(filteredByBrand.length / PAGE_SIZE)
+          }
+        } as ProductListResponse
       }
     },
     {
