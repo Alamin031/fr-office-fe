@@ -12,43 +12,6 @@ interface BrandSliderProps {
 
 export function BrandSlider({ brands }: BrandSliderProps) {
   const safeBrands = Array.isArray(brands) ? brands : [];
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    // Only animate if content is scrollable
-    if (el.scrollWidth <= el.clientWidth) return;
-
-    let rafId: number | null = null;
-    let lastTime = performance.now();
-    const speed = 50; // pixels per second
-
-    const step = (now: number) => {
-      const delta = now - lastTime;
-      lastTime = now;
-
-      if (!isPaused) {
-        el.scrollLeft += (delta / 1000) * speed;
-
-        // Seamless loop: reset when we've scrolled past a quarter (since we repeat 4x)
-        const quarterWidth = el.scrollWidth / 4;
-        if (el.scrollLeft >= quarterWidth) {
-          el.scrollLeft = 0;
-        }
-      }
-
-      rafId = requestAnimationFrame(step);
-    };
-
-    rafId = requestAnimationFrame(step);
-
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [isPaused]);
 
   return (
     <section aria-label="Shop by brand">
