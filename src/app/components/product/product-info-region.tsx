@@ -831,7 +831,7 @@ export function ProductInfoRegion({
           {/* Company Deal Button */}
           <Button
             variant="ghost"
-            size="default"
+            size="icon"
             className="h-11 px-4 rounded-lg"
             onClick={() => setCompanyDealModalOpen(true)}>
             <span className="text-foreground font-semibold text-sm">Company Deal</span>
