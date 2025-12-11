@@ -28,7 +28,17 @@ export function ProductsListClient({
   selectedCategories = [],
   selectedBrands = [],
   allProducts = [],
+  categories = [],
+  brands = [],
 }: ProductsListClientProps) {
+  // Convert category and brand slugs to IDs
+  const selectedCategoryIds = selectedCategories
+    .map(slug => categories.find((c: any) => c.slug === slug)?.id)
+    .filter(Boolean) as string[]
+
+  const selectedBrandIds = selectedBrands
+    .map(slug => brands.find((b: any) => b.slug === slug)?.id)
+    .filter(Boolean) as string[]
   // Filter products based on selected categories and brands
   const filteredProducts = useMemo(() => {
     let filtered = allProducts.length > 0 ? allProducts : initialProducts
