@@ -89,23 +89,30 @@ export class AuthService {
    * Refresh access token
    */
    async refreshToken(): Promise<string> {
-    const refreshToken = TokenManager.getRefreshToken()
-    if (!refreshToken) {
-      throw new Error("No refresh token available")
+    try {
+      const refreshToken = TokenManager.getRefreshToken()
+      if (!refreshToken) {
+        TokenManager.clearTokens()
+        throw new Error("No refresh token available")
+      }
+
+      const response = await apiClient.post<ApiResponse<{ token: string; refreshToken?: string }>>(
+        API_ENDPOINTS.AUTH_REFRESH,
+        { refreshToken }
+      )
+
+      if (response.data.data) {
+        const { token, refreshToken: newRefreshToken } = response.data.data
+        TokenManager.setTokens(token, newRefreshToken || refreshToken)
+        return token
+      }
+
+      throw new Error("Failed to refresh token")
+    } catch (error) {
+      // Auto-clear on token refresh error
+      TokenManager.clearTokens()
+      throw error
     }
-
-    const response = await apiClient.post<ApiResponse<{ token: string; refreshToken?: string }>>(
-      API_ENDPOINTS.AUTH_REFRESH,
-      { refreshToken }
-    )
-
-    if (response.data.data) {
-      const { token, refreshToken: newRefreshToken } = response.data.data
-      TokenManager.setTokens(token, newRefreshToken || refreshToken)
-      return token
-    }
-
-    throw new Error("Failed to refresh token")
   }
 
   /**
