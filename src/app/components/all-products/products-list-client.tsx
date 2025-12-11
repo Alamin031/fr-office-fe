@@ -52,12 +52,13 @@ export function ProductsListClient({
     async () => {
       const filters: any = {}
 
+      // Send category and brand IDs as comma-separated strings for API compatibility
       if (selectedCategoryIds.length > 0) {
-        filters.categoryIds = selectedCategoryIds
+        filters.categoryIds = selectedCategoryIds.join(',')
       }
 
       if (selectedBrandIds.length > 0) {
-        filters.brandIds = selectedBrandIds
+        filters.brandIds = selectedBrandIds.join(',')
       }
 
       const response = await productsService.getAll(filters, currentPage, PAGE_SIZE)
