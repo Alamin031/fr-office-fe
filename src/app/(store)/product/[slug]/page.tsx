@@ -105,6 +105,14 @@ export default async function ProductPage({params}: ProductPageProps) {
 
   // Get category from categories array
   const category = apiProductAny.categories?.[0] || apiProduct.category;
+  console.log('DEBUG - Category extraction:', {
+    hasCategories: !!apiProductAny.categories,
+    categoriesArray: apiProductAny.categories,
+    hasCategory: !!apiProduct.category,
+    extractedCategory: category,
+    categoryId: category?.id,
+    categoryName: category?.name,
+  });
 
   // Region product price/stock extraction
   let price = Number(apiProduct.price) || 0;
