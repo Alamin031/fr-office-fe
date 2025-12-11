@@ -59,7 +59,8 @@ export const brandsService = {
    * Get brand by slug
    */
   getBySlug: async (slug: string): Promise<Brand> => {
-    const endpoint = API_ENDPOINTS.BRANDS_SLUG.replace('{slug}', slug);
+    const endpoint = API_ENDPOINTS.BRANDS_PRODUCTS.replace('{slug}', slug);
+
     const response = await apiClient.get<Brand>(endpoint);
     return response.data;
   },
