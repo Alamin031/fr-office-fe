@@ -48,8 +48,13 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
       : [params.brands]
     : [];
 
-  // Fetch all categories
-  const categoriesRaw = await categoriesService.getAll();
+  // Parallelize API calls for better performance
+  const [categoriesRaw, brandsRaw, productsRaw] = await Promise.all([
+    categoriesService.getAll(),
+    brandsService.findAll().catch(() => []),
+    productsService.getAll({}, 1, 1000).catch(() => null),
+  ]);
+
   const categories: Category[] = (categoriesRaw as unknown as RawCategory[]).map(
     (c: RawCategory) => ({
       id: c.id,
@@ -78,29 +83,19 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
     })
   );
 
-  // Fetch all brands
-  let brands: Brand[] = [];
-  try {
-    brands = await brandsService.findAll();
-  } catch (error) {
-  }
+  const brands: Brand[] = brandsRaw ?? [];
 
-  // Fetch all products
   let products: Product[] = [];
-  try {
-    const allRes = await productsService.getAll({}, 1, 1000);
-    if (allRes && typeof allRes === "object") {
-      if (Array.isArray((allRes as { data?: unknown[] }).data)) {
-        products = (allRes as { data?: unknown[] }).data as Product[];
-      } else if (Array.isArray((allRes as { items?: unknown[] }).items)) {
-        products = (allRes as { items?: unknown[] }).items as Product[];
-      } else if (Array.isArray(allRes)) {
-        products = allRes as Product[];
-      }
-    } else if (Array.isArray(allRes)) {
-      products = allRes as Product[];
+  if (productsRaw && typeof productsRaw === "object") {
+    if (Array.isArray((productsRaw as { data?: unknown[] }).data)) {
+      products = (productsRaw as { data?: unknown[] }).data as Product[];
+    } else if (Array.isArray((productsRaw as { items?: unknown[] }).items)) {
+      products = (productsRaw as { items?: unknown[] }).items as Product[];
+    } else if (Array.isArray(productsRaw)) {
+      products = productsRaw as Product[];
     }
-  } catch (error) {
+  } else if (Array.isArray(productsRaw)) {
+    products = productsRaw as Product[];
   }
 
   return (
