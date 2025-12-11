@@ -52,7 +52,14 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
   const [categoriesRaw, brandsRaw, productsRaw] = await Promise.all([
     categoriesService.getAll(),
     brandsService.findAll().catch(() => []),
-    productsService.getAll({}, 1, 1000).catch(() => null),
+    // Request products with all necessary fields for product cards
+    productsService.getAll(
+      {
+        // No specific filters on initial load, but could add includeRelations if needed
+      },
+      1,
+      1000
+    ).catch(() => ({ data: [], pagination: { total: 0, page: 1, limit: 1000, pages: 0 } } as any)),
   ]);
 
   const categories: Category[] = (categoriesRaw as unknown as RawCategory[]).map(
