@@ -863,18 +863,44 @@ export function ProductInfoRegion({
           </Button>
         </div>
 
-        {/* Add to Cart Button */}
-        <Button
-          size="lg"
-          className={cn(
-            'w-full h-12 text-base font-semibold rounded-lg transition-all duration-200',
-            isOutOfStock && 'opacity-60 cursor-not-allowed',
-          )}
-          disabled={isOutOfStock}
-          onClick={handleAddToCart}>
-          <ShoppingCart className="h-5 w-5 mr-2" />
-          {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-        </Button>
+        {/* Add to Cart or Notify Button */}
+        {isOutOfStock ? (
+          <Button
+            size="lg"
+            variant="outline"
+            className="w-full h-12 text-base font-semibold rounded-lg transition-all duration-200 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+            disabled={notifyLoading || notifySuccess}
+            onClick={handleNotifyMe}>
+            {notifyLoading ? (
+              <>
+                <span className="animate-spin mr-2">⏳</span>
+                Notifying...
+              </>
+            ) : notifySuccess ? (
+              <>
+                <Check className="h-5 w-5 mr-2 text-green-600" />
+                Notification Sent!
+              </>
+            ) : (
+              <>
+                <Bell className="h-5 w-5 mr-2" />
+                Notify Me When Available
+              </>
+            )}
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            className={cn(
+              'w-full h-12 text-base font-semibold rounded-lg transition-all duration-200',
+              isOutOfStock && 'opacity-60 cursor-not-allowed',
+            )}
+            disabled={isOutOfStock}
+            onClick={handleAddToCart}>
+            <ShoppingCart className="h-5 w-5 mr-2" />
+            Add to Cart
+          </Button>
+        )}
 
         {/* Buy Now Button */}
         <Button
