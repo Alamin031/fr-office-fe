@@ -116,10 +116,14 @@ export default function LoginPage() {
         };
       };
 
+      // Error during login - AuthService already cleared tokens
       const message =
         (error as ErrorResponse).response?.data?.error?.message ??
         (error instanceof Error ? error.message : "Invalid email or password");
       toast.error(message);
+
+      // Ensure storage is cleared on error
+      useAuthStore.getState().logout();
     } finally {
       setIsLoading(false);
     }
