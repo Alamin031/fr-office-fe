@@ -40,6 +40,14 @@ export function ProductsListClient({
     .map(slug => brands.find((b: any) => b.slug === slug)?.id)
     .filter(Boolean) as string[]
 
+  // Track total products from API response
+  const totalProductsFromAPI = useMemo(() => {
+    if (paginatedData?.pagination?.total) {
+      return paginatedData.pagination.total
+    }
+    return 0
+  }, [paginatedData])
+
   const {
     currentPage,
     totalPages,
@@ -52,7 +60,7 @@ export function ProductsListClient({
     hasPrevPage,
   } = usePagination({
     pageSize: PAGE_SIZE,
-    totalItems: filteredProducts.length,
+    totalItems: totalProductsFromAPI || totalProducts,
   })
 
   // Generate cache key based on current page and filters
