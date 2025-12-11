@@ -830,11 +830,11 @@ export function ProductInfoRegion({
           )}
           {/* Company Deal Button */}
           <Button
-            variant="ghost"
+            variant="greentransparent"
             size="icon"
-            className="h-11 px-4 rounded-lg"
+            className="h-11 px-5 rounded-lg"
             onClick={() => setCompanyDealModalOpen(true)}>
-            <span className="text-foreground font-semibold text-sm">Company Deal</span>
+            <span className="text-emerald-600 font-semibold text-sm">Company Deal</span>
           </Button>
         </div>
 
