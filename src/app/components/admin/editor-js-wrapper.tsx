@@ -530,13 +530,14 @@ export function EditorJSWrapper({
         }
 
         :global(.editor-js-container .ce-inline-toolbar) {
-          background-color: rgb(30, 41, 59);
+          background-color: white;
           border-radius: 0.375rem;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgb(226, 232, 240);
         }
 
         :global(.editor-js-container .ce-inline-toolbar__button) {
-          color: rgb(203, 213, 225);
+          color: rgb(71, 85, 105);
           transition: all 0.15s;
         }
 
