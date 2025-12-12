@@ -583,40 +583,40 @@ export function EditorJSWrapper({
         }
 
         :global(.dark .editor-js-container .ce-inline-toolbar) {
-          background-color: rgb(30, 41, 59);
-          border-color: rgb(71, 85, 105);
+          background-color: white;
+          border-color: rgb(226, 232, 240);
         }
 
         :global(.dark .editor-js-container .ce-inline-toolbar__button) {
-          color: rgb(203, 213, 225);
+          color: rgb(71, 85, 105);
         }
 
         :global(.dark .editor-js-container .ce-popover) {
-          background-color: rgb(30, 41, 59);
-          border-color: rgb(71, 85, 105);
+          background-color: white;
+          border-color: rgb(226, 232, 240);
         }
 
         :global(.dark .editor-js-container .ce-popover__item) {
-          color: rgb(226, 232, 240);
+          color: rgb(71, 85, 105);
         }
 
         :global(.dark .editor-js-container .ce-popover__item:hover) {
-          background-color: rgb(51, 65, 85);
+          background-color: rgb(248, 250, 252);
           color: rgb(59, 130, 246);
         }
 
         :global(.dark .editor-js-container .ce-image figcaption) {
-          background-color: rgb(51, 65, 85);
-          border-top-color: rgb(71, 85, 105);
-          color: rgb(148, 163, 184);
+          background-color: rgb(248, 250, 252);
+          border-top-color: rgb(226, 232, 240);
+          color: rgb(100, 116, 139);
         }
 
         :global(.dark .editor-js-container .ce-quote) {
-          color: rgb(148, 163, 184);
+          color: rgb(71, 85, 105);
         }
 
         :global(.dark .editor-js-container .ce-list) {
-          color: rgb(226, 232, 240);
+          color: rgb(30, 41, 59);
         }
       `}</style>
     </div>
