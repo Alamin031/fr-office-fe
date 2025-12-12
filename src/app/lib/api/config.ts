@@ -98,6 +98,10 @@ export const API_ENDPOINTS = {
 
   // Product Notification Requests
     NOTIFICATIONS_STOCK_OUT: '/notifications/stock-out',
+    NOTIFICATIONS_BY: '/notifications/by',
+    NOTIFICATIONS_ALL: '/notifications',
+    NOTIFICATIONS_RESOLVE: '/notifications/{id}/resolve',
+    NOTIFICATIONS_DELETE: '/notifications/{id}',
 
   
 

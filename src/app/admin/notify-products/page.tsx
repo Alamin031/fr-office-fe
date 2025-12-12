@@ -13,9 +13,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../../components/ui/alert-dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../../components/ui/dropdown-menu'
 import { toast } from 'sonner'
-import { productNotifyService, type ProductNotifyRequest } from '../../lib/api/services/notify'
+import { productNotifyService, notificationService, type ProductNotifyRequest } from '../../lib/api/services/notify'
 import { withProtectedRoute } from '../../lib/auth/protected-route'
-import { apiClient } from '../../lib/api/client'
 
 function NotifyProductsPage() {
   const [notifications, setNotifications] = useState<ProductNotifyRequest[]>([])
@@ -35,12 +34,22 @@ function NotifyProductsPage() {
   const fetchNotifications = async () => {
     setLoading(true)
     try {
-      const response = await apiClient.get('/products/notify')
-      const data = Array.isArray(response.data) ? response.data : []
-      const normalizedData = data.map((n: ProductNotifyRequest) => ({
-        ...n,
-        createdAt: new Date(n.createdAt)
-      }))
+      const data = await notificationService.getAll();
+      const notificationsData = data as unknown as ProductNotifyRequest[];
+      const normalizedData = Array.isArray(notificationsData)
+        ? notificationsData.map((n) => ({
+            id: n.id,
+            productId: n.productId,
+            productName: n.productName ?? '',
+            email: n.email ?? '',
+            phone: n.phone ?? '',
+            userName: n.userName ?? '',
+            status: n.status ?? 'pending',
+            title: n.title ?? '',
+            message: n.message ?? '',
+            createdAt: new Date(n.createdAt),
+          }))
+        : [];
       setNotifications(normalizedData)
     } catch (error) {
       setNotifications([])
@@ -86,46 +95,52 @@ function NotifyProductsPage() {
   const handleResolve = async (notification: ProductNotifyRequest) => {
     setLoading(true)
     try {
-      await productNotifyService.update(notification.id, { status: 'resolved' })
-      toast.success('Notification marked as resolved')
+      await notificationService.resolve(notification.id);
+      toast.success('Notification marked as resolved');
       setNotifications(
         notifications.map(n =>
           n.id === notification.id ? { ...n, status: 'resolved' } : n
         )
-      )
+      );
     } catch (error) {
-      toast.error('Failed to update notification')
+      toast.error('Failed to update notification');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDeleteNotification = async () => {
-    if (!selectedNotification) return
+    if (!selectedNotification) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      await productNotifyService.delete(selectedNotification.id)
-      toast.success('Notification deleted successfully')
-      setNotifications(notifications.filter(n => n.id !== selectedNotification.id))
-      setIsDeleteDialogOpen(false)
-      setIsModalOpen(false)
+      await notificationService.delete(selectedNotification.id);
+      toast.success('Notification deleted successfully');
+      setNotifications(notifications.filter(n => n.id !== selectedNotification.id));
+      setIsDeleteDialogOpen(false);
+      setIsModalOpen(false);
     } catch (error) {
-      toast.error('Failed to delete notification')
+      toast.error('Failed to delete notification');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const pendingCount = notifications.filter(n => n.status === 'pending').length
   const resolvedCount = notifications.filter(n => n.status === 'resolved').length
 
-  const NotificationRow = ({ notification }: { notification: ProductNotifyRequest }) => (
+  const NotificationRow = ({ notification }: { notification: ProductNotifyRequest & { userName?: string; title?: string; message?: string } }) => (
     <div className="flex items-center justify-between rounded-lg border p-4 hover:bg-muted/50 transition-colors">
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
             <h3 className="font-medium">{notification.productName}</h3>
+            {notification.title && (
+              <div className="text-xs font-semibold text-foreground mt-1">{notification.title}</div>
+            )}
+            {notification.message && (
+              <div className="text-xs text-muted-foreground mt-0.5">{notification.message}</div>
+            )}
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
               <Mail className="h-3.5 w-3.5" />
               {notification.email}
@@ -136,6 +151,9 @@ function NotifyProductsPage() {
                 {notification.phone}
               </div>
             )}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+              <span>User: {notification.userName ? notification.userName : 'Guest'}</span>
+            </div>
             <p className="text-xs text-muted-foreground mt-2">
               Product ID: {notification.productId}
             </p>
@@ -300,10 +318,28 @@ function NotifyProductsPage() {
                 </div>
               )}
 
-              {selectedNotification.userId && (
+              {selectedNotification.title && (
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">User ID</p>
-                  <p className="text-sm font-semibold">{selectedNotification.userId}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Title</p>
+                  <p className="text-sm font-semibold">{selectedNotification.title}</p>
+                </div>
+              )}
+              {selectedNotification.message && (
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Message</p>
+                  <p className="text-sm font-semibold">{selectedNotification.message}</p>
+                </div>
+              )}
+              {selectedNotification.userName && (
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">User</p>
+                  <p className="text-sm font-semibold">{selectedNotification.userName}</p>
+                </div>
+              )}
+              {!selectedNotification.userName && (
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">User</p>
+                  <p className="text-sm font-semibold">Guest</p>
                 </div>
               )}
 

@@ -9,6 +9,9 @@ export interface ProductNotifyRequest {
   email?: string;
   userId?: string;
   phone?: string;
+  userName?: string;
+  title?: string;
+  message?: string;
   status: string;
   createdAt: Date;
 }
@@ -19,6 +22,8 @@ export interface CreateProductNotifyRequest {
   email?: string;
   phone?: string;
   userId?: string;
+  title?: string;
+  message?: string;
   status: string;
 }
 
@@ -64,11 +69,44 @@ export interface CreateNotificationRequest {
 
 // Service
 export const notificationService = {
+        /**
+         * Delete a notification by ID
+         */
+        delete: async (id: string): Promise<void> => {
+          const endpoint = API_ENDPOINTS.NOTIFICATIONS_DELETE.replace('{id}', id);
+          await apiClient.delete(endpoint);
+        },
+      /**
+       * Resolve a notification by ID
+       */
+      resolve: async (id: string): Promise<Notification> => {
+        const endpoint = API_ENDPOINTS.NOTIFICATIONS_RESOLVE.replace('{id}', id);
+        const response = await apiClient.patch(endpoint);
+        return response.data;
+      },
+    /**
+     * Fetch all notifications
+     */
+    getAll: async (): Promise<Notification[]> => {
+      const response = await apiClient.get(API_ENDPOINTS.NOTIFICATIONS_ALL);
+      return response.data;
+    },
   createStockOut: async (productId: string, userId?: string): Promise<Notification> => {
     const response = await apiClient.post(
       API_ENDPOINTS.NOTIFICATIONS_STOCK_OUT,
       { productId, userId }
     );
+    return response.data;
+  },
+
+  /**
+   * Fetch notifications by userId and/or productId
+   * @param params Object with userId and/or productId
+   */
+  getBy: async (params: { userId?: string; productId?: string }): Promise<Notification[]> => {
+    const response = await apiClient.get(API_ENDPOINTS.NOTIFICATIONS_BY, {
+      params,
+    });
     return response.data;
   },
 };

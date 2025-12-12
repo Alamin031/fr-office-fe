@@ -31,7 +31,7 @@ import {NotifyProductDialog} from './notify-product-dialog';
 import {CompanyDealModal} from './company-deal-modal';
 import {careService, type ProductCarePlan} from '@/app/lib/api/services/care';
 import {emiService, type EmiPlan} from '@/app/lib/api/services/emi';
-import {productNotifyService} from '@/app/lib/api/services/notify';
+import {notificationService, productNotifyService} from '@/app/lib/api/services/notify';
 import type {Product} from '@/app/types';
 
 type Region = {
@@ -527,21 +527,16 @@ export function ProductInfoRegion({
 
   const handleNotifyMe = async () => {
     const authStore = useAuthStore.getState();
-
     try {
       setNotifyLoading(true);
-      await productNotifyService.create(product.id, {
-        productId: product.id,
-        productName: product.name,
-        email: user?.email || '',
-        userId: user?.id || '',
-        status: 'pending',
-      });
+      // Pass productId and userId as separate arguments
+      await notificationService.createStockOut(product.id, authStore.user?.id || undefined);
       setNotifySuccess(true);
       setTimeout(() => {
         setNotifySuccess(false);
       }, 3000);
     } catch (error) {
+      // Optionally handle error
     } finally {
       setNotifyLoading(false);
     }
