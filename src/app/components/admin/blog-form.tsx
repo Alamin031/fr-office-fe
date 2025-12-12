@@ -149,7 +149,7 @@ export function BlogForm({ initialData, isEditing = false }: BlogFormProps) {
       form.append('title', formData.title);
       form.append('slug', formData.slug);
       form.append('excerpt', formData.excerpt);
-      form.append('content', formData.content);
+      form.append('content', JSON.stringify(editorData));
       form.append('status', formData.status);
       if (formData.readTime) form.append('readTime', formData.readTime);
       if (formData.publishedAt) form.append('publishedAt', new Date(formData.publishedAt).toISOString());
