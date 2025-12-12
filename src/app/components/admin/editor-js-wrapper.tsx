@@ -566,6 +566,15 @@ export function EditorJSWrapper({
           color: white;
         }
 
+        :global(.dark .editor-js-container .ce-editor) {
+          background-color: rgb(15, 23, 42) !important;
+        }
+
+        :global(.dark .editor-js-container .ce-editor__redactor) {
+          background-color: rgb(15, 23, 42) !important;
+          color: rgb(226, 232, 240);
+        }
+
         :global(.dark .editor-js-container .ce-code) {
           background-color: rgb(30, 41, 59);
           color: rgb(226, 232, 240);
