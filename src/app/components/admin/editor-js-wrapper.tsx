@@ -252,7 +252,7 @@ export function EditorJSWrapper({
             })}
           </div>
           {blockCount > 0 && (
-            <p className="text-xs text-slate-500 dark:text-slate-500 mt-3">
+            <p className="text-xs text-slate-500 mt-3">
               {blockCount} {blockCount === 1 ? 'block' : 'blocks'} added
             </p>
           )}
