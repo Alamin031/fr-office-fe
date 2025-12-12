@@ -479,22 +479,31 @@ export function EditorJSWrapper({
         }
 
         :global(.editor-js-container .ce-toolbar__plus) {
-          width: 2.5rem;
-          height: 2.5rem;
-          background-color: rgb(59, 130, 246);
+          width: 2.75rem;
+          height: 2.75rem;
+          background: linear-gradient(135deg, rgb(59, 130, 246), rgb(37, 99, 235));
           color: white;
-          border-radius: 0.375rem;
+          border-radius: 0.5rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 1.25rem;
-          transition: all 0.2s;
-          box-shadow: 0 1px 3px rgba(59, 130, 246, 0.3);
+          font-size: 1.5rem;
+          font-weight: bold;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+          border: none;
+          cursor: pointer;
         }
 
         :global(.editor-js-container .ce-toolbar__plus:hover) {
-          background-color: rgb(37, 99, 235);
-          box-shadow: 0 4px 6px rgba(59, 130, 246, 0.4);
+          background: linear-gradient(135deg, rgb(37, 99, 235), rgb(29, 78, 216));
+          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+          transform: translateY(-2px);
+        }
+
+        :global(.editor-js-container .ce-toolbar__plus:active) {
+          transform: translateY(0);
+          box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
         }
 
         :global(.editor-js-container .ce-toolbar__settings-btn) {
