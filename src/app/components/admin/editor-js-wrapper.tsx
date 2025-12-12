@@ -233,7 +233,7 @@ export function EditorJSWrapper({
                   key={block.id}
                   onClick={() => addBlock(block.id)}
                   type="button"
-                  className="editor-block-btn group relative flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-slate-700/50 transition-all duration-200 min-h-[80px]"
+                  className="editor-block-btn group relative flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 min-h-[80px]"
                   title={block.description}
                 >
                   {Icon ? (
