@@ -221,8 +221,8 @@ export function EditorJSWrapper({
     <div className="editor-wrapper space-y-4">
       {/* Quick Add Toolbar */}
       {!readOnly && (
-        <div className="editor-toolbar bg-slate-50 dark:bg-slate-900/30 rounded-lg border border-slate-200 dark:border-slate-800 p-4">
-          <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-3 uppercase tracking-wider">
+        <div className="editor-toolbar bg-white dark:bg-white rounded-lg border border-slate-200 dark:border-slate-800 p-4">
+          <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">
             Quick Add Block
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -233,17 +233,17 @@ export function EditorJSWrapper({
                   key={block.id}
                   onClick={() => addBlock(block.id)}
                   type="button"
-                  className="editor-block-btn group relative flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-slate-700/50 transition-all duration-200 min-h-[80px]"
+                  className="editor-block-btn group relative flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-slate-300 bg-white hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 min-h-[80px]"
                   title={block.description}
                 >
                   {Icon ? (
-                    <Icon className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                    <Icon className="w-5 h-5 text-slate-600 group-hover:text-blue-600 transition-colors" />
                   ) : (
-                    <span className="text-lg font-bold text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <span className="text-lg font-bold text-slate-600 group-hover:text-blue-600 transition-colors">
                       {block.icon}
                     </span>
                   )}
-                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">
+                  <span className="text-xs font-medium text-slate-700 text-center">
                     {block.name}
                   </span>
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-400 to-blue-600 rounded-b-lg scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -252,7 +252,7 @@ export function EditorJSWrapper({
             })}
           </div>
           {blockCount > 0 && (
-            <p className="text-xs text-slate-500 dark:text-slate-500 mt-3">
+            <p className="text-xs text-slate-500 mt-3">
               {blockCount} {blockCount === 1 ? 'block' : 'blocks'} added
             </p>
           )}
@@ -261,8 +261,9 @@ export function EditorJSWrapper({
 
       {/* Editor Container */}
       <div
-        className="editor-container bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden transition-shadow hover:shadow-sm"
+        className="editor-container bg-white border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden transition-shadow hover:shadow-sm"
         style={{
+          backgroundColor: 'white',
           boxShadow: isReady ? 'none' : '0 0 0 1px rgba(0,0,0,0.1)',
         }}
       >
@@ -287,7 +288,7 @@ export function EditorJSWrapper({
       </div>
 
       {/* Helper Text */}
-      <div className="editor-help text-xs text-slate-500 dark:text-slate-400 space-y-2">
+      <div className="editor-help text-xs text-slate-500 space-y-2">
         <p className="flex items-start gap-2">
           <span className="inline-block w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
           <span>
@@ -567,55 +568,55 @@ export function EditorJSWrapper({
         }
 
         :global(.dark .editor-js-container .ce-editor) {
-          background-color: rgb(15, 23, 42) !important;
+          background-color: white !important;
         }
 
         :global(.dark .editor-js-container .ce-editor__redactor) {
-          background-color: rgb(15, 23, 42) !important;
-          color: rgb(226, 232, 240);
+          background-color: white !important;
+          color: rgb(30, 41, 59);
         }
 
         :global(.dark .editor-js-container .ce-code) {
-          background-color: rgb(30, 41, 59);
-          color: rgb(226, 232, 240);
-          border-color: rgb(71, 85, 105);
+          background-color: rgb(248, 250, 252);
+          color: rgb(30, 41, 59);
+          border-color: rgb(203, 213, 225);
         }
 
         :global(.dark .editor-js-container .ce-inline-toolbar) {
-          background-color: rgb(30, 41, 59);
-          border-color: rgb(71, 85, 105);
+          background-color: white;
+          border-color: rgb(226, 232, 240);
         }
 
         :global(.dark .editor-js-container .ce-inline-toolbar__button) {
-          color: rgb(203, 213, 225);
+          color: rgb(71, 85, 105);
         }
 
         :global(.dark .editor-js-container .ce-popover) {
-          background-color: rgb(30, 41, 59);
-          border-color: rgb(71, 85, 105);
+          background-color: white;
+          border-color: rgb(226, 232, 240);
         }
 
         :global(.dark .editor-js-container .ce-popover__item) {
-          color: rgb(226, 232, 240);
+          color: rgb(71, 85, 105);
         }
 
         :global(.dark .editor-js-container .ce-popover__item:hover) {
-          background-color: rgb(51, 65, 85);
+          background-color: rgb(248, 250, 252);
           color: rgb(59, 130, 246);
         }
 
         :global(.dark .editor-js-container .ce-image figcaption) {
-          background-color: rgb(51, 65, 85);
-          border-top-color: rgb(71, 85, 105);
-          color: rgb(148, 163, 184);
+          background-color: rgb(248, 250, 252);
+          border-top-color: rgb(226, 232, 240);
+          color: rgb(100, 116, 139);
         }
 
         :global(.dark .editor-js-container .ce-quote) {
-          color: rgb(148, 163, 184);
+          color: rgb(71, 85, 105);
         }
 
         :global(.dark .editor-js-container .ce-list) {
-          color: rgb(226, 232, 240);
+          color: rgb(30, 41, 59);
         }
       `}</style>
     </div>
