@@ -4,6 +4,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { OutputData } from '@editorjs/editorjs';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -16,6 +17,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { EditorJSWrapper } from './editor-js-wrapper';
 import blogsService, { BlogPost } from '../../lib/api/services/blogs';
 
 interface BlogFormProps {
@@ -29,11 +31,38 @@ export function BlogForm({ initialData, isEditing = false }: BlogFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [editorData, setEditorData] = useState<OutputData>(() => {
+    if (initialData?.content) {
+      try {
+        return JSON.parse(typeof initialData.content === 'string' ? initialData.content : JSON.stringify(initialData.content));
+      } catch {
+        // Fallback if content is not valid JSON
+        return {
+          blocks: [
+            {
+              id: 'initial',
+              type: 'paragraph',
+              data: {
+                text: initialData.content || '',
+              },
+            },
+          ],
+          version: '2.28.2',
+          time: Date.now(),
+        };
+      }
+    }
+    return {
+      blocks: [],
+      version: '2.28.2',
+      time: Date.now(),
+    };
+  });
+
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     slug: initialData?.slug || '',
     excerpt: initialData?.excerpt || '',
-    content: initialData?.content || '',
     publishedAt: initialData?.publishedAt ? new Date(initialData.publishedAt).toISOString().slice(0, 16) : '',
     readTime: initialData?.readTime !== undefined && initialData?.readTime !== null ? String(initialData.readTime) : '',
     status: (initialData?.status as 'draft' | 'published') || 'draft',
@@ -89,14 +118,13 @@ export function BlogForm({ initialData, isEditing = false }: BlogFormProps) {
     if (
       !formData.title ||
       !formData.slug ||
-      !formData.excerpt ||
-      !formData.content
+      !formData.excerpt
     ) {
       setError('Please fill in all required fields');
       return false;
     }
-    if (formData.content.length < 100) {
-      setError('Content must be at least 100 characters');
+    if (!editorData.blocks || editorData.blocks.length === 0) {
+      setError('Please add content to your blog post');
       return false;
     }
     // Require one image
@@ -121,7 +149,7 @@ export function BlogForm({ initialData, isEditing = false }: BlogFormProps) {
       form.append('title', formData.title);
       form.append('slug', formData.slug);
       form.append('excerpt', formData.excerpt);
-      form.append('content', formData.content);
+      form.append('content', JSON.stringify(editorData));
       form.append('status', formData.status);
       if (formData.readTime) form.append('readTime', formData.readTime);
       if (formData.publishedAt) form.append('publishedAt', new Date(formData.publishedAt).toISOString());
@@ -320,21 +348,18 @@ export function BlogForm({ initialData, isEditing = false }: BlogFormProps) {
             <CardTitle>Content</CardTitle>
           </CardHeader>
           <CardContent>
-            <Label htmlFor="content">
+            <Label>
               Full Content <span className="text-red-500">*</span>
             </Label>
-            <textarea
-              id="content"
-              name="content"
-              placeholder="Write your blog post content here. Supports markdown formatting."
-              value={formData.content}
-              onChange={handleInputChange}
-              required
-              className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary font-mono"
-              rows={15}
-            />
+            <div className="mt-2">
+              <EditorJSWrapper
+                value={editorData}
+                onChange={setEditorData}
+                placeholder="Write your blog post content here. Add headings, text, lists, images, code blocks, and more..."
+              />
+            </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Supports markdown: # Headings, ## Subheadings, - Lists, etc.
+              Use the toolbar to add different content blocks: headings, paragraphs, lists, images, code, quotes, and more.
             </p>
           </CardContent>
         </Card>
