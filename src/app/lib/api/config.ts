@@ -225,4 +225,10 @@ export const API_ENDPOINTS = {
   HOMECATEGORY_GET: '/homecategory/{id}',
   HOMECATEGORY_UPDATE: '/homecategory/{id}',
   HOMECATEGORY_DELETE: '/homecategory/{id}',
+  // Delivery Methods
+  DELIVERY_METHODS_GET: '/delivery-methods',
+  DELIVERY_METHODS_CREATE: '/delivery-methods',
+  DELIVERY_METHODS_GET_ONE: '/delivery-methods/{id}',
+  DELIVERY_METHODS_UPDATE: '/delivery-methods/{id}',
+  DELIVERY_METHODS_DELETE: '/delivery-methods/{id}',
 };

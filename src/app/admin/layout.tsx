@@ -26,6 +26,7 @@ const sidebarLinks = [
   {href: '/admin/banners', label: 'Banners', icon: ImageIcon},
   {href: '/admin/brand', label: 'Brand', icon: TrendingUp},
   {href: '/admin/categories', label: 'Categories', icon: FolderTree},
+  {href: '/admin/delivery', label: 'Delivery Methods', icon: Package},
   {href: '/admin/emi', label: 'EMI Plans', icon: CreditCard},
   {href: '/admin/products', label: 'Products', icon: Package},
   {href: '/admin/giveaways', label: 'Giveaways', icon: Gift},
