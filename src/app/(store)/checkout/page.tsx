@@ -173,19 +173,33 @@ export default function CheckoutPage() {
           if (typeof dynamicInputs !== 'object' || dynamicInputs === null) {
             dynamicInputs = {};
           }
+
+          // Calculate the correct price based on selected variants
+          const itemPrice = getProductPriceWithType(item.product, item.selectedVariants);
+
           return {
             productId: item.product.id,
             productName: item.product.name,
-            price: item.product.price === null ? undefined : item.product.price, // <-- Fix here
+            price: itemPrice,
             quantity: item.quantity,
+            // Variant information from selected variants
+            region: item.selectedVariants?.region || undefined,
+            regionName: item.selectedVariants?.regionName || undefined,
+            network: item.selectedVariants?.network || undefined,
+            networkName: item.selectedVariants?.networkName || undefined,
             color: item.color || item.selectedVariants?.color || undefined,
+            colorName: item.selectedVariants?.colorName || undefined,
             storage: item.storage || item.selectedVariants?.storage || undefined,
+            storageName: item.selectedVariants?.storageName || undefined,
             RAM: item.RAM || item.selectedVariants?.RAM || item.selectedVariants?.ram || undefined,
             sim: item.sim || item.selectedVariants?.sim || undefined,
+            priceType: item.selectedVariants?.priceType || 'offer',
             image: Array.isArray(item.product.images) && item.product.images.length > 0
               ? (typeof item.product.images[0] === 'string' ? item.product.images[0] : item.product.images[0].imageUrl)
               : '',
             dynamicInputs,
+            // Full selectedVariants for backend flexibility
+            selectedVariants: item.selectedVariants,
           };
         }),
         total,
