@@ -29,8 +29,8 @@ export const useCartStore = create<CartStore>()(
           const sim = variants.sim || undefined;
           const dynamicInputs = variants.dynamicInputs || undefined;
 
-          // Calculate the price for this product with selected variants
-          const price = getProductDisplayPrice(product, variants);
+          // Calculate the price for this product with selected variants and price type
+          const price = getProductPriceWithType(product, variants);
 
           if (existingItem) {
             return {
