@@ -130,12 +130,8 @@ export function getProductDisplayPrice(product: any, selectedVariants?: Record<s
  * Used for cart items where user selected offer or regular price
  */
 export function getProductPriceWithType(product: any, selectedVariants?: Record<string, string>): number {
-  const priceData = getDefaultProductPrice(product);
-  const priceType = selectedVariants?.priceType;
-  if (priceType === 'regular') {
-    return priceData.regularPrice;
-  }
-  return priceData.discountPrice;
+  // Use the display price which already handles variant selection
+  return getProductDisplayPrice(product, selectedVariants);
 }
 
 /**
