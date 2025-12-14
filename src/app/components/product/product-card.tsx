@@ -6,7 +6,7 @@ import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, ArrowLeftRight, ShoppingCart, Eye } from "lucide-react";
+import { Heart, ArrowLeftRight, Eye } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { useCartStore } from "@/app/store/cart-store";
@@ -29,7 +29,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const addToCart = useCartStore((state) => state.addItem);
   const {
     addItem: addToWishlist,
     removeItem: removeFromWishlist,
@@ -70,12 +69,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
     }
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!isOutOfStock) {
-      addToCart(product, 1);
-    }
-  };
 
   // Extract image URL from product images array
   const getImageUrl = (img: any): string => {
@@ -198,24 +191,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </Link>
         </div>
 
-        {/* Add to Cart Button */}
-        <div
-          className={cn(
-            "absolute bottom-0 left-0 right-0 p-3 transition-all duration-300",
-            isHovered
-              ? "translate-y-0 opacity-100"
-              : "translate-y-full opacity-0"
-          )}
-        >
-          <Button
-            className="w-full gap-2 shadow-md"
-            disabled={isOutOfStock}
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart className="h-4 w-4" />
-            {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-          </Button>
-        </div>
       </div>
 
       {/* Content */}

@@ -156,20 +156,35 @@ export function CompareContent() {
             {/* Specifications */}
             <div className="flex-1 space-y-3 p-4">
               {sortedSpecKeys.length > 0 ? (
-                sortedSpecKeys.map((specKey) => {
-                  const specItem = Array.isArray(product.specifications)
-                    ? product.specifications.find((s: any) => s.specKey === specKey)
-                    : null
-                  const displayValue = specItem?.specValue || "N/A"
-                  return (
-                    <div key={specKey} className="border-b border-border pb-3 last:border-b-0">
-                      <p className="text-xs font-medium text-muted-foreground">{specKey}</p>
-                      <p className="text-sm font-medium">
-                        {displayValue}
-                      </p>
-                    </div>
+                (() => {
+                  const query = (searchQueries[product.id] || "").toLowerCase().trim()
+                  const filteredSpecs = sortedSpecKeys
+                    .map((specKey) => {
+                      const specItem = Array.isArray(product.specifications)
+                        ? product.specifications.find((s: any) => s.specKey === specKey)
+                        : null
+                      const displayValue = specItem?.specValue || "N/A"
+                      return { specKey, displayValue, specItem }
+                    })
+                    .filter((spec) => {
+                      if (!query) return true
+                      return (
+                        spec.specKey.toLowerCase().includes(query) ||
+                        String(spec.displayValue).toLowerCase().includes(query)
+                      )
+                    })
+
+                  return filteredSpecs.length > 0 ? (
+                    filteredSpecs.map(({ specKey, displayValue }) => (
+                      <div key={specKey} className="border-b border-border pb-3 last:border-b-0">
+                        <p className="text-xs font-medium text-muted-foreground">{specKey}</p>
+                        <p className="text-sm font-medium">{displayValue}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No specs match your search</p>
                   )
-                })
+                })()
               ) : (
                 <p className="text-xs text-muted-foreground">No specifications available</p>
               )}
