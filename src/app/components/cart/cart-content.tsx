@@ -11,7 +11,6 @@ import { Separator } from "../ui/separator"
 import { formatPrice } from "@/app/lib/utils/format"
 import { useCartStore } from "@/app/store/cart-store"
 import { useAuthStore } from "@/app/store/auth-store"
-import { getProductDisplayPrice } from "@/app/lib/utils/product"
 
 export function CartContent() {
   const router = useRouter()
