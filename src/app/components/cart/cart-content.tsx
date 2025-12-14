@@ -184,7 +184,7 @@ export function CartContent() {
                       <Plus className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="font-semibold">{formatPrice(getProductDisplayPrice(item.product) * item.quantity)}</p>
+                  <p className="font-semibold">{formatPrice(getProductDisplayPrice(item.product, item.selectedVariants) * item.quantity)}</p>
                 </div>
               </div>
             </div>
