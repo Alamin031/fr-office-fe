@@ -28,7 +28,6 @@ import {cn} from '@/app/lib/utils';
 import {EmiOptionsModal} from './emi-options-modal';
 import {CarePlansDisplay} from './care-plans-display';
 import {NotifyProductDialog} from './notify-product-dialog';
-import {CompanyDealModal} from './company-deal-modal';
 import {careService, type ProductCarePlan} from '@/app/lib/api/services/care';
 import {emiService, type EmiPlan} from '@/app/lib/api/services/emi';
 import {notificationService, productNotifyService} from '@/app/lib/api/services/notify';
@@ -112,7 +111,6 @@ export function ProductInfoRegion({
   const [carePlusSelected, setCarePlusSelected] = useState(false);
   const [notifyDialogOpen, setNotifyDialogOpen] = useState(false);
   const [emiModalOpen, setEmiModalOpen] = useState(false);
-  const [companyDealModalOpen, setCompanyDealModalOpen] = useState(false);
   const [notifyLoading, setNotifyLoading] = useState(false);
   const [notifySuccess, setNotifySuccess] = useState(false);
   const [selectedPriceType, setSelectedPriceType] = useState<
@@ -873,7 +871,7 @@ export function ProductInfoRegion({
             variant="greentransparent"
             size="icon"
             className="h-11 px-5 rounded-lg"
-            onClick={() => setCompanyDealModalOpen(true)}>
+            onClick={() => router.push('/corporate-deals')}>
             <span className="text-emerald-600 font-semibold text-sm">Company Deal</span>
           </Button>
         </div>
@@ -1037,11 +1035,6 @@ export function ProductInfoRegion({
         open={notifyDialogOpen}
         onOpenChange={setNotifyDialogOpen}
         product={product}
-      />
-      {/* Company Deal Modal */}
-      <CompanyDealModal
-        open={companyDealModalOpen}
-        onOpenChange={setCompanyDealModalOpen}
       />
     </div>
   );
