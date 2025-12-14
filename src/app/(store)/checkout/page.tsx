@@ -553,8 +553,7 @@ export default function CheckoutPage() {
                     <p className="font-semibold mt-2">
                       {item.product
                         ? formatPrice(
-                            ((item.product?.comparePrice ?? item.product?.price ?? 0) *
-                              item.quantity),
+                            getProductDisplayPrice(item.product) * item.quantity,
                           )
                         : null}
                     </p>
