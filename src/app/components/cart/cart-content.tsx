@@ -83,13 +83,37 @@ export function CartContent() {
               >
                 {(() => {
                   let imgSrc = null;
+                  const rawProduct = (item.product as any).rawProduct;
+
+                  // Try to get image from product.images array first
                   if (Array.isArray(item.product.images) && item.product.images.length > 0) {
-                    // Prefer object with imageUrl, fallback to string
-                    const firstImg = item.product.images.find(img => img && (typeof img === 'object' ? img.imageUrl : img));
-                    if (firstImg) {
-                      imgSrc = typeof firstImg === 'string' ? firstImg : firstImg.imageUrl;
+                    const firstImg = item.product.images[0];
+                    if (typeof firstImg === 'string') {
+                      imgSrc = firstImg;
+                    } else if (firstImg && typeof firstImg === 'object') {
+                      imgSrc = firstImg.imageUrl || (firstImg as any).url;
                     }
                   }
+
+                  // Fallback: try to get from rawProduct.directColors for basic products
+                  if (!imgSrc && rawProduct?.directColors && Array.isArray(rawProduct.directColors)) {
+                    const firstColor = rawProduct.directColors[0];
+                    if (firstColor?.colorImage) {
+                      imgSrc = firstColor.colorImage;
+                    }
+                  }
+
+                  // Fallback: try to get from rawProduct.networks for network products
+                  if (!imgSrc && rawProduct?.networks && Array.isArray(rawProduct.networks)) {
+                    const firstNetwork = rawProduct.networks[0];
+                    if (firstNetwork?.colors && Array.isArray(firstNetwork.colors)) {
+                      const firstColor = firstNetwork.colors[0];
+                      if (firstColor?.colorImage) {
+                        imgSrc = firstColor.colorImage;
+                      }
+                    }
+                  }
+
                   if (!imgSrc) {
                     return (
                       <div className="w-full h-full flex items-center justify-center bg-gray-100">

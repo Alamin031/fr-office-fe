@@ -37,6 +37,7 @@ import {
 import {formatPrice} from '../../lib/utils/format';
 import {useCartStore} from '../../store/cart-store';
 import {useAuthStore} from '../../store/auth-store';
+import {getProductDisplayPrice, getProductPriceWithType} from '../../lib/utils/product';
 import {toast} from 'sonner';
 
 export default function CheckoutPage() {
@@ -172,19 +173,33 @@ export default function CheckoutPage() {
           if (typeof dynamicInputs !== 'object' || dynamicInputs === null) {
             dynamicInputs = {};
           }
+
+          // Calculate the correct price based on selected variants
+          const itemPrice = getProductPriceWithType(item.product, item.selectedVariants);
+
           return {
             productId: item.product.id,
             productName: item.product.name,
-            price: item.product.price === null ? undefined : item.product.price, // <-- Fix here
+            price: itemPrice,
             quantity: item.quantity,
+            // Variant information from selected variants
+            region: item.selectedVariants?.region || undefined,
+            regionName: item.selectedVariants?.regionName || undefined,
+            network: item.selectedVariants?.network || undefined,
+            networkName: item.selectedVariants?.networkName || undefined,
             color: item.color || item.selectedVariants?.color || undefined,
+            colorName: item.selectedVariants?.colorName || undefined,
             storage: item.storage || item.selectedVariants?.storage || undefined,
+            storageName: item.selectedVariants?.storageName || undefined,
             RAM: item.RAM || item.selectedVariants?.RAM || item.selectedVariants?.ram || undefined,
             sim: item.sim || item.selectedVariants?.sim || undefined,
+            priceType: item.selectedVariants?.priceType || 'offer',
             image: Array.isArray(item.product.images) && item.product.images.length > 0
               ? (typeof item.product.images[0] === 'string' ? item.product.images[0] : item.product.images[0].imageUrl)
               : '',
             dynamicInputs,
+            // Full selectedVariants for backend flexibility
+            selectedVariants: item.selectedVariants,
           };
         }),
         total,
@@ -494,12 +509,37 @@ export default function CheckoutPage() {
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
                     {(() => {
                       let imgSrc = null;
+                      const rawProduct = (item.product as any).rawProduct;
+
+                      // Try to get image from product.images array first
                       if (Array.isArray(item.product.images) && item.product.images.length > 0) {
-                        const firstImg = item.product.images.find(img => img && (typeof img === 'object' ? img.imageUrl : img));
-                        if (firstImg) {
-                          imgSrc = typeof firstImg === 'string' ? firstImg : firstImg.imageUrl;
+                        const firstImg = item.product.images[0];
+                        if (typeof firstImg === 'string') {
+                          imgSrc = firstImg;
+                        } else if (firstImg && typeof firstImg === 'object') {
+                          imgSrc = firstImg.imageUrl || (firstImg as any).url;
                         }
                       }
+
+                      // Fallback: try to get from rawProduct.directColors for basic products
+                      if (!imgSrc && rawProduct?.directColors && Array.isArray(rawProduct.directColors)) {
+                        const firstColor = rawProduct.directColors[0];
+                        if (firstColor?.colorImage) {
+                          imgSrc = firstColor.colorImage;
+                        }
+                      }
+
+                      // Fallback: try to get from rawProduct.networks for network products
+                      if (!imgSrc && rawProduct?.networks && Array.isArray(rawProduct.networks)) {
+                        const firstNetwork = rawProduct.networks[0];
+                        if (firstNetwork?.colors && Array.isArray(firstNetwork.colors)) {
+                          const firstColor = firstNetwork.colors[0];
+                          if (firstColor?.colorImage) {
+                            imgSrc = firstColor.colorImage;
+                          }
+                        }
+                      }
+
                       if (!imgSrc) {
                         return (
                           <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -527,8 +567,7 @@ export default function CheckoutPage() {
                     <p className="font-semibold mt-2">
                       {item.product
                         ? formatPrice(
-                            ((item.product?.comparePrice ?? item.product?.price ?? 0) *
-                              item.quantity),
+                            getProductDisplayPrice(item.product) * item.quantity,
                           )
                         : null}
                     </p>
