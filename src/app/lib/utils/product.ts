@@ -122,7 +122,7 @@ export function getProductDisplayPrice(product: any, selectedVariants?: Record<s
 
   // Fallback to default price
   const { discountPrice } = getDefaultProductPrice(product);
-  return discountPrice;
+  return discountPrice || 0;
 }
 
 /**
