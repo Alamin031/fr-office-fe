@@ -60,7 +60,7 @@ export function ProductTabs({ product, faqs = [] }: ProductTabsProps) {
           <div className="overflow-hidden rounded-2xl border border-border">
             <table className="w-full">
               <tbody>
-                {Object.entries(product.specifications).map(([key, value], index) => (
+                {Object.entries(product.specifications ?? {}).map(([key, value], index) => (
                   <tr
                     key={key}
                     className={cn(
@@ -85,11 +85,11 @@ export function ProductTabs({ product, faqs = [] }: ProductTabsProps) {
                 dangerouslySetInnerHTML={{ __html: product.description || '' }}
               />
             </div>
-            {product.highlights.length > 0 && (
+            {(product.highlights?.length ?? 0) > 0 && (
               <div>
                 <h3 className="text-xl font-bold mb-4">Key Features</h3>
                 <ul className="grid gap-3">
-                  {product.highlights.map((highlight, index) => (
+                  {product.highlights?.map((highlight, index) => (
                     <li key={index} className="flex gap-3 items-start">
                       <div className="h-2 w-2 rounded-full bg-foreground mt-2 shrink-0" />
                       <span className="text-muted-foreground leading-relaxed">{highlight}</span>

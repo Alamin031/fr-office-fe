@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type {Metadata} from 'next';
@@ -282,7 +283,7 @@ export default async function ProductPage({params}: ProductPageProps) {
         </div>
 
         {/* Related Products */}
-        {relatedProducts.length > 0 && (
+        {/* {relatedProducts.length > 0 && (
           <div className="mt-16">
             <ProductSection
               title="Related Products"
@@ -291,7 +292,7 @@ export default async function ProductPage({params}: ProductPageProps) {
               viewAllLink={`/category/${product.category.slug}`}
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

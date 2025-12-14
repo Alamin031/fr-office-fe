@@ -59,18 +59,18 @@ export function ProductInfo({product}: ProductInfoProps) {
   const isOutOfStock = priceInfo.stockQuantity === 0;
 
   // Group variants by type
-  const variantsByType = product.variants.reduce((acc, variant) => {
+  const variantsByType = (product.variants ?? []).reduce((acc, variant) => {
     if (!acc[variant.type]) {
       acc[variant.type] = [];
     }
-    acc[variant.type].push(variant);
+    acc[variant.type]!.push(variant);
     return acc;
   }, {} as Record<string, typeof product.variants>);
 
   // Calculate total price with variants and care+
   const variantPriceModifier = Object.entries(selectedVariants).reduce(
     (total, [type, value]) => {
-      const variant = product.variants.find(
+      const variant = product.variants?.find(
         v => v.type === type && v.value === value,
       );
       return total + (variant?.priceModifier || 0);
@@ -130,7 +130,7 @@ export function ProductInfo({product}: ProductInfoProps) {
 
       {/* Rating & SKU */}
       <div className="mt-3 flex flex-wrap items-center gap-4">
-        {product.rating > 0 && (
+        {(product.rating ?? 0) > 0 && (
           <div className="flex items-center gap-1">
             <div className="flex">
               {Array.from({length: 5}).map((_, i) => (
@@ -138,7 +138,7 @@ export function ProductInfo({product}: ProductInfoProps) {
                   key={i}
                   className={cn(
                     'h-4 w-4',
-                    i < Math.floor(product.rating)
+                    i < Math.floor(product.rating ?? 0)
                       ? 'fill-[oklch(0.75_0.15_85)] text-[oklch(0.75_0.15_85)]'
                       : 'fill-muted text-muted',
                   )}
@@ -147,7 +147,7 @@ export function ProductInfo({product}: ProductInfoProps) {
                 </svg>
               ))}
             </div>
-            <span className="text-sm font-medium">{product.rating}</span>
+            <span className="text-sm font-medium">{product.rating ?? 0}</span>
             <span className="text-sm text-muted-foreground">
               ({product.reviewCount} reviews)
             </span>
@@ -185,9 +185,9 @@ export function ProductInfo({product}: ProductInfoProps) {
             className="bg-muted-foreground/10 text-muted-foreground">
             Out of Stock
           </Badge>
-        ) : product.stock <= 10 ? (
+        ) : (product.stock ?? 0) <= 10 ? (
           <Badge className="bg-[oklch(0.55_0.2_25)]/10 text-[oklch(0.55_0.2_25)] hover:bg-[oklch(0.55_0.2_25)]/10">
-            Only {product.stock} left in stock
+            Only {product.stock ?? 0} left in stock
           </Badge>
         ) : (
           <Badge className="bg-[oklch(0.55_0.2_145)]/10 text-[oklch(0.45_0.2_145)] hover:bg-[oklch(0.55_0.2_145)]/10">
@@ -205,7 +205,7 @@ export function ProductInfo({product}: ProductInfoProps) {
             {type}: {selectedVariants[type] || 'Select'}
           </h3>
           <div className="flex flex-wrap gap-2">
-            {variants.map((variant, index) => (
+            {(variants ?? []).map((variant, index) => (
               <button
                 key={variant.id || variant.value || index}
                 onClick={() =>
@@ -254,9 +254,9 @@ export function ProductInfo({product}: ProductInfoProps) {
             {quantity}
           </span>
           <button
-            onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+            onClick={() => setQuantity(Math.min(product.stock ?? 1, quantity + 1))}
             className="px-4 py-3 text-lg font-medium transition-colors hover:bg-muted disabled:opacity-50"
-            disabled={quantity >= product.stock}>
+            disabled={quantity >= (product.stock ?? 1)}>
             +
           </button>
         </div>
@@ -318,7 +318,7 @@ export function ProductInfo({product}: ProductInfoProps) {
       <div>
         <h3 className="mb-3 font-semibold">Highlights</h3>
         <ul className="space-y-2">
-          {product.highlights.map((highlight, index) => (
+          {product.highlights?.map((highlight, index) => (
             <li key={index} className="flex items-start gap-2 text-sm">
               <Check className="mt-0.5 h-4 w-4 shrink-0 text-[oklch(0.45_0.2_145)]" />
               {highlight}

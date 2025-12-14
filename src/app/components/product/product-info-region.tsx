@@ -584,11 +584,11 @@ export function ProductInfoRegion({
       {/* Rating & Stock Status */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 text-sm text-foreground">
-          {(product.ratingPoint && product.ratingPoint > 0) || (product.rating > 0) ? (
+          {(product.ratingPoint && product.ratingPoint > 0) || ((product.rating ?? 0) > 0) ? (
             <div className="flex items-center gap-2">
               <div className="flex gap-1">
                 {Array.from({length: 5}).map((_, i) => {
-                  const ratingValue = product.ratingPoint || product.rating;
+                  const ratingValue = product.ratingPoint || (product.rating ?? 0);
                   return (
                     <svg
                       key={i}
@@ -604,8 +604,8 @@ export function ProductInfoRegion({
                   );
                 })}
               </div>
-              <span className="font-semibold">{(product.ratingPoint || product.rating).toFixed(1)}</span>
-              {product.reviewCount > 0 && (
+              <span className="font-semibold">{(product.ratingPoint || (product.rating ?? 0)).toFixed(1)}</span>
+              {typeof product.reviewCount === 'number' && product.reviewCount > 0 && (
                 <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
               )}
             </div>
