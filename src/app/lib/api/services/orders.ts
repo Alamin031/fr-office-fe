@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiClient } from "../client"
 import {
   Order,
@@ -47,13 +48,12 @@ export const ordersService = {
   },
 
   /**
-   * Get order by order number
+   * Get order tracking info by order number
    */
   getByOrderNumber: async (orderNumber: string): Promise<Order> => {
-    const response = await apiClient.get<Order>(API_ENDPOINTS.PRODUCTS_SEARCH, {
-      params: { orderNumber },
-    })
-    return response.data
+    const endpoint = API_ENDPOINTS.ORDERS_TRACKING.replace("{orderNumber}", orderNumber);
+    const response = await apiClient.get<Order>(endpoint);
+    return response.data;
   },
 
   /**
@@ -68,9 +68,9 @@ export const ordersService = {
   /**
    * Generate invoice for order
    */
-  generateInvoice: async (id: string): Promise<OrderInvoiceResponse> => {
+  generateInvoice: async (id: string): Promise<any> => {
     const endpoint = API_ENDPOINTS.ORDERS_INVOICE.replace("{id}", id)
-    const response = await apiClient.get<OrderInvoiceResponse>(endpoint)
+    const response = await apiClient.get<any>(endpoint)
     return response.data
   },
 
@@ -83,18 +83,18 @@ export const ordersService = {
   },
 
   /**
-   * Track order
+   * Track order (new backend endpoint)
    */
   track: async (orderNumber: string): Promise<{
-    order: Order
-    status: string
-    estimatedDelivery: string
-    trackingUpdates: Array<{ date: string; status: string; location: string }>
+    orderNumber: string;
+    status: string;
+    timeline: Array<{ status: string; date: string }>;
+    shippingAddress: any;
+    paymentSummary: any;
   }> => {
-    const response = await apiClient.get(API_ENDPOINTS.TRACK_ORDER || "/orders/track", {
-      params: { orderNumber },
-    })
-    return response.data
+    const endpoint = API_ENDPOINTS.ORDERS_TRACKING.replace("{orderNumber}", orderNumber);
+    const response = await apiClient.get(endpoint);
+    return response.data;
   },
 }
 

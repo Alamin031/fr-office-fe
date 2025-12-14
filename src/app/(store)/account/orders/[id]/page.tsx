@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import Link from "next/link"
@@ -9,45 +10,115 @@ import { Badge } from "../../../../components/ui/badge"
 import { Separator } from "../../../../components/ui/separator"
 import { formatPrice } from "../../../../lib/utils/format"
 import { withProtectedRoute } from "../../../../lib/auth/protected-route"
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
+import { ordersService } from "../../../../lib/api/services/orders"
 
-const orderDetails = {
-  id: "ORD-2024-001",
-  date: "Nov 20, 2024",
-  status: "Delivered",
-  deliveredDate: "Nov 23, 2024",
-  paymentMethod: "Credit Card ending in 4242",
-  items: [
-    {
-      name: "iPhone 15 Pro Max",
-      image: "/iphone-15-pro-max-display.png",
-      price: 129999,
-      quantity: 1,
-      variant: "256GB - Natural Titanium",
-    },
-  ],
-  subtotal: 129999,
-  shipping: 0,
-  tax: 23400,
-  discount: 5000,
-  total: 148399,
-  shippingAddress: {
-    name: "John Doe",
-    phone: "+91 98765 43210",
-    address: "123 Main Street, Apartment 4B",
-    city: "Mumbai",
-    state: "Maharashtra",
-    pincode: "400001",
-  },
-  timeline: [
-    { status: "Order Placed", date: "Nov 20, 2024 10:30 AM", completed: true },
-    { status: "Order Confirmed", date: "Nov 20, 2024 10:35 AM", completed: true },
-    { status: "Shipped", date: "Nov 21, 2024 02:15 PM", completed: true },
-    { status: "Out for Delivery", date: "Nov 23, 2024 09:00 AM", completed: true },
-    { status: "Delivered", date: "Nov 23, 2024 11:45 AM", completed: true },
-  ],
+// Map backend timeline to UI timeline
+function mapOrderTimeline(tracking: {
+  timeline?: { status?: string; date?: string; completed?: boolean; label?: string }[];
+}) {
+  if (tracking && Array.isArray(tracking.timeline)) {
+    let foundCurrent = false;
+    return tracking.timeline.map((item) => {
+      let completed = false;
+      if (item.completed !== undefined) {
+        completed = item.completed;
+      } else if (item.status) {
+        // Mark all previous statuses as completed until the current one
+        if (!foundCurrent && ["delivered", "cancelled", "returned"].includes(item.status)) {
+          completed = true;
+        } else if (!foundCurrent) {
+          completed = true;
+        } else {
+          completed = false;
+        }
+      }
+      if (item.status && ["delivered", "cancelled", "returned"].includes(item.status)) {
+        foundCurrent = true;
+      }
+      return {
+        status: item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : item.label,
+        date: item.date ? new Date(item.date).toLocaleString() : '',
+        completed,
+      };
+    });
+  }
+  return [];
 }
 
+
 function OrderDetailPage() {
+    // Download Invoice handler
+    const handleDownloadInvoice = async () => {
+      try {
+        if (!tracking?.orderNumber) return;
+        const invoice = await ordersService.generateInvoice(tracking.orderNumber);
+        if (invoice?.pdfUrl) {
+          window.open(invoice.pdfUrl, '_blank');
+        } else if (invoice?.html) {
+          // fallback: open HTML in new tab
+          const newWindow = window.open();
+          if (newWindow) {
+            newWindow.document.write(invoice.html);
+            newWindow.document.close();
+          }
+        } else {
+          alert("Invoice not available.");
+        }
+      } catch {
+        alert("Failed to download invoice.");
+      }
+    };
+  const params = useParams();
+  const orderId = params?.id;
+  type Tracking = {
+    orderNumber: string;
+    status: string;
+    timeline: { status: string; date: string; completed?: boolean; label?: string }[];
+    shippingAddress: any;
+    paymentSummary: any;
+    orderItems?: any[];
+    items?: any[];
+  } | null;
+
+  const [tracking, setTracking] = useState<Tracking>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!orderId) return;
+    // Use the new tracking endpoint for details page
+    setLoading(true);
+    const id = Array.isArray(orderId) ? orderId[0] : orderId;
+    ordersService.track(id)
+      .then((data) => {
+        setTracking(data);
+        setError(null);
+      })
+      .catch(() => setError("Failed to load order details."))
+      .finally(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderId]);
+
+  if (loading) {
+    return <div className="py-12 text-center">Loading...</div>;
+  }
+  if (error) {
+    return <div className="py-12 text-center text-red-500">{error}</div>;
+  }
+  if (!tracking) {
+    return <div className="py-12 text-center">Order not found.</div>;
+  }
+
+  const timeline = Array.isArray(tracking?.timeline) ? mapOrderTimeline(tracking) : [];
+  const shippingAddress = tracking && typeof tracking.shippingAddress === 'object' && tracking.shippingAddress !== null ? tracking.shippingAddress : {};
+  const paymentSummary = tracking && typeof tracking.paymentSummary === 'object' && tracking.paymentSummary !== null ? tracking.paymentSummary : {};
+  // Prefer orderItems if available, fallback to items
+  const items = Array.isArray(tracking?.orderItems) && tracking.orderItems.length > 0
+    ? tracking.orderItems
+    : (Array.isArray(tracking?.items) ? tracking.items : []);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -57,11 +128,11 @@ function OrderDetailPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{orderDetails.id}</h1>
-          <p className="text-muted-foreground">Placed on {orderDetails.date}</p>
+          <h1 className="text-2xl font-bold tracking-tight">{tracking.orderNumber || orderId}</h1>
+          {/* You can add placed date if available */}
         </div>
         <Badge className="ml-auto bg-green-500/10 text-green-600 border-green-200" variant="outline">
-          {orderDetails.status}
+          {tracking.status ? tracking.status.charAt(0).toUpperCase() + tracking.status.slice(1) : "-"}
         </Badge>
       </div>
 
@@ -73,66 +144,35 @@ function OrderDetailPage() {
             </CardHeader>
             <CardContent>
               <div className="relative space-y-6">
-                {orderDetails.timeline.map((event, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="relative flex flex-col items-center">
-                      <div
-                        className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                          event.completed ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {event.completed ? (
-                          <CheckCircle2 className="h-4 w-4" />
-                        ) : (
-                          <div className="h-2 w-2 rounded-full bg-current" />
+                {timeline.length === 0 ? (
+                  <div className="text-muted-foreground">No timeline available</div>
+                ) : (
+                  timeline.map((event, index) => (
+                    <div key={index} className="flex gap-4">
+                      <div className="relative flex flex-col items-center">
+                        <div
+                          className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                            event.completed ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {event.completed ? (
+                            <CheckCircle2 className="h-4 w-4" />
+                          ) : (
+                            <div className="h-2 w-2 rounded-full bg-current" />
+                          )}
+                        </div>
+                        {index < timeline.length - 1 && (
+                          <div className={`absolute top-8 h-full w-0.5 ${event.completed ? "bg-primary" : "bg-muted"}`} />
                         )}
                       </div>
-                      {index < orderDetails.timeline.length - 1 && (
-                        <div className={`absolute top-8 h-full w-0.5 ${event.completed ? "bg-primary" : "bg-muted"}`} />
-                      )}
+                      <div className="pb-6">
+                        <p className="font-medium">{event.status}</p>
+                        <p className="text-sm text-muted-foreground">{event.date}</p>
+                      </div>
                     </div>
-                    <div className="pb-6">
-                      <p className="font-medium">{event.status}</p>
-                      <p className="text-sm text-muted-foreground">{event.date}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Items Ordered</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {orderDetails.items.map((item, index) => (
-                <div key={index} className="flex gap-4 rounded-lg border border-border p-4">
-                  <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
-                    <Image
-                      src={item.image || "/placeholder.svg"}
-                      alt={item.name}
-                      width={96}
-                      height={96}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">{item.variant}</p>
-                    <p className="mt-2 text-sm">Qty: {item.quantity}</p>
-                    <p className="mt-1 font-semibold">{formatPrice(item.price)}</p>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Button variant="outline" size="sm">
-                      Write Review
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Buy Again
-                    </Button>
-                  </div>
-                </div>
-              ))}
             </CardContent>
           </Card>
         </div>
@@ -147,15 +187,14 @@ function OrderDetailPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-1 text-sm">
-                <p className="font-medium">{orderDetails.shippingAddress.name}</p>
-                <p className="text-muted-foreground">{orderDetails.shippingAddress.address}</p>
+                <p className="font-medium">{shippingAddress.fullName || shippingAddress.name || '-'}</p>
+                <p className="text-muted-foreground">{shippingAddress.address || '-'}</p>
                 <p className="text-muted-foreground">
-                  {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.state} -{" "}
-                  {orderDetails.shippingAddress.pincode}
+                  {(shippingAddress.division || '-')}, {(shippingAddress.district || shippingAddress.city || '-')} - {(shippingAddress.postCode || shippingAddress.pincode || '-')}
                 </p>
                 <p className="flex items-center gap-1 text-muted-foreground">
                   <Phone className="h-3 w-3" />
-                  {orderDetails.shippingAddress.phone}
+                  {shippingAddress.phone || '-'}
                 </p>
               </div>
             </CardContent>
@@ -168,43 +207,32 @@ function OrderDetailPage() {
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>{formatPrice(orderDetails.subtotal)}</span>
+                <span>{formatPrice(paymentSummary.subtotal || 0)}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Shipping</span>
-                <span className="text-green-600">FREE</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tax (GST)</span>
-                <span>{formatPrice(orderDetails.tax)}</span>
-              </div>
-              {orderDetails.discount > 0 && (
+              {paymentSummary.discount > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Discount</span>
-                  <span className="text-green-600">-{formatPrice(orderDetails.discount)}</span>
+                  <span className="text-green-600">-{formatPrice(paymentSummary.discount)}</span>
                 </div>
               )}
               <Separator />
               <div className="flex justify-between font-semibold">
                 <span>Total</span>
-                <span>{formatPrice(orderDetails.total)}</span>
+                <span>{formatPrice(paymentSummary.total || 0)}</span>
               </div>
-              <p className="text-xs text-muted-foreground">Paid via {orderDetails.paymentMethod}</p>
+              <p className="text-xs text-muted-foreground">Paid via {paymentSummary.paymentMethod || '-'}</p>
             </CardContent>
           </Card>
 
           <div className="space-y-2">
-            <Button variant="outline" className="w-full bg-transparent">
+            <Button variant="outline" className="w-full bg-transparent" onClick={handleDownloadInvoice}>
               Download Invoice
-            </Button>
-            <Button variant="outline" className="w-full bg-transparent">
-              Need Help?
             </Button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default withProtectedRoute(OrderDetailPage, {

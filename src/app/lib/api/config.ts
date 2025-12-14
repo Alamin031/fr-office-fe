@@ -106,13 +106,13 @@ export const API_ENDPOINTS = {
   
 
   // Orders
-  ORDERS_CREATE: '/orders',
-  ORDERS_GET: '/orders',
-  ORDERS_GET_ONE: '/orders/{id}',
-  ORDERS_UPDATE_STATUS: '/orders/{id}/status',
-  ORDERS_INVOICE: '/orders/{id}/invoice',
-  ORDERS_CALCULATE_EMI: '/orders/calculate-emi',
-  TRACK_ORDER: '/orders/track',
+  ORDERS_CREATE: '/orders', // POST: Create order
+  ORDERS_GET: '/orders', // GET: Get all orders (Admin/Management)
+  ORDERS_GET_ONE: '/orders/{id}', // GET: Get order by ID
+  ORDERS_TRACKING: '/orders/tracking/{orderNumber}', // GET: Get order tracking info by order number (User)
+  ORDERS_UPDATE_STATUS: '/orders/{id}/status', // PATCH: Update order status (Admin/Management)
+  ORDERS_INVOICE: '/orders/{id}/invoice', // GET: Generate invoice for order
+  ORDERS_CALCULATE_EMI: '/orders/calculate-emi', // POST: Calculate EMI for amount
 
   // Warranty
   WARRANTY_ACTIVATE: '/warranty/activate',
