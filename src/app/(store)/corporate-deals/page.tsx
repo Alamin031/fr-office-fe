@@ -1,11 +1,7 @@
-import { Metadata } from 'next'
+'use client'
+
 import { CheckCircle2, Award, Users, Zap, Shield, Handshake, ArrowRight, Phone, Mail } from 'lucide-react'
 import { Button } from '@/app/components/ui/button'
-
-export const metadata: Metadata = {
-  title: 'Corporate Deals & Partnerships',
-  description: 'Premium solutions designed for businesses and organizations seeking quality electronics and gadgets.',
-}
 
 export default function CorporateDealsPage() {
   return (
