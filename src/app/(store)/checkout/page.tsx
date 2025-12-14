@@ -37,6 +37,7 @@ import {
 import {formatPrice} from '../../lib/utils/format';
 import {useCartStore} from '../../store/cart-store';
 import {useAuthStore} from '../../store/auth-store';
+import {getProductDisplayPrice} from '../../lib/utils/product';
 import {toast} from 'sonner';
 
 export default function CheckoutPage() {
