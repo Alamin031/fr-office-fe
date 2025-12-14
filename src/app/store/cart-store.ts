@@ -3,16 +3,6 @@ import { persist } from "zustand/middleware"
 import { CartItem, Product } from "../types"
 import { getProductDisplayPrice } from "../lib/utils/product"
 
-interface SerializedCartItem extends Omit<CartItem, 'product'> {
-  product: {
-    id: string
-    name: string
-    slug: string
-    brand?: { id: string; name: string } | null
-    images?: string[] | Array<{ imageUrl: string }>
-  }
-}
-
 interface CartStore {
   items: CartItem[]
   addItem: (product: Product, quantity?: number, variants?: Record<string, string>) => void
