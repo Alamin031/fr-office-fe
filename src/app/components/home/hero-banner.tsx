@@ -78,7 +78,7 @@ export function HeroBanner() {
     return (
       <div
         className="relative overflow-hidden rounded-2xl bg-muted w-full flex items-center justify-center"
-        style={{ aspectRatio: "1920/600" }}
+        style={{ aspectRatio: "1920/800" }}
       >
         <span className="text-muted-foreground">No banners available</span>
       </div>
@@ -92,7 +92,7 @@ export function HeroBanner() {
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
-        <div className="relative w-full" style={{ aspectRatio: "1920/600" }}>
+        <div className="relative w-full" style={{ aspectRatio: "1920/800" }}>
           {banners.map((banner, index) => (
             <div
               key={banner.id}
@@ -153,27 +153,24 @@ export function HeroBanner() {
         </div>
       </div>
       <div className="rounded-lg bg-background border border-border overflow-hidden">
-        <div className="grid grid-cols-2 md:grid-cols-4">
+        <div className="grid grid-cols-4">
           {features.map((feature, index) => (
             <div
               key={feature.title}
               className={cn(
-                "flex flex-col items-center justify-center text-center p-6 hover:bg-muted/50 transition-colors border-border",
-                index < 2 && "border-b md:border-b-0",
-                index === 0 && "border-r",
-                index === 1 && "md:border-r",
-                index === 2 && "border-r md:border-r"
+                "flex flex-col items-center justify-center text-center p-2 sm:p-6 hover:bg-muted/50 transition-colors border-border",
+                index < 3 && "border-r"
               )}
             >
-              <div className="flex items-center justify-center mb-3">
+              <div className="flex items-center justify-center mb-1 sm:mb-3">
                 <feature.icon
-                  className="h-6 w-6 text-foreground"
+                  className="h-4 w-4 sm:h-6 sm:w-6 text-foreground"
                   strokeWidth={1.5}
                 />
               </div>
               <div>
-                <p className="text-sm font-semibold mb-1">{feature.title}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[10px] sm:text-sm font-semibold mb-0.5 sm:mb-1">{feature.title}</p>
+                <p className="text-[8px] sm:text-xs text-muted-foreground">
                   {feature.description}
                 </p>
               </div>

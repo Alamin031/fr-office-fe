@@ -359,7 +359,7 @@ function SectionImages({
                   accept="image/*"
                   multiple
                 />
-                <p className="text-xs text-muted-foreground">Upload one or more images (1920×600 recommended)</p>
+                <p className="text-xs text-muted-foreground">Upload one or more images (1920×800 recommended)</p>
               </div>
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => setIsUploadDialogOpen(false)}>

@@ -64,7 +64,7 @@ export default async function Page() {
             <ProductSectionLazy
               title={hc.name}
               subtitle={hc.description}
-              products={hc.products}
+              products={hc.products?.slice(0, 5) ?? []}
               viewAllLink={
                 hc.products && hc.products.length > 0
                   ? `/products?homecategory=${hc.id}`
@@ -86,7 +86,7 @@ export default async function Page() {
               <ProductSectionLazy
                 title={hc.name}
                 subtitle={hc.description}
-                products={hc.products}
+                products={hc.products?.slice(0, 5) ?? []}
                 viewAllLink={
                   hc.products && hc.products.length > 0
                     ? `/products?homecategory=${hc.id}`

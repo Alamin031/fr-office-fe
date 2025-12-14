@@ -40,7 +40,7 @@ export function ProductSection({
         </div>
         {viewAllLink && (
           <Link href={viewAllLink}>
-            <Button variant="ghost" className="gap-1">
+            <Button variant="outline" className="gap-1">
               View All
               <ArrowRight className="h-4 w-4" />
             </Button>

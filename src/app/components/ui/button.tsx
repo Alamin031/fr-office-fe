@@ -23,6 +23,7 @@ const buttonVariants = cva(
         fjhfhs: 'bg-green-500 text-white hover:bg-green-600 focus-visible:ring-green-300',
         greentransparent: 'bg-green-100 text-green-600 hover:bg-green-200 focus-visible:ring-green-200 dark:bg-green-100 dark:text-green-400',
         orangetransparent: 'bg-orange-100 text-orange-600 hover:bg-orange-200 focus-visible:ring-orange-200 dark:bg-100 dark:text-orange-400',
+        orange: 'bg-orange-600 text-white hover:bg-orange-700 focus-visible:ring-orange-300 dark:bg-orange-500 dark:hover:bg-orange-600',
         redtransparent: 'bg-red-100 text-red-600 hover:bg-red-200 focus-visible:ring-red-200 dark:bg-100 dark:text-red-400',
         warning: 'bg-yellow-500 text-black hover:bg-yellow-600 focus-visible:ring-yellow-200 dark:bg-yellow-500',
         info: 'bg-sky-500 text-white hover:bg-sky-600 focus-visible:ring-sky-200 dark:bg-sky-400',

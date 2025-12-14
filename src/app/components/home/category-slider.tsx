@@ -20,22 +20,23 @@ export function CategorySlider({ categories }: CategorySliderProps) {
 
   return (
     <div className="flex flex-col items-center gap-8 w-full">
-      <div className="w-full grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {displayedCategories.map((category) => (
+      <div className="w-full grid grid-cols-3 gap-2 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        {displayedCategories.map((category, index) => (
           <Link
             key={category.slug}
             href={`/category/${category.slug}`}
-            className="group flex flex-col items-center gap-2 justify-center"
+            className={`group flex flex-col items-center gap-2 justify-center ${index >= 6 ? 'hidden sm:flex' : ''}`}
           >
             <div
               style={{
-                height: "9rem",
-                width: "9rem",
+                height: "5rem",
+                width: "5rem",
                 background: "none",
                 position: "relative",
                 border: "2px solid #e5e7eb", // Tailwind's border-muted color
                 borderRadius: "0.75rem" // rounded-xl
               }}
+              className="sm:w-[9rem] sm:h-[9rem]"
             >
               <Image
                 src={

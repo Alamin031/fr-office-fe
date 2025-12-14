@@ -180,7 +180,7 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
               </Button>
             </Link>
               <Link href="/giveaway" className="hidden sm:inline-flex">
-                <Button variant="outline" size="sm" className="text-sm font-medium">
+                <Button variant="orangetransparent" size="sm" className="text-sm font-medium">
                   Giveaway
                 </Button>
               </Link>
@@ -350,6 +350,14 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
                             className="block rounded-md px-4 py-3 text-base font-medium transition-colors hover:bg-accent active:bg-accent/70"
                           >
                             Track Order
+                          </Link>
+                        </SheetClose>
+                        <SheetClose asChild>
+                          <Link
+                            href="/giveaway"
+                            className="block rounded-md px-4 py-3 text-base font-medium transition-colors hover:bg-accent active:bg-accent/70"
+                          >
+                            Giveaway
                           </Link>
                         </SheetClose>
                       </div>

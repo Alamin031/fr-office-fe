@@ -20,22 +20,13 @@ const footerLinks = {
     {name: 'Accessories', href: '/category/accessories'},
   ],
   support: [
-    {name: 'Contact Us', href: '/contact'},
-    {name: 'FAQs', href: '/faq'},
-    {name: 'Shipping Info', href: '/shipping'},
-    {name: 'Returns & Refunds', href: '/returns'},
-    {name: 'Warranty', href: '/warranty'},
+    // ...add items or keep empty...
   ],
   company: [
     {name: 'About Us', href: '/about'},
-    {name: 'Careers', href: '/careers'},
+    {name: 'Contact Us', href: '/contact'},
+    {name: 'Giveaway', href: '/giveaway'},
     {name: 'Blog', href: '/blog'},
-    {name: 'API List', href: '/api-list'},
-  ],
-  legal: [
-    {name: 'Privacy Policy', href: '/privacy'},
-    {name: 'Terms of Service', href: '/terms'},
-    {name: 'Refund Policy', href: '/refund-policy'},
   ],
 };
 
@@ -203,16 +194,6 @@ export function Footer() {
               © {new Date().getFullYear()} Friend&apos;s Telecom. All rights
               reserved.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              {footerLinks.legal.map(link => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm text-gray-400 transition-colors hover:text-white">
-                  {link.name}
-                </Link>
-              ))}
-            </div>
           </div>
         </div>
       </div>

@@ -866,14 +866,6 @@ export function ProductInfoRegion({
               <span className="text-emerald-600 font-semibold">EMI</span>
             </Button>
           )}
-          {/* Company Deal Button */}
-          <Button
-            variant="greentransparent"
-            size="icon"
-            className="h-11 px-5 rounded-lg"
-            onClick={() => router.push('/corporate-deals')}>
-            <span className="text-emerald-600 font-semibold text-sm">Company Deal</span>
-          </Button>
         </div>
 
         {/* Add to Cart or Notify Button */}
@@ -923,6 +915,15 @@ export function ProductInfoRegion({
           disabled={isOutOfStock}
           onClick={handleBuyNow}>
           Buy Now
+        </Button>
+
+        {/* Company Deal Button */}
+        <Button
+          variant="orange"
+          size="lg"
+          className="w-full h-12 text-base font-semibold rounded-lg"
+          onClick={() => router.push('/corporate-deals')}>
+          <span className="font-semibold">Company Deal</span>
         </Button>
       </div>
 

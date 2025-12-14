@@ -5,35 +5,40 @@ import blogsService from "@/app/lib/api/services/blogs"
 import { Button } from "../ui/button"
 
 export async function BlogSection() {
+  let blogPosts
   try {
     const postsResponse = await blogsService.getAll()
-    const blogPosts = postsResponse.data.slice(0, 4)
+    blogPosts = postsResponse.data.slice(0, 4)
+  } catch (error) {
+    console.error("Error fetching blog posts:", error)
+    return null
+  }
 
-    if (!blogPosts.length) {
-      return null
-    }
+  if (!blogPosts.length) {
+    return null
+  }
 
-    return (
-      <section className="py-12 md:py-16">
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">
-              Latest from Blog
-            </h2>
-            <p className="text-muted-foreground">
-              Expert reviews, guides, and technology insights
-            </p>
-          </div>
-          <a href="/blog">
-            <Button 
-              variant="outline" 
-              className="hidden sm:flex items-center gap-2 rounded-lg"
-            >
-              View All
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </a>
+  return (
+    <section className="py-12 md:py-16">
+      <div className="mb-10 flex items-end justify-between">
+        <div>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">
+            Latest from Blog
+          </h2>
+          <p className="text-muted-foreground">
+            Expert reviews, guides, and technology insights
+          </p>
         </div>
+        <a href="/blog">
+          <Button 
+            variant="outline" 
+            className="hidden sm:flex items-center gap-2 rounded-lg"
+          >
+            View All
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </a>
+      </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {blogPosts.map((post) => (
@@ -42,7 +47,7 @@ export async function BlogSection() {
               href={`/blog/${post.slug}`}
               className="group h-full"
             >
-              <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full border-border/50 hover:border-emerald-300 dark:hover:border-emerald-700">
+              <Card className="overflow-hidden rounded-xl bg-card shadow-md transition-all duration-300 flex flex-col h-full hover:-translate-y-1 hover:shadow-2xl">
                 <div className="relative aspect-video overflow-hidden bg-muted">
                   <Image
                     src={post.image || "/placeholder.svg"}
@@ -61,7 +66,7 @@ export async function BlogSection() {
                       {post.excerpt}
                     </p>
                   </div>
-                  <div className="mt-4 flex items-center gap-3 pt-3 border-t border-border/30 text-xs text-muted-foreground">
+                  <div className="mt-4 flex items-center gap-3 pt-3 text-xs text-muted-foreground/90">
                     {post.publishedAt && (
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
@@ -84,23 +89,19 @@ export async function BlogSection() {
           ))}
         </div>
 
-        {/* Mobile View All Button */}
-        <div className="mt-8 sm:hidden">
-          <a href="/blog" className="block">
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="w-full rounded-lg flex items-center justify-center gap-2"
-            >
-              View All Articles
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </a>
-        </div>
-      </section>
-    )
-  } catch (error) {
-    console.error("Error fetching blog posts:", error)
-    return null
-  }
+      {/* Mobile View All Button */}
+      <div className="mt-8 sm:hidden">
+        <a href="/blog" className="block">
+          <Button 
+            variant="outline" 
+            size="lg"
+            className="w-full rounded-lg flex items-center justify-center gap-2"
+          >
+            View All Articles
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </a>
+      </div>
+    </section>
+  )
 }

@@ -57,7 +57,7 @@ export function BottomBanner() {
     return (
       <div
         className="relative overflow-hidden rounded-2xl bg-muted w-full flex items-center justify-center"
-        style={{ aspectRatio: "1920/600" }}
+        style={{ aspectRatio: "1920/800" }}
       >
         <span className="text-muted-foreground">No banners available</span>
       </div>
@@ -71,7 +71,7 @@ export function BottomBanner() {
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
       {/* Slides */}
-      <div className="relative w-full" style={{ aspectRatio: "1920/600" }}>
+      <div className="relative w-full" style={{ aspectRatio: "1920/800" }}>
         {banners.map((banner, index) => (
           <div
             key={banner.id}
