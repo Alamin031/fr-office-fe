@@ -502,16 +502,22 @@ export function ProductInfoRegion({
     }
 
     // Add to cart and redirect to checkout
-    if (!isOutOfStock && selectedRegion && selectedColor && selectedStorage) {
-      addToCart(product, quantity, {
+    if (!isOutOfStock && selectedRegion && selectedColor) {
+      const variants: Record<string, string> = {
         region: selectedRegion.id,
         regionName: selectedRegion.name,
         color: selectedColor.id,
         colorName: selectedColor.name,
-        storage: selectedStorage.id,
-        storageName: selectedStorage.size,
         priceType: selectedPriceType,
-      });
+      };
+
+      // Add storage info if it exists (for network/region products with storage)
+      if (selectedStorage) {
+        variants.storage = selectedStorage.id;
+        variants.storageName = selectedStorage.size;
+      }
+
+      addToCart(product, quantity, variants);
 
       // Redirect to checkout
       router.push('/checkout');
