@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { CartItem, Product } from "../types"
-import { getProductDisplayPrice } from "../lib/utils/product"
+import { getProductPriceWithType } from "../lib/utils/product"
 
 interface CartStore {
   items: CartItem[]
