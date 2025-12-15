@@ -1164,6 +1164,68 @@ function AdminOrdersPage() {
         </SheetContent>
       </Sheet>
 
+      {/* Status Update Dialog */}
+      <Dialog open={statusUpdateOpen} onOpenChange={setStatusUpdateOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Update Order Status</DialogTitle>
+            <DialogDescription>
+              Change the status for order {statusUpdateData.orderId}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {formErrors.status && (
+              <div className="rounded-lg bg-red-50 border border-red-200 p-3">
+                <p className="text-sm text-red-600">{formErrors.status}</p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="status-select" className="text-sm font-medium">
+                New Status
+              </Label>
+              <Select
+                value={statusUpdateData.newStatus}
+                onValueChange={(value) => {
+                  setStatusUpdateData({ ...statusUpdateData, newStatus: value })
+                  if (formErrors.status) {
+                    setFormErrors({ ...formErrors, status: "" })
+                  }
+                }}
+              >
+                <SelectTrigger id="status-select">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ORDER_STATUSES.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setStatusUpdateOpen(false)}
+              disabled={statusUpdating}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleStatusUpdate}
+              disabled={statusUpdating}
+            >
+              {statusUpdating ? "Updating..." : "Update Status"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   )
 }
