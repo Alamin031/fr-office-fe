@@ -1088,6 +1088,9 @@ function AdminOrdersPage() {
           </div>
 
           <SheetFooter className="border-t pt-4 gap-2">
+            {formErrors.submit && (
+              <p className="text-sm text-red-500 w-full text-center py-2">{formErrors.submit}</p>
+            )}
             <Button
               variant="outline"
               onClick={() => setAddDrawerOpen(false)}
