@@ -147,12 +147,8 @@ export function ProductCard({product, className}: ProductCardProps) {
           )}
         </div>
 
-        {/* Quick Actions */}
-        <div
-          className={cn(
-            'absolute right-3 top-3 flex flex-col gap-2 transition-all duration-300',
-            isHovered ? 'translate-x-0 opacity-100' : 'translate-x-2 opacity-0',
-          )}>
+        {/* Quick Actions - Bottom Right */}
+        <div className="absolute bottom-3 right-3 flex flex-col gap-2">
           <Button
             variant="secondary"
             size="icon"
@@ -162,17 +158,6 @@ export function ProductCard({product, className}: ProductCardProps) {
             )}
             onClick={handleWishlistToggle}>
             <Heart className={cn('h-4 w-4', inWishlist && 'fill-current')} />
-          </Button>
-          <Button
-            variant="secondary"
-            size="icon"
-            className={cn(
-              'h-9 w-9 rounded-full shadow-md',
-              inCompare &&
-                'bg-foreground text-background hover:bg-foreground/90',
-            )}
-            onClick={handleCompareToggle}>
-            <ArrowLeftRight className="h-4 w-4" />
           </Button>
           <Link href={`/product/${product.slug}`}>
             <Button
