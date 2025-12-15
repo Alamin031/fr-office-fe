@@ -11,7 +11,13 @@ import {
 import {Input} from '../ui/input';
 import {Button} from '../ui/button';
 
-const footerLinks = {
+type FooterLink = { name: string; href: string };
+
+const footerLinks: {
+  shop: FooterLink[];
+  support: FooterLink[];
+  company: FooterLink[];
+} = {
   shop: [
     {name: 'All Products', href: '/products'},
     {name: 'Smartphones', href: '/category/smartphones'},

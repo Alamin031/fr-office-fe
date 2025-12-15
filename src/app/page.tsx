@@ -29,7 +29,6 @@ export default async function Page() {
       slug: c.slug ?? "",
     })
   );
-  console.log('Fetched homecategories:', homecategories);
   const sortedHomecategories = [...homecategories].sort(
     (a, b) => (a.priority ?? 999) - (b.priority ?? 999)
   );
