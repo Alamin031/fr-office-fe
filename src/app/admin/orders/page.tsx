@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useState, useEffect } from "react"
@@ -103,7 +104,7 @@ function AdminOrdersPage() {
       setError(null)
       try {
         const res = await ordersService.getAll(1, 100)
-        let fetchedOrders: ApiOrder[] = []
+        let fetchedOrders: any[] = []
 
         if (Array.isArray(res)) {
           fetchedOrders = res
@@ -111,20 +112,22 @@ function AdminOrdersPage() {
           fetchedOrders = res.data
         }
 
-        const mappedOrders = fetchedOrders.map((order: ApiOrder) => ({
+        const mappedOrders = fetchedOrders.map((order: any) => ({
           id: order.id,
-          customer: order.shippingAddress?.fullName || order.shippingAddress?.name || "Unknown",
-          email: order.shippingAddress?.email || "",
+          customer: order.fullName || order.customer?.fullName || "Unknown",
+          email: order.email || order.customer?.email || "",
           items: (order.orderItems || []).length,
           total: order.total,
           status: order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : "Pending",
           payment: order.paymentStatus ? order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1) : "Pending",
-          date: new Date(order.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }),
-          address: order.shippingAddress?.address || "",
-          phone: order.shippingAddress?.phone || "",
+          date: order.createdAt
+            ? new Date(order.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+            : "",
+          address: order.address || order.customer?.address || "",
+          phone: order.phone || order.customer?.phone || "",
           orderItems: (order.orderItems || []).map((item: any, idx: number) => ({
-            id: String(idx),
-            name: item.productName || item.name || "Product",
+            id: item.id || String(idx),
+            name: item.productName || "Product",
             quantity: item.quantity,
             price: item.price,
           })),
