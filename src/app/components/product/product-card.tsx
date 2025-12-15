@@ -148,7 +148,7 @@ export function ProductCard({product, className}: ProductCardProps) {
         </div>
 
         {/* Quick Actions - Bottom Right */}
-        <div className="absolute bottom-3 right-3 flex flex-col gap-2 rounded-lg bg-muted p-2 shadow-md">
+        <div className="absolute bottom-3 right-3 flex flex-col gap-2 rounded-lg bg-stone-500 p-2 shadow-md">
           <Button
             variant="secondary"
             size="icon"
