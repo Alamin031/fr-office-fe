@@ -19,7 +19,6 @@ import { Label } from "../../components/ui/label"
 import { Textarea } from "../../components/ui/textarea"
 import { formatPrice } from "../../lib/utils/format"
 import { ordersService } from "../../lib/api/services"
-import type { Order as ApiOrder } from "../../lib/api/types"
 
 interface OrderItem {
   id: string

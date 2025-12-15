@@ -29,12 +29,10 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
-    // Handle 401 (Unauthorized) and 403 (Forbidden) errors
     if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
       originalRequest._retry = true
       try {
         const authStore = useAuthStore.getState()
-        // Clear everything on auth error
         authStore.logout()
 
         if (typeof window !== "undefined") {
