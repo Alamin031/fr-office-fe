@@ -563,6 +563,10 @@ function AdminOrdersPage() {
                                     <Eye className="mr-2 h-4 w-4" />
                                     View Details
                                   </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openStatusUpdateDialog(order)}>
+                                    <span className="mr-2">📊</span>
+                                    Update Status
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem onClick={() => handlePrintInvoice(order)}>
                                     <Printer className="mr-2 h-4 w-4" />
                                     Print Invoice
