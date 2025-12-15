@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Search, Filter, Eye, MoreVertical, Download, Printer, Plus, Mail, X } from "lucide-react"
 import { withProtectedRoute } from "../../lib/auth/protected-route"
@@ -17,6 +17,8 @@ import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetT
 import { Label } from "../../components/ui/label"
 import { Textarea } from "../../components/ui/textarea"
 import { formatPrice } from "../../lib/utils/format"
+import { ordersService } from "../../lib/api/services"
+import type { Order as ApiOrder } from "../../lib/api/types"
 
 interface OrderItem {
   id: string
@@ -38,86 +40,6 @@ interface Order {
   phone?: string
   orderItems?: OrderItem[]
 }
-
-const initialOrders: Order[] = [
-  {
-    id: "ORD-2024-001",
-    customer: "John Doe",
-    email: "john@example.com",
-    items: 2,
-    total: 148399,
-    status: "Processing",
-    payment: "Paid",
-    date: "Nov 20, 2024",
-    address: "123 Main Street, Dhaka, Bangladesh",
-    phone: "+880 1234567890",
-    orderItems: [
-      { id: "1", name: "iPhone 15 Pro Max", quantity: 1, price: 129999 },
-      { id: "2", name: "Sony WH-1000XM5", quantity: 1, price: 29999 },
-    ],
-  },
-  {
-    id: "ORD-2024-002",
-    customer: "Jane Smith",
-    email: "jane@example.com",
-    items: 1,
-    total: 49999,
-    status: "Shipped",
-    payment: "Paid",
-    date: "Nov 19, 2024",
-    address: "456 Oak Avenue, Chittagong, Bangladesh",
-    phone: "+880 9876543210",
-    orderItems: [
-      { id: "3", name: "iPad Pro 12.9", quantity: 1, price: 49999 },
-    ],
-  },
-  {
-    id: "ORD-2024-003",
-    customer: "Bob Wilson",
-    email: "bob@example.com",
-    items: 3,
-    total: 79999,
-    status: "Delivered",
-    payment: "Paid",
-    date: "Nov 18, 2024",
-    address: "789 Pine Road, Sylhet, Bangladesh",
-    phone: "+880 5555555555",
-    orderItems: [
-      { id: "4", name: "Samsung Galaxy S24 Ultra", quantity: 1, price: 89999 },
-    ],
-  },
-  {
-    id: "ORD-2024-004",
-    customer: "Alice Brown",
-    email: "alice@example.com",
-    items: 1,
-    total: 15999,
-    status: "Pending",
-    payment: "Pending",
-    date: "Nov 17, 2024",
-    address: "321 Elm Street, Rajshahi, Bangladesh",
-    phone: "+880 3333333333",
-    orderItems: [
-      { id: "5", name: "Wireless Earbuds", quantity: 1, price: 15999 },
-    ],
-  },
-  {
-    id: "ORD-2024-005",
-    customer: "Charlie Davis",
-    email: "charlie@example.com",
-    items: 2,
-    total: 249999,
-    status: "Cancelled",
-    payment: "Refunded",
-    date: "Nov 16, 2024",
-    address: "654 Birch Lane, Khulna, Bangladesh",
-    phone: "+880 7777777777",
-    orderItems: [
-      { id: "6", name: "MacBook Air M3", quantity: 1, price: 79999 },
-      { id: "7", name: "Magic Mouse", quantity: 1, price: 10000 },
-    ],
-  },
-]
 
 function getStatusColor(status: string) {
   switch (status) {
