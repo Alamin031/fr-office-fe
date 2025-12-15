@@ -295,6 +295,50 @@ function AdminOrdersPage() {
     alert(`Invoice email sent to ${order.email}`)
   }
 
+  const handleStatusUpdate = async () => {
+    if (!statusUpdateData.newStatus) {
+      setFormErrors({ status: "Please select a status" })
+      return
+    }
+
+    setStatusUpdating(true)
+    try {
+      const statusLowerCase = statusUpdateData.newStatus.toLowerCase()
+      await ordersService.updateStatus(statusUpdateData.orderId, {
+        status: statusLowerCase as any,
+      })
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === statusUpdateData.orderId
+            ? {
+                ...order,
+                status: statusUpdateData.newStatus,
+              }
+            : order
+        )
+      )
+
+      setStatusUpdateOpen(false)
+      setStatusUpdateData({ orderId: "", newStatus: "" })
+      setFormErrors({})
+    } catch (err) {
+      setFormErrors({ status: "Failed to update status. Please try again." })
+      console.error("Error updating status:", err)
+    } finally {
+      setStatusUpdating(false)
+    }
+  }
+
+  const openStatusUpdateDialog = (order: Order) => {
+    setStatusUpdateData({
+      orderId: order.id,
+      newStatus: order.status,
+    })
+    setStatusUpdateOpen(true)
+    setFormErrors({})
+  }
+
   const handleAddOrder = async () => {
     if (!validateForm()) {
       return
