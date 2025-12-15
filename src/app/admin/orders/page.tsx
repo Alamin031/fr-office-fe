@@ -287,43 +287,64 @@ function AdminOrdersPage() {
     alert(`Invoice email sent to ${order.email}`)
   }
 
-  const handleAddOrder = () => {
+  const handleAddOrder = async () => {
     if (!validateForm()) {
       return
     }
 
     const validItems = newOrderForm.items.filter(item => item.name.trim() !== "")
     const totalAmount = validItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const newOrder: Order = {
-      id: `ORD-2024-${String(orders.length + 1).padStart(3, "0")}`,
-      customer: newOrderForm.customer,
-      email: newOrderForm.email,
-      items: validItems.length,
-      total: totalAmount,
-      status: newOrderForm.status,
-      payment: newOrderForm.payment,
-      date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }),
-      address: newOrderForm.address,
-      phone: newOrderForm.phone,
-      orderItems: validItems.map((item, idx) => ({
-        id: String(idx),
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-      })),
+
+    try {
+      const orderData = {
+        fullName: newOrderForm.customer,
+        email: newOrderForm.email,
+        phone: newOrderForm.phone,
+        address: newOrderForm.address,
+        orderItems: validItems.map((item) => ({
+          productName: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        total: totalAmount,
+      }
+
+      await ordersService.create(orderData as any)
+
+      const newOrder: Order = {
+        id: `ORD-${Date.now()}`,
+        customer: newOrderForm.customer,
+        email: newOrderForm.email,
+        items: validItems.length,
+        total: totalAmount,
+        status: newOrderForm.status,
+        payment: newOrderForm.payment,
+        date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }),
+        address: newOrderForm.address,
+        phone: newOrderForm.phone,
+        orderItems: validItems.map((item, idx) => ({
+          id: String(idx),
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      }
+      setOrders([newOrder, ...orders])
+      setAddDrawerOpen(false)
+      setFormErrors({})
+      setNewOrderForm({
+        customer: "",
+        email: "",
+        phone: "",
+        address: "",
+        items: [{ name: "", quantity: 1, price: 0 }],
+        status: "Pending",
+        payment: "Pending",
+      })
+    } catch (err) {
+      setFormErrors({ submit: "Failed to create order. Please try again." })
+      console.error("Error creating order:", err)
     }
-    setOrders([newOrder, ...orders])
-    setAddDrawerOpen(false)
-    setFormErrors({})
-    setNewOrderForm({
-      customer: "",
-      email: "",
-      phone: "",
-      address: "",
-      items: [{ name: "", quantity: 1, price: 0 }],
-      status: "Pending",
-      payment: "Pending",
-    })
   }
 
   const addOrderItem = () => {
