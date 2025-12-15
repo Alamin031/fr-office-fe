@@ -9,7 +9,6 @@ interface ProductSectionProps {
   title: string
   subtitle?: string
   products: Product[]
-  viewAllLink?: string
   badge?: string
   badgeColor?: string
   isLoading?: boolean
@@ -19,7 +18,6 @@ export function ProductSection({
   title,
   subtitle,
   products,
-  viewAllLink,
   badge,
   badgeColor = "bg-foreground",
   isLoading = false,
@@ -38,23 +36,23 @@ export function ProductSection({
           </div>
           {subtitle && <p className="mt-1 text-muted-foreground">{subtitle}</p>}
         </div>
-        {viewAllLink && (
-          <Link href={viewAllLink}>
-            <Button variant="outline" className="gap-1">
-              View All
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        )}
       </div>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted-foreground/30">
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
+            <div
+              key={i}
+              className="w-[240px] min-h-[320px] bg-muted animate-pulse rounded-[2rem] flex-shrink-0"
+            />
           ))
         ) : (
           products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <div
+              key={product.id}
+              className="w-[240px] min-h-[320px] flex-shrink-0 flex"
+            >
+              <ProductCard product={product} className="w-full h-full" />
+            </div>
           ))
         )}
       </div>

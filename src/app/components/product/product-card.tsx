@@ -93,7 +93,7 @@ export function ProductCard({product, className}: ProductCardProps) {
   return (
     <div
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg',
+        'group relative flex flex-col overflow-hidden rounded-[2rem] border-2 border-gray-200 bg-card transition-all duration-300 hover:shadow-lg',
         className,
       )}
       onMouseEnter={() => setIsHovered(true)}
