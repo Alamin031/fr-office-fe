@@ -1,18 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  Facebook,
-  Instagram,
-  Youtube,
-  Mail,
-  Phone,
-  MapPin,
-} from 'lucide-react';
+import {Facebook, Instagram, Youtube, Mail, Phone, MapPin} from 'lucide-react';
 import {Input} from '../ui/input';
 import {Button} from '../ui/button';
+import {useEffect, useState} from 'react';
+import {policiesService, Policy} from '../../lib/api';
 
-type FooterLink = { name: string; href: string };
-
+type FooterLink = {name: string; href: string};
 
 const footerLinks: {
   shop: FooterLink[];
@@ -38,6 +34,15 @@ const footerLinks: {
 };
 
 export function Footer() {
+  const [policies, setPolicies] = useState<Policy[]>([]);
+
+  useEffect(() => {
+    // Fetch all policies
+    policiesService.getAll().then(result => {
+      setPolicies(result.data);
+    });
+  }, []);
+
   return (
     <footer className="border-t border-gray-800 bg-black text-white">
       {/* Main Footer */}
@@ -74,7 +79,9 @@ export function Footer() {
                   placeholder="Enter your email"
                   className="h-9 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-gray-600"
                 />
-                <Button size="sm" className="h-9 bg-white text-black hover:bg-gray-200">
+                <Button
+                  size="sm"
+                  className="h-9 bg-white text-black hover:bg-gray-200">
                   Subscribe
                 </Button>
               </form>
@@ -141,6 +148,16 @@ export function Footer() {
                     href={link.href}
                     className="text-sm text-gray-400 transition-colors hover:text-white">
                     {link.name}
+                  </Link>
+                </li>
+              ))}
+              {/* All policies as links */}
+              {policies.map(policy => (
+                <li key={policy.slug}>
+                  <Link
+                    href={`/privacy-policy/${policy.slug}`}
+                    className="text-sm text-gray-400 transition-colors hover:text-white">
+                    {policy.title}
                   </Link>
                 </li>
               ))}

@@ -457,25 +457,25 @@ export interface GiveawayListResponse {
 
 // ==================== Policy Types ====================
 export interface Policy {
-  id: string
-  title: string
-  slug: string
-  content: string
-  type: "privacy" | "terms" | "shipping" | "return" | "refund" | "warranty" | "custom"
-  isPublished: boolean
-  orderIndex?: number
-  createdAt: string
-  updatedAt: string
+  id: string;
+  title: string;
+  slug: string;
+  content?: string;
+  type: "privacy" | "terms" | "shipping" | "return" | "refund" | "warranty" | "custom";
+  isPublished: boolean;
+  orderIndex: number; // <-- make required, not optional
+  createdAt: string;
+  updatedAt: string;
 }
 
 
 export interface CreatePolicyRequest {
   title: string;
-  content: string;
+  content?: string;
   type: Policy["type"];
   isPublished?: boolean;
   slug?: string;
-  orderIndex?: number;
+  orderIndex: number; // <-- make required, not optional
 }
 
 export interface UpdatePolicyRequest {

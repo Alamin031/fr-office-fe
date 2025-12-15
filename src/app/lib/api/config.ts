@@ -16,6 +16,11 @@ export const STORAGE_KEYS = {
 
 // API Endpoints
 export const API_ENDPOINTS = {
+    // Corporate Deals
+    CORPORATE_DEALS_GET: '/corporate-deals', // GET: Get all corporate deals
+    CORPORATE_DEALS_CREATE: '/corporate-deals', // POST: Create corporate deal
+    CORPORATE_DEALS_GET_ONE: '/corporate-deals/{id}', // GET: Get corporate deal by ID
+    CORPORATE_DEALS_DELETE: '/corporate-deals/{id}', // DELETE: Delete corporate deal
   // Blog
   BLOGS_GET: '/blogs',
   BLOGS_CREATE: '/blogs',
@@ -97,11 +102,17 @@ export const API_ENDPOINTS = {
   PRODUCT_CARE_BY_PRODUCT: '/products-new/care/product/{productId}',
 
   // Product Notification Requests
-    NOTIFICATIONS_STOCK_OUT: '/notifications/stock-out',
-    NOTIFICATIONS_BY: '/notifications/by',
-    NOTIFICATIONS_ALL: '/notifications',
-    NOTIFICATIONS_RESOLVE: '/notifications/{id}/resolve',
-    NOTIFICATIONS_DELETE: '/notifications/{id}',
+    NOTIFICATIONS_BY: '/notifications/by', // GET: Get notifications by filter
+    NOTIFICATIONS_UNREAD: '/notifications/unread', // GET: Get all unread notifications
+    NOTIFICATIONS_MARK_READ: '/notifications/{id}/read', // PATCH: Mark notification as read
+    NOTIFICATIONS_ALL: '/notifications', // GET: Get all notifications
+    NOTIFICATIONS_CREATE: '/notifications', // POST: Create notification
+    NOTIFICATIONS_RESOLVE: '/notifications/{id}/resolve', // PATCH: Resolve notification
+    NOTIFICATIONS_BY_USER: '/notifications/{userId}', // GET: Get notifications for a user
+    NOTIFICATIONS_USER_UNREAD: '/notifications/{userId}/unread', // GET: Get unread notifications for a user
+    NOTIFICATIONS_STOCK_OUT: '/notifications/stock-out', // POST: Stock out notification
+    NOTIFICATIONS_DELETE: '/notifications/{id}', // DELETE: Delete notification
+    NOTIFICATIONS_HEADER: '/notifications/header', // GET: Get notifications for header
 
   
 
@@ -134,6 +145,7 @@ export const API_ENDPOINTS = {
   POLICIES_PUBLISHED: '/policies/published',
   POLICIES_UPDATE: '/policies/{id}',
   POLICIES_DELETE: '/policies/{id}',
+  POLICIES_GET_BY_SLUG: '/policies/slug/{slug}', // <-- Add this line
 
   // FAQs
   FAQS_CREATE: '/faqs',

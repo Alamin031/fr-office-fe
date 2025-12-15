@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { ArrowLeft, CheckCircle2, MapPin, Phone } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card"
 import { Button } from "../../../../components/ui/button"
@@ -89,16 +89,20 @@ function OrderDetailPage() {
   useEffect(() => {
     if (!orderId) return;
     // Use the new tracking endpoint for details page
-    setLoading(true);
-    const id = Array.isArray(orderId) ? orderId[0] : orderId;
-    ordersService.track(id)
-      .then((data) => {
+    const fetchOrder = async () => {
+      setLoading(true);
+      const id = Array.isArray(orderId) ? orderId[0] : orderId;
+      try {
+        const data = await ordersService.track(id);
         setTracking(data);
         setError(null);
-      })
-      .catch(() => setError("Failed to load order details."))
-      .finally(() => setLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+      } catch {
+        setError("Failed to load order details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrder();
   }, [orderId]);
 
   if (loading) {

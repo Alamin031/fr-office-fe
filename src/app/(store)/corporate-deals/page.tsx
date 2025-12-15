@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle2, Award, Users, Zap, Shield, Handshake, ArrowRight, Phone, Mail } from 'lucide-react'
+import corporateDealService from '@/app/lib/api/services/corporate'
+import { CheckCircle2, Award, Users, Zap, Shield, Handshake, Phone, Mail } from 'lucide-react'
 import { Button } from '@/app/components/ui/button'
 
 export default function CorporateDealsPage() {
@@ -28,12 +29,13 @@ export default function CorporateDealsPage() {
     setIsSubmitting(true)
 
     try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      // Here you would typically send data to your backend/email service
-      console.log('Form submitted:', formData)
-
+      await corporateDealService.create({
+        fullName: formData.fullName,
+        companyName: formData.companyName,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+      })
       setSubmitSuccess(true)
       setFormData({
         fullName: '',
@@ -42,7 +44,6 @@ export default function CorporateDealsPage() {
         phone: '',
         message: '',
       })
-
       setTimeout(() => {
         setSubmitSuccess(false)
       }, 3000)
@@ -169,7 +170,7 @@ export default function CorporateDealsPage() {
               {submitSuccess && (
                 <div className="p-4 rounded-lg bg-black/5 dark:bg-white/5 border border-border shadow-sm">
                   <p className="text-sm font-semibold text-foreground">
-                    ✓ Quote request sent successfully! We'll contact you within 24 hours.
+                    ✓ Quote request sent successfully! We&apos;ll contact you within 24 hours.
                   </p>
                 </div>
               )}
@@ -265,7 +266,7 @@ export default function CorporateDealsPage() {
               <CheckCircle2 className="h-6 w-6 text-black shrink-0 mt-1" />
               <div>
                 <p className="font-bold text-foreground text-lg">Custom Solutions</p>
-                <p className="text-muted-foreground mt-1">Tailored packages based on your organization's specific requirements</p>
+                <p className="text-muted-foreground mt-1">Tailored packages based on your organization&lsquo;s specific requirements</p>
               </div>
             </div>
             <div className="flex items-start gap-4 p-4 rounded-xl hover:bg-muted/50 transition-colors">
@@ -318,7 +319,7 @@ export default function CorporateDealsPage() {
           <div className="bg-gradient-to-r from-black/5 to-blue-500/10 dark:from-white/10 dark:to-blue-600/20 rounded-2xl border border-border p-8 md:p-12 text-center shadow-sm">
             <Handshake className="h-12 w-12 text-black mx-auto mb-4" />
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Ready to Work Together?</h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">Contact our corporate team to discuss your organization's needs and get a customized quotation</p>
+            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">Contact our corporate team to discuss your organization&apos;s needs and get a customized quotation</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
               <Button 
                 className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg h-12 px-6"

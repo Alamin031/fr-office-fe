@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
@@ -54,12 +55,13 @@ import {
   SelectValue,
 } from '../../components/ui/select';
 import {Checkbox} from '../../components/ui/checkbox';
-import {policiesService} from '../../lib/api';
+import {policiesService, Policy} from '../../lib/api';
 import {toast} from 'sonner';
-import type {Policy} from '../../lib/api/types';
+import { RichTextEditor } from '../../components/ui/rich-text-editor';
+
 import { withProtectedRoute } from '../../lib/auth/protected-route';
 
-const POLICY_TYPES: Array<Policy['type']> = [
+const POLICY_TYPES: Array<string> = [
   'privacy',
   'terms',
   'shipping',
@@ -84,8 +86,9 @@ function PrivacyPolicyPage() {
     title: '',
     slug: '',
     content: '',
-    type: 'privacy' as Policy['type'],
+    type: 'privacy',
     isPublished: false,
+    orderIndex: 0,
   });
 
   // Ensure all form input values are never null
@@ -127,6 +130,7 @@ function PrivacyPolicyPage() {
       content: '',
       type: 'privacy',
       isPublished: false,
+      orderIndex: 0,
     });
   };
 
@@ -140,6 +144,7 @@ function PrivacyPolicyPage() {
       content: policy.content || '',
       type: policy.type || 'privacy',
       isPublished: policy.isPublished ?? false,
+      orderIndex: policy.orderIndex ?? 0,
     });
   };
 
@@ -153,6 +158,7 @@ function PrivacyPolicyPage() {
       content: policy.content || '',
       type: policy.type || 'privacy',
       isPublished: policy.isPublished ?? false,
+      orderIndex: policy.orderIndex ?? 0,
     });
   };
 
@@ -160,15 +166,14 @@ function PrivacyPolicyPage() {
     setLoading(true);
     try {
       const response = await policiesService.getAll();
-      setPolicies(Array.isArray(response) ? response : response?.data ?? []);
+      // response.data is always Policy[]
+      setPolicies(response.data);
     } catch (error) {
       toast.error('Failed to fetch policies');
     } finally {
       setLoading(false);
     }
   };
-
-  // ...existing code...
 
   const generateSlug = (title: string) => {
     return title
@@ -193,9 +198,10 @@ function PrivacyPolicyPage() {
       const payload = {
         title,
         content,
-        type: formData.type,
+        type: formData.type as Policy['type'],
         isPublished: formData.isPublished,
         slug: formData.slug,
+        orderIndex: formData.orderIndex,
       };
 
       if (selectedPolicy) {
@@ -204,7 +210,7 @@ function PrivacyPolicyPage() {
           setLoading(false);
           return;
         }
-        await policiesService.update(selectedPolicy.id, payload);
+        await policiesService.update(String(selectedPolicy.id), payload);
         toast.success('Policy updated successfully');
       } else {
         await policiesService.create(payload);
@@ -250,7 +256,7 @@ function PrivacyPolicyPage() {
   const handleTogglePublish = async (policy: Policy) => {
     setLoading(true);
     try {
-      await policiesService.update(policy.id, {
+      await policiesService.update(String(policy.id), {
         ...policy,
         isPublished: !policy.isPublished,
       });
@@ -431,7 +437,7 @@ function PrivacyPolicyPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="slug">Slug</Label>
                 <Input
@@ -450,7 +456,7 @@ function PrivacyPolicyPage() {
                 <Select
                   value={formData.type}
                   onValueChange={type =>
-                    setFormData({...formData, type: type as Policy['type']})
+                    setFormData({...formData, type: type})
                   }
                   disabled={isViewMode}>
                   <SelectTrigger id="type">
@@ -465,19 +471,45 @@ function PrivacyPolicyPage() {
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="orderIndex">Order</Label>
+                <Input
+                  id="orderIndex"
+                  type="number"
+                  min={0}
+                  value={formData.orderIndex}
+                  onChange={e =>
+                    setFormData({...formData, orderIndex: Number(e.target.value)})
+                  }
+                  disabled={isViewMode}
+                />
+              </div>
             </div>
+            {selectedPolicy && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Created At</Label>
+                  <div className="border rounded px-3 py-2 bg-muted text-xs">
+                    {selectedPolicy.createdAt ? new Date(selectedPolicy.createdAt).toLocaleString() : ''}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Updated At</Label>
+                  <div className="border rounded px-3 py-2 bg-muted text-xs">
+                    {selectedPolicy.updatedAt ? new Date(selectedPolicy.updatedAt).toLocaleString() : ''}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="content">Content *</Label>
-              <Textarea
-                id="content"
-                placeholder="Enter the policy content (supports plain text or HTML)"
+              <RichTextEditor
                 value={formData.content || ''}
-                onChange={e =>
-                  setFormData({...formData, content: e.target.value})
-                }
-                disabled={isViewMode}
-                className="min-h-64 font-mono text-xs"
+                onChange={val => setFormData({ ...formData, content: val })}
+                placeholder="Enter the policy content (supports rich text or HTML)"
+                className="min-h-64"
               />
             </div>
 

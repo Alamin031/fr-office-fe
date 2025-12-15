@@ -136,36 +136,32 @@ export function BlogForm({initialData, isEditing = false}: BlogFormProps) {
     setLoading(true);
 
     try {
-      // Only send the first image (string or file URL)
-      const imageValue =
-        typeof images[0] === 'string'
-          ? images[0]
-          : URL.createObjectURL(images[0]);
-      const payload = {
-        ...formData,
-        readTime: formData.readTime ? Number(formData.readTime) : undefined,
-        publishedAt: formData.publishedAt
-          ? new Date(formData.publishedAt).toISOString()
-          : undefined,
-        tags: formData.tags
-          .split(',')
-          .map(tag => tag.trim())
-          .filter(tag => tag),
-        image: imageValue,
-      };
+      // Prepare FormData for binary image upload
+      const form = new FormData();
+      form.append('title', formData.title);
+      form.append('slug', formData.slug);
+      form.append('excerpt', formData.excerpt);
+      form.append('content', formData.content);
+      if (formData.publishedAt) form.append('publishedAt', new Date(formData.publishedAt).toISOString());
+      if (formData.readTime) form.append('readTime', String(formData.readTime));
+      form.append('status', formData.status);
+      // Always send tags as array (even if single or empty)
+      const tagsArr = formData.tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag);
+      tagsArr.forEach(tag => form.append('tags[]', tag));
+      // Only send the first image
+      if (images[0] && typeof images[0] !== 'string') {
+        form.append('image', images[0]);
+      } else if (images[0] && typeof images[0] === 'string') {
+        form.append('image', images[0]);
+      }
 
       if (isEditing && initialData?.id) {
-        await blogsService.update(initialData.id, {
-          ...payload,
-          readTime:
-            payload.readTime !== undefined ? String(payload.readTime) : '',
-        });
+        await blogsService.update(initialData.id, form);
       } else {
-        await blogsService.create({
-          ...payload,
-          readTime:
-            payload.readTime !== undefined ? String(payload.readTime) : '',
-        });
+        await blogsService.create(form);
       }
 
       router.push('/admin/blog');
