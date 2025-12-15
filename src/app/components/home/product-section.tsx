@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef } from "react"
 import { ProductCard } from "../product/product-card"
 import type { Product } from "@/app/types"
 
@@ -13,7 +13,6 @@ interface ProductSectionProps {
   isLoading?: boolean
 }
 
-const CARD_WIDTH = 240 + 16 // card width + gap (px), adjust gap if needed
 
 export function ProductSection({
   title,
@@ -24,41 +23,6 @@ export function ProductSection({
   isLoading = false,
 }: ProductSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (products.length <= 4) return // Disable auto-scroll if 4 or fewer
-    const container = scrollRef.current
-    if (!container) return
-
-    let direction = 1
-    let currentIndex = 0
-    const visibleCards = 4
-    const cardWidth = CARD_WIDTH // px
-    const interval = 2500 // ms between scrolls
-
-    const scrollToCard = (index: number) => {
-      if (!container) return
-      container.scrollTo({
-        left: index * cardWidth,
-        behavior: "smooth",
-      })
-    }
-
-    const autoScroll = () => {
-      if (!container) return
-      const maxIndex = Math.max(0, products.length - visibleCards)
-      if (currentIndex >= maxIndex) {
-        direction = -1
-      } else if (currentIndex <= 0) {
-        direction = 1
-      }
-      currentIndex += direction
-      scrollToCard(currentIndex)
-    }
-
-    const scrollInterval = setInterval(autoScroll, interval)
-    return () => clearInterval(scrollInterval)
-  }, [isLoading, products.length])
 
   return (
     <section>
