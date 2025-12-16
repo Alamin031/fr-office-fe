@@ -113,7 +113,7 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
     })
   );
 
-  const brands: Brand[] = brandsRaw ?? [];
+  const brands: Brand[] = Array.isArray(brandsRaw) ? brandsRaw : [];
 
   let products: Product[] = [];
   if (productsRaw && typeof productsRaw === "object") {
