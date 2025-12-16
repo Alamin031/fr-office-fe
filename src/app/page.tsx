@@ -15,12 +15,40 @@ import { BlogSection } from "./components/home/blog-section";
 export const dynamic = 'force-dynamic';
 
 export default async function Page() {
-  // Parallelize API calls for better performance
-  const [brands, categories, homecategories] = await Promise.all([
-    brandsService.findAll(),
-    categoriesService.getAll(),
-    homecategoriesService.list(),
-  ]);
+  // Parallelize API calls for better performance with graceful fallback on errors
+  let brands: any[] = [];
+  let categories: any[] = [];
+  let homecategories: any[] = [];
+
+  try {
+    const results = await Promise.allSettled([
+      brandsService.findAll(),
+      categoriesService.getAll(),
+      homecategoriesService.list(),
+    ]);
+
+    // Extract successful results or use empty arrays as fallback
+    if (results[0].status === 'fulfilled') {
+      brands = results[0].value;
+    }
+    if (results[1].status === 'fulfilled') {
+      categories = results[1].value;
+    }
+    if (results[2].status === 'fulfilled') {
+      homecategories = results[2].value;
+    }
+
+    // Log failures for monitoring
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        const names = ['brands', 'categories', 'homecategories'];
+        console.error(`Failed to load ${names[index]}:`, result.reason);
+      }
+    });
+  } catch (error) {
+    console.error('Error loading page data:', error);
+    // Continue with empty arrays - page will still render with available data
+  }
 
   // Ensure slug is always a string to match the app types
   const normalizedCategories: import("./types").Category[] = categories.map(
