@@ -33,7 +33,7 @@ export function ProductSectionLazy({
   const cacheKey = `products_section_${title
     .toLowerCase()
     .replace(/\s+/g, "_")}_${productIds?.join(",") || categoryId || brandId || "all"}`;
-  const { data: response, isLoading: swrLoading } = useSWRCache<{ data?: Product[] | Product[] }>(
+  const { data: response, isLoading: swrLoading, error, mutate } = useSWRCache<{ data?: Product[] | Product[] }>(
     cacheKey,
     async () => {
       let products: Product[] = [];
@@ -101,6 +101,24 @@ export function ProductSectionLazy({
   );
   const products = productsProp ?? response?.data ?? [];
   const isLoading = productsProp ? false : swrLoading;
+  const hasError = !productsProp && error;
+
+  if (hasError) {
+    return (
+      <section className="mx-auto w-full py-8">
+        <div className="flex flex-col items-center gap-4 rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+          <h3 className="text-lg font-semibold text-red-900">{title}</h3>
+          <p className="text-sm text-red-700">Unable to load products. Please try again.</p>
+          <button
+            onClick={() => mutate()}
+            className="mt-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <ProductSection
