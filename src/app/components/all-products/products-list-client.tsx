@@ -40,17 +40,19 @@ export function ProductsListClient({
     .filter(Boolean) as string[]
 
   const [currentPage, setCurrentPage] = useState(1)
+  const [previousFilterKey, setPreviousFilterKey] = useState<string>('')
 
   // Generate cache key based on current page and filters
   const filterKey = `${selectedCategoryIds.sort().join('_')}_${selectedBrandIds.sort().join('_')}`
   const cacheKey = `products_list_${filterKey}_page_${currentPage}`
 
   // Reset to page 1 when filters change
-  const memoizedFilterKey = useMemo(() => filterKey, [filterKey])
-
-  if (filterKey !== memoizedFilterKey) {
-    setCurrentPage(1)
-  }
+  useEffect(() => {
+    if (filterKey !== previousFilterKey && previousFilterKey !== '') {
+      setCurrentPage(1)
+    }
+    setPreviousFilterKey(filterKey)
+  }, [filterKey, previousFilterKey])
 
   // Fetch products for current page with filters
   const { data: paginatedData, isLoading, error } = useSWRCache<ProductListResponse>(
