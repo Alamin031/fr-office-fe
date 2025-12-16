@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useSWRCache } from "@/app/hooks/use-swr-cache"
 import { productsService } from "@/app/lib/api/services/products"
 import { CategoryProducts } from "@/app/components/category/category-products"
@@ -42,8 +42,16 @@ export function ProductsListClient({
   const [currentPage, setCurrentPage] = useState(1)
 
   // Generate cache key based on current page and filters
-  const filterKey = `${selectedCategoryIds.sort().join('_')}_${selectedBrandIds.sort().join('_')}`
+  const filterKey = useMemo(
+    () => `${selectedCategoryIds.sort().join('_')}_${selectedBrandIds.sort().join('_')}`,
+    [selectedCategoryIds, selectedBrandIds]
+  )
   const cacheKey = `products_list_${filterKey}_page_${currentPage}`
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filterKey])
 
   // Fetch products for current page with filters
   const { data: paginatedData, isLoading, error } = useSWRCache<ProductListResponse>(
@@ -160,9 +168,26 @@ export function ProductsListClient({
 
   if (error) {
     return (
-      <div className="py-12 text-center">
-        <p className="text-red-500 mb-4">Failed to load products</p>
-        <Button onClick={() => window.location.reload()}>Retry</Button>
+      <div className="space-y-8">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
+          <h3 className="text-lg font-semibold text-red-900 mb-2">Unable to Load Products</h3>
+          <p className="text-red-700 mb-6">We encountered an issue while loading products. Please try again.</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Button
+              onClick={() => window.location.reload()}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Retry
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => window.history.back()}
+              className="border-red-300"
+            >
+              Go Back
+            </Button>
+          </div>
+        </div>
       </div>
     )
   }

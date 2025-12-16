@@ -1,5 +1,6 @@
 import { useAuthStore } from "@/app/store/auth-store";
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "axios"
+import axiosRetry from "axios-retry"
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || " https://friends-be-production.up.railway.app/api").trim()
 
@@ -8,6 +9,22 @@ export const apiClient: AxiosInstance = axios.create({
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
+  },
+})
+
+// Configure automatic retry with exponential backoff
+// Retries up to 3 times on network errors or 5xx errors (not 4xx)
+axiosRetry(apiClient, {
+  retries: 3,
+  retryDelay: (retryCount) => {
+    // Exponential backoff: 1s, 2s, 4s
+    return retryCount * 1000 * Math.pow(2, retryCount - 1)
+  },
+  retryCondition: (error) => {
+    // Retry on network errors and 5xx server errors
+    // Don't retry on 4xx client errors
+    return axiosRetry.isNetworkOrIdempotentRequestError(error) &&
+           (!error.response || (error.response.status >= 500))
   },
 })
 

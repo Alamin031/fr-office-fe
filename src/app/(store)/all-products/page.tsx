@@ -49,13 +49,41 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
       : [params.brands]
     : [];
 
-  // Parallelize API calls for better performance
-  const [categoriesRaw, brandsRaw, productsRaw] = await Promise.all([
-    categoriesService.getAll(),
-    brandsService.findAll().catch(() => []),
-    // Fetch products with full relations for complete product data
-    productsService.getAll({}, 1, 1000).catch(() => null),
-  ]);
+  // Parallelize API calls with graceful error handling
+  let categoriesRaw: any = [];
+  let brandsRaw: any = [];
+  let productsRaw: any = null;
+
+  try {
+    const results = await Promise.allSettled([
+      categoriesService.getAll(),
+      brandsService.findAll(),
+      // Fetch products with full relations for complete product data
+      productsService.getAll({}, 1, 500),
+    ]);
+
+    // Extract successful results or use empty arrays as fallback
+    if (results[0].status === 'fulfilled') {
+      categoriesRaw = results[0].value;
+    }
+    if (results[1].status === 'fulfilled') {
+      brandsRaw = results[1].value;
+    }
+    if (results[2].status === 'fulfilled') {
+      productsRaw = results[2].value;
+    }
+
+    // Log failures for monitoring
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        const names = ['categories', 'brands', 'products'];
+        console.error(`Failed to load ${names[index]}:`, result.reason);
+      }
+    });
+  } catch (error) {
+    console.error('Error loading all-products page data:', error);
+    // Continue with empty arrays - page will still render with available data
+  }
 
   const categories: Category[] = (categoriesRaw as unknown as RawCategory[]).map(
     (c: RawCategory) => ({
@@ -85,7 +113,7 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
     })
   );
 
-  const brands: Brand[] = brandsRaw ?? [];
+  const brands: Brand[] = Array.isArray(brandsRaw) ? brandsRaw : [];
 
   let products: Product[] = [];
   if (productsRaw && typeof productsRaw === "object") {
