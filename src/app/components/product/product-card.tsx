@@ -26,9 +26,25 @@ interface ProductCardProps {
   emiPlans?: EmiPlan[];
 }
 
-export function ProductCard({product, className, emiPlans}: ProductCardProps) {
+export function ProductCard({product, className, emiPlans: propEmiPlans}: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [emiPlans, setEmiPlans] = useState<EmiPlan[]>(propEmiPlans || []);
+  const [emiLoading, setEmiLoading] = useState(false);
+
+  // Fetch EMI plans on mount if not provided as prop
+  useEffect(() => {
+    if (!propEmiPlans || propEmiPlans.length === 0) {
+      setEmiLoading(true);
+      emiService
+        .getPlans()
+        .then((plans) => setEmiPlans(plans))
+        .catch(() => setEmiPlans([]))
+        .finally(() => setEmiLoading(false));
+    } else {
+      setEmiPlans(propEmiPlans);
+    }
+  }, [propEmiPlans]);
 
   const {
     addItem: addToWishlist,
