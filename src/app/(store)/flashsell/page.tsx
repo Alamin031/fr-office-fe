@@ -25,7 +25,7 @@ interface TimeLeft {
   isUpcoming: boolean
 }
 
-function useCountdown(startTime: string, endTime: string): TimeLeft {
+function useCountdown(startTime: string | null, endTime: string | null): TimeLeft {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -36,6 +36,8 @@ function useCountdown(startTime: string, endTime: string): TimeLeft {
   })
 
   useEffect(() => {
+    if (!startTime || !endTime) return
+
     const calculateTimeLeft = () => {
       const now = new Date()
       const start = new Date(startTime)
