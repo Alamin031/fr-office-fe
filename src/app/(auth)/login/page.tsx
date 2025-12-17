@@ -79,6 +79,14 @@ export default function LoginPage() {
       };
       const token = res.token ?? res.access_token;
       if (!token) throw new Error("No token received from API");
+
+      // Clear any stale auth state before setting new token
+      useAuthStore.getState().logout();
+
+      // Wait a moment for clear to complete
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Now set new login state
       login(userToStore, token);
 
       // Hydrate to fetch fresh user data from API
