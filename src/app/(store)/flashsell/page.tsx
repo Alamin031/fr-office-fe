@@ -93,16 +93,10 @@ function FlashSellDetailContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const timeLeft = flashsell
-    ? useCountdown(flashsell.startTime, flashsell.endTime)
-    : {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-        isEnded: false,
-        isUpcoming: false,
-      }
+  const timeLeft = useCountdown(
+    flashsell?.startTime ?? null,
+    flashsell?.endTime ?? null
+  )
 
   useEffect(() => {
     const fetchFlashsellData = async () => {
