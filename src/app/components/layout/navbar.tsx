@@ -25,6 +25,7 @@ import { cn } from "@/app/lib/utils"
 import Image from "next/image"
 import { categoriesService } from "@/app/lib/api/services/categories"
 import { brandsService } from "@/app/lib/api/services/brands"
+import AuthService from "@/app/lib/api/services/auth.service"
 import type { Category, Brand } from "@/app/types"
 
 interface NavbarProps {
