@@ -190,6 +190,64 @@ export const herobannerService = {
         const endpoint = API_ENDPOINTS.HEROBANNER_MIDDLE_DELETE.replace("{id}", id)
         await apiClient.delete(endpoint)
     },
+
+    /**
+     * Create a new giveaway banner (with image upload)
+     */
+    createGiveaway: async (data: CreateHerobannerRequest): Promise<Herobanner> => {
+        const formData = new FormData()
+        if (data.img instanceof File) {
+            formData.append("img", data.img)
+        } else if (typeof data.img === "string") {
+            formData.append("img", data.img)
+        }
+        const response = await apiClient.post<Herobanner>(API_ENDPOINTS.HEROBANNER_GIVEAWAY_CREATE, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        })
+        return response.data
+    },
+
+    /**
+     * Get all giveaway banners
+     */
+    findAllGiveaway: async (): Promise<Herobanner[]> => {
+        const response = await apiClient.get<Herobanner[]>(API_ENDPOINTS.HEROBANNER_GIVEAWAY_GET_ALL)
+        return response.data
+    },
+
+    /**
+     * Get a single giveaway banner by id
+     */
+    findOneGiveaway: async (id: string): Promise<Herobanner> => {
+        const endpoint = API_ENDPOINTS.HEROBANNER_GIVEAWAY_GET_ONE.replace("{id}", id)
+        const response = await apiClient.get<Herobanner>(endpoint)
+        return response.data
+    },
+
+    /**
+     * Update a giveaway banner (with image upload)
+     */
+    updateGiveaway: async (id: string, data: UpdateHerobannerRequest): Promise<Herobanner> => {
+        const formData = new FormData()
+        if (data.img instanceof File) {
+            formData.append("img", data.img)
+        } else if (typeof data.img === "string" && data.img) {
+            formData.append("img", data.img)
+        }
+        const endpoint = API_ENDPOINTS.HEROBANNER_GIVEAWAY_UPDATE.replace("{id}", id)
+        const response = await apiClient.patch<Herobanner>(endpoint, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        })
+        return response.data
+    },
+
+    /**
+     * Delete a giveaway banner
+     */
+    removeGiveaway: async (id: string): Promise<void> => {
+        const endpoint = API_ENDPOINTS.HEROBANNER_GIVEAWAY_DELETE.replace("{id}", id)
+        await apiClient.delete(endpoint)
+    },
 }
 
 export default herobannerService
