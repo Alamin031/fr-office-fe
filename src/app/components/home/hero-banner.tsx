@@ -111,7 +111,7 @@ export function HeroBanner() {
                 className="object-cover"
               />
               <div className="absolute inset-0 flex items-center">
-                <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
+                <div className="mx-auto w-full max-w-7xl px-2 md:px-8">
                   <div className="max-w-lg">
                     {banner.title && (
                       <h2 className="text-3xl font-bold tracking-tight md:text-5xl lg:text-6xl">
@@ -158,7 +158,7 @@ export function HeroBanner() {
             <div
               key={feature.title}
               className={cn(
-                "flex flex-col items-center justify-center text-center p-2 sm:p-6 hover:bg-muted/50 transition-colors border-border",
+                "flex flex-col items-center justify-center text-center p-1.5 sm:p-4 hover:bg-muted/50 transition-colors border-border",
                 index < 3 && "border-r"
               )}
             >

@@ -80,10 +80,10 @@ export default async function Page() {
         {/* Show Shop by Category only if categories exist */}
         {normalizedCategories.length > 0 && (
           <section className="mx-auto w-full max-w-7xl px-4 py-8">
-            <h2 className="mb-6 text-center text-2xl font-bold tracking-tight">
-              Shop by Category
-            </h2>
-            <CategorySlider categories={normalizedCategories} />
+            <CategorySlider
+              categories={normalizedCategories}
+              viewAllLink="/all-products"
+            />
           </section>
         )}
 

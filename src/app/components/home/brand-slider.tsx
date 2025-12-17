@@ -53,7 +53,8 @@ export function BrandSlider({ brands }: BrandSliderProps) {
   return (
     <section aria-label="Shop by brand">
       <h2 className="mb-6 text-center text-2xl font-bold tracking-tight">
-        Shop by Brand
+        <span className="bg-gradient-to-r from-orange-500 via-amber-400 to-purple-500 bg-clip-text text-transparent">Shop by</span>{" "}
+        Brand
       </h2>
 
       <style>{`

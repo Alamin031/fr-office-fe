@@ -14,6 +14,7 @@ interface ProductSectionProps {
   badgeColor?: string;
   isLoading?: boolean;
   emiPlans?: EmiPlan[];
+  viewAllLink?: string;
 }
 
 export function ProductSection({
@@ -24,13 +25,16 @@ export function ProductSection({
   badgeColor = 'bg-foreground',
   isLoading = false,
   emiPlans,
+  viewAllLink,
 }: ProductSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [firstWord, ...restWords] = (title ?? '').split(' ');
+  const restTitle = restWords.join(' ');
 
   return (
     <section>
-      <div className="mb-6 flex items-end justify-between">
-        <div>
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div className="min-w-0">
           <div className="flex items-center gap-2">
             {badge && (
               <span
@@ -39,11 +43,22 @@ export function ProductSection({
               </span>
             )}
             <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-              {title}
+              <span className="bg-gradient-to-r from-orange-500 via-amber-400 to-purple-500 bg-clip-text text-transparent">
+                {firstWord}
+              </span>
+              {restTitle ? ` ${restTitle}` : ''}
             </h2>
           </div>
           {subtitle && <p className="mt-1 text-muted-foreground">{subtitle}</p>}
         </div>
+        {viewAllLink && (
+          <a
+            href={viewAllLink}
+            className="shrink-0 inline-flex items-center rounded-full border border-input px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            View All
+          </a>
+        )}
       </div>
       <div
         ref={scrollRef}

@@ -153,7 +153,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold">Support</h4>
+            <h4 className="text-sm font-semibold">Policies</h4>
             <ul className="mt-4 space-y-2">
               {footerLinks.support.map(link => (
                 <li key={link.href}>
@@ -193,7 +193,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold">Contact</h4>
+            <h4 className="text-sm font-semibold">Main Branch</h4>
             <ul className="mt-4 space-y-3">
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
@@ -391,7 +391,7 @@ export function Footer() {
 
           {/* Contact Section */}
           <div className="border-t border-gray-800 pt-4">
-            <h4 className="text-sm font-semibold">Contact</h4>
+            <h4 className="text-sm font-semibold">Main Branch</h4>
             <ul className="mt-4 space-y-3">
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />

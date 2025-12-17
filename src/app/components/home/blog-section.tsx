@@ -1,5 +1,6 @@
-import { ArrowRight, Calendar, Clock } from "lucide-react"
+import { Calendar, Clock } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { Card, CardContent } from "../ui/card"
 import blogsService from "@/app/lib/api/services/blogs"
 import { Button } from "../ui/button"
@@ -20,29 +21,24 @@ export async function BlogSection() {
 
   return (
     <section className="py-12 md:py-16">
-      <div className="mb-10 flex items-end justify-between">
+      <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">
-            Latest from Blog
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+            <span className="bg-gradient-to-r from-orange-500 via-amber-400 to-purple-500 bg-clip-text text-transparent">Latest from</span>{" "}
+            Blog
           </h2>
-          <p className="text-muted-foreground">
-            Expert reviews, guides, and technology insights
-          </p>
         </div>
-        <a href="/blog">
-          <Button 
-            variant="outline" 
-            className="hidden sm:flex items-center gap-2 rounded-lg"
-          >
-            View All
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </a>
+        <Link
+          href="/blog"
+          className="shrink-0 inline-flex items-center rounded-full border border-input px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          View All
+        </Link>
       </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {blogPosts.map((post) => (
-            <a 
+            <Link 
               key={post.id}
               href={`/blog/${post.slug}`}
               className="group h-full"
@@ -85,23 +81,9 @@ export async function BlogSection() {
                   </div>
                 </CardContent>
               </Card>
-            </a>
+            </Link>
           ))}
         </div>
-
-      {/* Mobile View All Button */}
-      <div className="mt-8 sm:hidden">
-        <a href="/blog" className="block">
-          <Button 
-            variant="outline" 
-            size="lg"
-            className="w-full rounded-lg flex items-center justify-center gap-2"
-          >
-            View All Articles
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </a>
-      </div>
     </section>
   )
 }
