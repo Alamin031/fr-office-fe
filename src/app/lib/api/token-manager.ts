@@ -19,7 +19,8 @@ export class TokenManager {
   }
 
   /**
-   * Set tokens in localStorage
+   * Set tokens in localStorage and cookies
+   * Properly sets cookies with SameSite=Lax and Secure flags for production HTTPS
    */
   static setTokens(token: string, refreshToken?: string): void {
     if (typeof window === "undefined") return
@@ -27,11 +28,16 @@ export class TokenManager {
     if (refreshToken) {
       localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken)
     }
-      // Set cookies
-      document.cookie = `access_token=${token}; path=/;`;
-      if (refreshToken) {
-        document.cookie = `refresh_token=${refreshToken}; path=/;`;
-      }
+
+    // Set cookies with proper flags for production
+    const isSecure = window.location.protocol === "https:"
+    const cookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}; Max-Age=86400`
+
+    document.cookie = `access_token=${token}; ${cookieOptions}`
+    document.cookie = `auth_token=${token}; ${cookieOptions}`
+    if (refreshToken) {
+      document.cookie = `refresh_token=${refreshToken}; ${cookieOptions}`
+    }
   }
 
   /**
