@@ -41,6 +41,7 @@ const sidebarLinks = [
   {href: '/admin/privacy-policy', label: 'Privacy Policy', icon: Settings},
   {href: '/admin/orders', label: 'Orders', icon: ShoppingCart, badge: '12'},
   {href: '/admin/customers', label: 'Customers', icon: Users},
+  {href: '/admin/flashsell', label: 'Flash Sell', icon: TrendingUp},
   {
     href: '/admin/notify-products',
     label: 'Notify Products',

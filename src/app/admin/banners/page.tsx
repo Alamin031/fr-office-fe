@@ -67,13 +67,13 @@ function Page() {
   const [selectedMiddleImage, setSelectedMiddleImage] = useState<Herobanner | null>(null);
   const [editMiddleImageData, setEditMiddleImageData] = useState<{ id: string; img: File | string } | null>(null);
 
-  // Giveaway Section
-  const [giveawayImages, setGiveawayImages] = useState<Herobanner[]>([]);
-  const [isGiveawayUploadDialogOpen, setIsGiveawayUploadDialogOpen] = useState(false);
-  const [giveawayEditOpen, setGiveawayEditOpen] = useState(false);
-  const [giveawayDeleteOpen, setGiveawayDeleteOpen] = useState(false);
-  const [selectedGiveawayImage, setSelectedGiveawayImage] = useState<Herobanner | null>(null);
-  const [editGiveawayImageData, setEditGiveawayImageData] = useState<{ id: string; img: File | string } | null>(null);
+  // Give Section
+  const [giveImages, setGiveImages] = useState<Herobanner[]>([]);
+  const [isGiveUploadDialogOpen, setIsGiveUploadDialogOpen] = useState(false);
+  const [giveEditOpen, setGiveEditOpen] = useState(false);
+  const [giveDeleteOpen, setGiveDeleteOpen] = useState(false);
+  const [selectedGiveImage, setSelectedGiveImage] = useState<Herobanner | null>(null);
+  const [editGiveImageData, setEditGiveImageData] = useState<{ id: string; img: File | string } | null>(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -81,7 +81,7 @@ function Page() {
     fetchHeroImages();
     fetchBottomImages();
     fetchMiddleImages();
-    fetchGiveawayImages();
+    fetchGiveImages();
   }, []);
 
   // Hero Section logic
@@ -240,55 +240,55 @@ function Page() {
     } catch (e) {} finally { setLoading(false); }
   };
 
-  // Giveaway Section logic
-  const fetchGiveawayImages = async () => {
+  // Give Section logic
+  const fetchGiveImages = async () => {
     setLoading(true);
     try {
-      const data = await herobannerService.findAllGiveaway();
-      setGiveawayImages(data);
+      const data = await herobannerService.findAllGive();
+      setGiveImages(data);
     } catch (e) {} finally { setLoading(false); }
   };
-  const handleGiveawayEditClick = (img: Herobanner) => {
-    setSelectedGiveawayImage(img);
-    setEditGiveawayImageData({ id: img.id, img: img.img });
-    setGiveawayEditOpen(true);
+  const handleGiveEditClick = (img: Herobanner) => {
+    setSelectedGiveImage(img);
+    setEditGiveImageData({ id: img.id, img: img.img });
+    setGiveEditOpen(true);
   };
-  const handleGiveawayDeleteClick = (img: Herobanner) => {
-    setSelectedGiveawayImage(img);
-    setGiveawayDeleteOpen(true);
+  const handleGiveDeleteClick = (img: Herobanner) => {
+    setSelectedGiveImage(img);
+    setGiveDeleteOpen(true);
   };
-  const handleSaveGiveawayEdit = async () => {
-    if (editGiveawayImageData) {
+  const handleSaveGiveEdit = async () => {
+    if (editGiveImageData) {
       setLoading(true);
       try {
-        await herobannerService.updateGiveaway(editGiveawayImageData.id, { img: editGiveawayImageData.img });
-        await fetchGiveawayImages();
-        setGiveawayEditOpen(false);
-        setEditGiveawayImageData(null);
+        await herobannerService.updateGive(editGiveImageData.id, { img: editGiveImageData.img });
+        await fetchGiveImages();
+        setGiveEditOpen(false);
+        setEditGiveImageData(null);
       } catch (e) {} finally { setLoading(false); }
     }
   };
-  const handleConfirmGiveawayDelete = async () => {
-    if (selectedGiveawayImage) {
+  const handleConfirmGiveDelete = async () => {
+    if (selectedGiveImage) {
       setLoading(true);
       try {
-        await herobannerService.removeGiveaway(selectedGiveawayImage.id);
-        await fetchGiveawayImages();
-        setGiveawayDeleteOpen(false);
-        setSelectedGiveawayImage(null);
+        await herobannerService.removeGive(selectedGiveImage.id);
+        await fetchGiveImages();
+        setGiveDeleteOpen(false);
+        setSelectedGiveImage(null);
       } catch (e) {} finally { setLoading(false); }
     }
   };
-  const handleGiveawayImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGiveImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
     setLoading(true);
     try {
       for (const file of Array.from(files)) {
-        await herobannerService.createGiveaway({ img: file });
+        await herobannerService.createGive({ img: file });
       }
-      await fetchGiveawayImages();
-      setIsGiveawayUploadDialogOpen(false);
+      await fetchGiveImages();
+      setIsGiveUploadDialogOpen(false);
     } catch (e) {} finally { setLoading(false); }
   };
 
@@ -360,26 +360,26 @@ function Page() {
         label="Middle Image"
       />
 
-      {/* Giveaway Section Images */}
+      {/* Give Section Images */}
       <SectionImages
-        title="Giveaway Banners"
-        description="Manage giveaway section banners."
-        images={giveawayImages}
-        isUploadDialogOpen={isGiveawayUploadDialogOpen}
-        setIsUploadDialogOpen={setIsGiveawayUploadDialogOpen}
-        handleImagesUpload={handleGiveawayImagesUpload}
-        handleEditClick={handleGiveawayEditClick}
-        handleDeleteClick={handleGiveawayDeleteClick}
-        editOpen={giveawayEditOpen}
-        setEditOpen={setGiveawayEditOpen}
-        editImageData={editGiveawayImageData}
-        setEditImageData={setEditGiveawayImageData}
-        handleSaveEdit={handleSaveGiveawayEdit}
-        deleteOpen={giveawayDeleteOpen}
-        setDeleteOpen={setGiveawayDeleteOpen}
-        handleConfirmDelete={handleConfirmGiveawayDelete}
+        title="Give Banners"
+        description="Manage give section banners."
+        images={giveImages}
+        isUploadDialogOpen={isGiveUploadDialogOpen}
+        setIsUploadDialogOpen={setIsGiveUploadDialogOpen}
+        handleImagesUpload={handleGiveImagesUpload}
+        handleEditClick={handleGiveEditClick}
+        handleDeleteClick={handleGiveDeleteClick}
+        editOpen={giveEditOpen}
+        setEditOpen={setGiveEditOpen}
+        editImageData={editGiveImageData}
+        setEditImageData={setEditGiveImageData}
+        handleSaveEdit={handleSaveGiveEdit}
+        deleteOpen={giveDeleteOpen}
+        setDeleteOpen={setGiveDeleteOpen}
+        handleConfirmDelete={handleConfirmGiveDelete}
         loading={loading}
-        label="Giveaway Banner"
+        label="Give Banner"
       />
     </div>
   );

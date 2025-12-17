@@ -16,11 +16,11 @@ export const STORAGE_KEYS = {
 
 // API Endpoints
 export const API_ENDPOINTS = {
-    // Corporate Deals
-    CORPORATE_DEALS_GET: '/corporate-deals', // GET: Get all corporate deals
-    CORPORATE_DEALS_CREATE: '/corporate-deals', // POST: Create corporate deal
-    CORPORATE_DEALS_GET_ONE: '/corporate-deals/{id}', // GET: Get corporate deal by ID
-    CORPORATE_DEALS_DELETE: '/corporate-deals/{id}', // DELETE: Delete corporate deal
+  // Corporate Deals
+  CORPORATE_DEALS_GET: '/corporate-deals', // GET: Get all corporate deals
+  CORPORATE_DEALS_CREATE: '/corporate-deals', // POST: Create corporate deal
+  CORPORATE_DEALS_GET_ONE: '/corporate-deals/{id}', // GET: Get corporate deal by ID
+  CORPORATE_DEALS_DELETE: '/corporate-deals/{id}', // DELETE: Delete corporate deal
   // Blog
   BLOGS_GET: '/blogs',
   BLOGS_CREATE: '/blogs',
@@ -102,19 +102,17 @@ export const API_ENDPOINTS = {
   PRODUCT_CARE_BY_PRODUCT: '/products-new/care/product/{productId}',
 
   // Product Notification Requests
-    NOTIFICATIONS_BY: '/notifications/by', // GET: Get notifications by filter
-    NOTIFICATIONS_UNREAD: '/notifications/unread', // GET: Get all unread notifications
-    NOTIFICATIONS_MARK_READ: '/notifications/{id}/read', // PATCH: Mark notification as read
-    NOTIFICATIONS_ALL: '/notifications', // GET: Get all notifications
-    NOTIFICATIONS_CREATE: '/notifications', // POST: Create notification
-    NOTIFICATIONS_RESOLVE: '/notifications/{id}/resolve', // PATCH: Resolve notification
-    NOTIFICATIONS_BY_USER: '/notifications/{userId}', // GET: Get notifications for a user
-    NOTIFICATIONS_USER_UNREAD: '/notifications/{userId}/unread', // GET: Get unread notifications for a user
-    NOTIFICATIONS_STOCK_OUT: '/notifications/stock-out', // POST: Stock out notification
-    NOTIFICATIONS_DELETE: '/notifications/{id}', // DELETE: Delete notification
-    NOTIFICATIONS_HEADER: '/notifications/header', // GET: Get notifications for header
-
-  
+  NOTIFICATIONS_BY: '/notifications/by', // GET: Get notifications by filter
+  NOTIFICATIONS_UNREAD: '/notifications/unread', // GET: Get all unread notifications
+  NOTIFICATIONS_MARK_READ: '/notifications/{id}/read', // PATCH: Mark notification as read
+  NOTIFICATIONS_ALL: '/notifications', // GET: Get all notifications
+  NOTIFICATIONS_CREATE: '/notifications', // POST: Create notification
+  NOTIFICATIONS_RESOLVE: '/notifications/{id}/resolve', // PATCH: Resolve notification
+  NOTIFICATIONS_BY_USER: '/notifications/{userId}', // GET: Get notifications for a user
+  NOTIFICATIONS_USER_UNREAD: '/notifications/{userId}/unread', // GET: Get unread notifications for a user
+  NOTIFICATIONS_STOCK_OUT: '/notifications/stock-out', // POST: Stock out notification
+  NOTIFICATIONS_DELETE: '/notifications/{id}', // DELETE: Delete notification
+  NOTIFICATIONS_HEADER: '/notifications/header', // GET: Get notifications for header
 
   // Orders
   ORDERS_CREATE: '/orders', // POST: Create order
@@ -219,6 +217,13 @@ export const API_ENDPOINTS = {
   HEROBANNER_MIDDLE_UPDATE: '/herobanner/middle/{id}',
   HEROBANNER_MIDDLE_DELETE: '/herobanner/middle/{id}',
 
+  // Hero Banner Give
+  HEROBANNER_GIVE_CREATE: '/herobanner/give',
+  HEROBANNER_GIVE_GET_ALL: '/herobanner/give',
+  HEROBANNER_GIVE_GET_ONE: '/herobanner/give/{id}',
+  HEROBANNER_GIVE_UPDATE: '/herobanner/give/{id}',
+  HEROBANNER_GIVE_DELETE: '/herobanner/give/{id}',
+
   // EMI
   EMI_PLAN_CREATE: '/emi/plan',
   EMI_PLAN_UPDATE: '/emi/plan/{id}',
@@ -243,4 +248,11 @@ export const API_ENDPOINTS = {
   DELIVERY_METHODS_GET_ONE: '/delivery-methods/{id}',
   DELIVERY_METHODS_UPDATE: '/delivery-methods/{id}',
   DELIVERY_METHODS_DELETE: '/delivery-methods/{id}',
+  // Flashsell
+  FLASHSELL_CREATE: '/flashsell',
+  FLASHSELL_GET_ALL: '/flashsell',
+  FLASHSELL_GET_ONE: '/flashsell/{id}',
+  FLASHSELL_UPDATE: '/flashsell/{id}',
+  FLASHSELL_DELETE: '/flashsell/{id}',
+
 };
