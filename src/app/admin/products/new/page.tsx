@@ -30,6 +30,7 @@ import {
 import {Checkbox} from '../../../components/ui/checkbox';
 import {withProtectedRoute} from '../../../lib/auth/protected-route';
 import { RichTextEditor } from '../../../components/ui/rich-text-editor';
+import { ProductCacheUtils } from '../../../lib/api/cache-utils';
 
 type ProductType = 'basic' | 'network' | 'region';
 
@@ -1215,7 +1216,11 @@ function NewProductPage() {
           : productType === 'network'
           ? await productsService.createNetwork(formData)
           : await productsService.createRegion(formData);
-      toast.success('Basic product created successfully!');
+
+      // Invalidate product list caches so new product shows up immediately
+      ProductCacheUtils.invalidateProductLists();
+
+      toast.success('Product created successfully!');
       resetForm();
     } catch (err: any) {
       toast.error(
