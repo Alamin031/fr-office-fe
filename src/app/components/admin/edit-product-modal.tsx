@@ -31,6 +31,7 @@ import {RichTextEditor} from '../../components/ui/rich-text-editor';
 import productsService from '../../lib/api/services/products';
 import categoriesService from '../../lib/api/services/categories';
 import brandsService from '../../lib/api/services/brands';
+import { ProductCacheUtils } from '../../lib/api/cache-utils';
 
 interface EditProductModalProps {
   open: boolean;
@@ -1607,6 +1608,10 @@ export function EditProductModal({
       } else if (productType === 'region') {
         response = await productsService.updateRegion(product.id, formData);
       }
+
+      // Invalidate product caches so UI updates immediately
+      ProductCacheUtils.invalidateProductLists();
+      ProductCacheUtils.invalidateProductDetail(product.id);
 
       toast.success('Product updated successfully!');
       onSuccess?.(response);

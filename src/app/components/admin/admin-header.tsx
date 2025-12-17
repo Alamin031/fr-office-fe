@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Bell, LogOut, Search, User, ChevronDown, AlertCircle, Clock } from "lucide-react"
+import { Bell, LogOut, Search, User, ChevronDown, AlertCircle, Clock, Menu } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
@@ -20,7 +20,13 @@ import { notificationService } from "@/app/lib/api/services/notify"
 import AuthService from "@/app/lib/api/services/auth.service"
 import type { Notification } from "@/app/lib/api/services/notify"
 
-export function AdminHeader() {
+export function AdminHeader({
+  sidebarOpen = false,
+  onToggleSidebar = () => {},
+}: {
+  sidebarOpen?: boolean
+  onToggleSidebar?: () => void
+}) {
   const router = useRouter()
   const { user, logout } = useAuthStore()
   const { notifications: productNotifications } = useProductNotifyStore()
@@ -91,6 +97,17 @@ export function AdminHeader() {
 
   return (
     <header className="sticky top-0 z-50 flex h-16 items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
+      {/* Mobile menu button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="lg:hidden"
+        onClick={onToggleSidebar}
+        aria-label="Toggle menu"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+
       <div className="relative flex-1 md:max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input placeholder="Search..." className="pl-9" />

@@ -67,12 +67,21 @@ function Page() {
   const [selectedMiddleImage, setSelectedMiddleImage] = useState<Herobanner | null>(null);
   const [editMiddleImageData, setEditMiddleImageData] = useState<{ id: string; img: File | string } | null>(null);
 
+  // Giveaway Section
+  const [giveawayImages, setGiveawayImages] = useState<Herobanner[]>([]);
+  const [isGiveawayUploadDialogOpen, setIsGiveawayUploadDialogOpen] = useState(false);
+  const [giveawayEditOpen, setGiveawayEditOpen] = useState(false);
+  const [giveawayDeleteOpen, setGiveawayDeleteOpen] = useState(false);
+  const [selectedGiveawayImage, setSelectedGiveawayImage] = useState<Herobanner | null>(null);
+  const [editGiveawayImageData, setEditGiveawayImageData] = useState<{ id: string; img: File | string } | null>(null);
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchHeroImages();
     fetchBottomImages();
     fetchMiddleImages();
+    fetchGiveawayImages();
   }, []);
 
   // Hero Section logic
@@ -231,6 +240,58 @@ function Page() {
     } catch (e) {} finally { setLoading(false); }
   };
 
+  // Giveaway Section logic
+  const fetchGiveawayImages = async () => {
+    setLoading(true);
+    try {
+      const data = await herobannerService.findAllGiveaway();
+      setGiveawayImages(data);
+    } catch (e) {} finally { setLoading(false); }
+  };
+  const handleGiveawayEditClick = (img: Herobanner) => {
+    setSelectedGiveawayImage(img);
+    setEditGiveawayImageData({ id: img.id, img: img.img });
+    setGiveawayEditOpen(true);
+  };
+  const handleGiveawayDeleteClick = (img: Herobanner) => {
+    setSelectedGiveawayImage(img);
+    setGiveawayDeleteOpen(true);
+  };
+  const handleSaveGiveawayEdit = async () => {
+    if (editGiveawayImageData) {
+      setLoading(true);
+      try {
+        await herobannerService.updateGiveaway(editGiveawayImageData.id, { img: editGiveawayImageData.img });
+        await fetchGiveawayImages();
+        setGiveawayEditOpen(false);
+        setEditGiveawayImageData(null);
+      } catch (e) {} finally { setLoading(false); }
+    }
+  };
+  const handleConfirmGiveawayDelete = async () => {
+    if (selectedGiveawayImage) {
+      setLoading(true);
+      try {
+        await herobannerService.removeGiveaway(selectedGiveawayImage.id);
+        await fetchGiveawayImages();
+        setGiveawayDeleteOpen(false);
+        setSelectedGiveawayImage(null);
+      } catch (e) {} finally { setLoading(false); }
+    }
+  };
+  const handleGiveawayImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    setLoading(true);
+    try {
+      for (const file of Array.from(files)) {
+        await herobannerService.createGiveaway({ img: file });
+      }
+      await fetchGiveawayImages();
+      setIsGiveawayUploadDialogOpen(false);
+    } catch (e) {} finally { setLoading(false); }
+  };
+
   return (
     <div className="space-y-10">
       {/* Hero Section Images */}
@@ -297,6 +358,28 @@ function Page() {
         handleConfirmDelete={handleConfirmMiddleDelete}
         loading={loading}
         label="Middle Image"
+      />
+
+      {/* Giveaway Section Images */}
+      <SectionImages
+        title="Giveaway Banners"
+        description="Manage giveaway section banners."
+        images={giveawayImages}
+        isUploadDialogOpen={isGiveawayUploadDialogOpen}
+        setIsUploadDialogOpen={setIsGiveawayUploadDialogOpen}
+        handleImagesUpload={handleGiveawayImagesUpload}
+        handleEditClick={handleGiveawayEditClick}
+        handleDeleteClick={handleGiveawayDeleteClick}
+        editOpen={giveawayEditOpen}
+        setEditOpen={setGiveawayEditOpen}
+        editImageData={editGiveawayImageData}
+        setEditImageData={setEditGiveawayImageData}
+        handleSaveEdit={handleSaveGiveawayEdit}
+        deleteOpen={giveawayDeleteOpen}
+        setDeleteOpen={setGiveawayDeleteOpen}
+        handleConfirmDelete={handleConfirmGiveawayDelete}
+        loading={loading}
+        label="Giveaway Banner"
       />
     </div>
   );

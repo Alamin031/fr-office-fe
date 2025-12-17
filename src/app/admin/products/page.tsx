@@ -48,6 +48,7 @@ import {
 import productsService from '../../lib/api/services/products';
 import categoriesService from '../../lib/api/services/categories';
 import {EditProductModal} from '@/app/components/admin/edit-product-modal';
+import {ProductCacheUtils} from '@/app/lib/api/cache-utils';
 
 type UIProduct = {
   id: string;
@@ -79,6 +80,7 @@ function AdminProductsPage() {
   const [pageSize] = useState<number>(20);
   const [viewLoading, setViewLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [refreshKey, setRefreshKey] = useState<number>(0);
   const cacheRef = useRef<Map<string, any>>(new Map());
 
   // Fetch categories on mount
@@ -229,7 +231,7 @@ function AdminProductsPage() {
     };
 
     fetchProducts();
-  }, [selectedCategory, currentPage, activeTab, pageSize, categories]);
+  }, [selectedCategory, currentPage, activeTab, pageSize, categories, refreshKey]);
 
   const handleViewClick = async (product: UIProduct) => {
     try {
@@ -272,6 +274,8 @@ function AdminProductsPage() {
       try {
         await productsService.delete(selectedProduct.id);
         setProducts(products.filter(p => p.id !== selectedProduct.id));
+        // Invalidate caches after deletion
+        ProductCacheUtils.invalidateProductLists();
         setDeleteOpen(false);
         setSelectedProduct(null);
       } catch {
@@ -583,13 +587,9 @@ function AdminProductsPage() {
         onOpenChange={setEditOpen}
         product={selectedProduct}
         onSuccess={updatedProduct => {
-          setProducts(
-            products.map(p =>
-              p.id === updatedProduct.id ? {...p, ...updatedProduct} : p,
-            ),
-          );
-          // Clear cache to ensure fresh data is fetched from API
+          // Clear cache and trigger re-fetch of current tab without full page reload
           cacheRef.current.clear();
+          setRefreshKey(prev => prev + 1);
         }}
       />
 

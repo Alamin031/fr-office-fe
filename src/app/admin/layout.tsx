@@ -1,5 +1,6 @@
 "use client"
 import type React from 'react';
+import {useState} from 'react';
 import Link from 'next/link';
 import {
   LayoutDashboard,
@@ -16,6 +17,8 @@ import {
   AlertCircle,
   BookOpen,
   Gift,
+  Menu,
+  X,
 } from 'lucide-react';
 import {Badge} from '../components/ui/badge';
 import {Suspense} from 'react';
@@ -48,10 +51,25 @@ const sidebarLinks = [
 ];
 
 export default function AdminLayout({children}: {children: React.ReactNode}) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
     <div className="flex min-h-screen">
       <Suspense fallback={<div>Loading...</div>}>
-        <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r border-border bg-card lg:block">
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+            onClick={closeSidebar}
+          />
+        )}
+
+        {/* Sidebar */}
+        <aside className={`fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-card transition-transform duration-200 ease-in-out lg:translate-x-0 lg:block ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}>
           <div className="flex h-16 items-center border-b border-border px-6">
             <Link href="/admin" className="text-xl font-bold">
               Admin Panel
@@ -63,6 +81,7 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={closeSidebar}
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
                   <link.icon className="h-5 w-5" />
                   {link.label}
@@ -77,6 +96,7 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
             <div className="border-t border-border p-4">
               <Link
                 href="/"
+                onClick={closeSidebar}
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
                 <LogOut className="h-5 w-5" />
                 Back to Store
@@ -88,7 +108,7 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
 
       <div className="flex-1 lg:ml-64 flex flex-col">
         <Suspense fallback={<div className="h-16 bg-background" />}>
-          <AdminHeader />
+          <AdminHeader sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
         </Suspense>
 
         <main className="flex-1 p-6 overflow-y-auto">{children}</main>
