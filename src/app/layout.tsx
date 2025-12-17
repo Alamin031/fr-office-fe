@@ -7,6 +7,7 @@ import "./globals.css"
 import { JsonLd } from "./components/seo/json-ld"
 import { StoreProvider } from "./components/providers/store-provider"
 import { AuthInit } from "./components/providers/auth-init"
+import { WhatsappChat } from "./components/layout/whatsapp-chat"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -105,6 +106,7 @@ export default function RootLayout({
         <StoreProvider>
           <AuthInit />
           {children}
+          <WhatsappChat />
         </StoreProvider>
         <Analytics />
       </body>
