@@ -138,19 +138,19 @@ export function EditProductModal({
   const [ratingPoint, setRatingPoint] = useState(product?.ratingPoint || '');
 
   // Network helper functions
- const addNetwork = () => {
-  setNetworks([
-    ...networks,
-    {
-      id: `network-${Date.now()}`,
-      networkType: '',
-      isDefault: false,
-      hasDefaultStorages: false,
-      defaultStorages: [],
-      colors: [],
-    },
-  ]); // <-- Added missing parenthesis here
-};
+  const addNetwork = () => {
+    setNetworks([
+      ...networks,
+      {
+        id: `network-${Date.now()}`,
+        networkType: '',
+        isDefault: false,
+        hasDefaultStorages: false,
+        defaultStorages: [],
+        colors: [],
+      },
+    ]); // <-- Added missing parenthesis here
+  };
 
   const removeNetwork = (networkId: string) => {
     setNetworks(networks.filter(n => n.id !== networkId));
@@ -468,17 +468,17 @@ export function EditProductModal({
 
   // Region helper functions
   const addRegion = () => {
-  setRegions([
-    ...regions,
-    {
-      id: `region-${Date.now()}`,
-      regionName: '',
-      isDefault: false,
-      defaultStorages: [],
-      colors: [],
-    },
-  ]);
-};
+    setRegions([
+      ...regions,
+      {
+        id: `region-${Date.now()}`,
+        regionName: '',
+        isDefault: false,
+        defaultStorages: [],
+        colors: [],
+      },
+    ]);
+  };
 
   const removeRegion = (regionId: string) => {
     setRegions(regions.filter(r => r.id !== regionId));
@@ -914,11 +914,19 @@ export function EditProductModal({
           setBasicColors(
             product.directColors.map((c: any) => {
               const regularPrice = c.regularPrice ? Number(c.regularPrice) : 0;
-              const discountPrice = c.discountPrice ? Number(c.discountPrice) : 0;
-              let discountPercent = c.discountPercent ? Number(c.discountPercent) : 0;
+              const discountPrice = c.discountPrice
+                ? Number(c.discountPrice)
+                : 0;
+              let discountPercent = c.discountPercent
+                ? Number(c.discountPercent)
+                : 0;
 
               // Calculate discount percent if missing but we have both prices
-              if (discountPercent === 0 && regularPrice > 0 && discountPrice > 0) {
+              if (
+                discountPercent === 0 &&
+                regularPrice > 0 &&
+                discountPrice > 0
+              ) {
                 discountPercent = Math.round(
                   ((regularPrice - discountPrice) / regularPrice) * 100,
                 );
@@ -1318,12 +1326,79 @@ export function EditProductModal({
       if (thumbnailFile) formData.append('thumbnail', thumbnailFile);
       galleryImageFiles.forEach(file => formData.append('galleryImages', file));
 
-      // Track existing image IDs to keep (so backend can delete any that were removed)
+      // Track existing image IDs to keep
       const existingImageIds = galleryImagePreviews
-        .filter(preview => preview.id) // Only existing images have IDs
+        .filter(preview => preview.id)
         .map(preview => preview.id) as string[];
+
+      // ALSO include the current thumbnail ID if it exists
+      const currentThumbnail = product.images?.find(
+        (img: any) => img.isThumbnail,
+      );
+      if (
+        currentThumbnail?.id &&
+        !existingImageIds.includes(currentThumbnail.id)
+      ) {
+        existingImageIds.push(currentThumbnail.id);
+      }
+
       if (existingImageIds.length > 0) {
         formData.append('keepImageIds', JSON.stringify(existingImageIds));
+      }
+
+      // Start building images array
+      const imagesArray = [];
+
+      // 1. FIRST add the THUMBNAIL (most important - must be first and have isThumbnail: true)
+      // Check if we have a current thumbnail from the product
+      if (currentThumbnail) {
+        imagesArray.push({
+          id: currentThumbnail.id,
+          url: currentThumbnail.imageUrl || currentThumbnail.url,
+          altText: currentThumbnail.altText || 'Thumbnail',
+          isThumbnail: true, // THIS IS CRITICAL
+          displayOrder: 0, // Thumbnail should be first
+        });
+      } else if (thumbnailFile || thumbnailPreview) {
+        // No existing thumbnail but we're uploading one
+        imagesArray.push({
+          url: '', // Will be filled by backend
+          altText: thumbnailFile ? thumbnailFile.name : 'Thumbnail',
+          isThumbnail: true, // THIS IS CRITICAL
+          displayOrder: 0,
+        });
+      }
+
+      // 2. Then add GALLERY images
+      galleryImagePreviews.forEach((preview, index) => {
+        // Skip if this preview is actually the thumbnail
+        if (preview.id === currentThumbnail?.id) return;
+
+        if (preview.id) {
+          imagesArray.push({
+            id: preview.id,
+            url: preview.url,
+            altText: preview.altText || '',
+            isThumbnail: false, // Gallery images are NOT thumbnails
+            displayOrder: index + 1, // +1 because thumbnail is at position 0
+          });
+        } else {
+          imagesArray.push({
+            url: '', // Will be filled by backend
+            altText: preview.altText || '',
+            isThumbnail: false, // Gallery images are NOT thumbnails
+            displayOrder: index + 1,
+          });
+        }
+      });
+
+      // 3. If we don't have a thumbnail but have gallery images, mark the first one as thumbnail
+      if (imagesArray.length > 0 && !imagesArray.some(img => img.isThumbnail)) {
+        imagesArray[0].isThumbnail = true;
+        if (thumbnailFile) {
+          // If uploading new thumbnail, the backend will update this image
+          imagesArray[0].altText = thumbnailFile.name || 'Thumbnail';
+        }
       }
 
       const payload: any = {
@@ -1357,6 +1432,8 @@ export function EditProductModal({
           : undefined,
         seoCanonical: seoCanonical || undefined,
         tags: tags ? tags.split(',').map(t => t.trim()) : undefined,
+        // ✅ CRITICAL: Add images array to payload WITH THUMBNAIL
+        images: imagesArray.length > 0 ? imagesArray : undefined,
         videos: videos
           .filter(v => v.url)
           .map((v, idx) => ({
@@ -1391,8 +1468,6 @@ export function EditProductModal({
           displayOrder: idx,
         }));
       } else if (productType === 'network') {
-        // Simplified network update logic - assuming backend handles full replacement or smart update
-        // For complex nested structures, we usually send the full structure
         const networkColorImages: File[] = [];
         payload.networks = networks.map((network, netIdx) => ({
           id: network.id.startsWith('network-') ? undefined : network.id,
@@ -1580,8 +1655,7 @@ export function EditProductModal({
                     variant="outline"
                     size="sm"
                     onClick={() => setDescriptionPreviewMode(prev => !prev)}
-                    className="text-xs mb-2"
-                  >
+                    className="text-xs mb-2">
                     {descriptionPreviewMode ? 'Edit Mode' : 'Preview Mode'}
                   </Button>
                 </div>
@@ -1610,7 +1684,9 @@ export function EditProductModal({
                     <span className="font-medium">Character Count:</span>{' '}
                     {description.replace(/<[^>]*>/g, '').length}
                     {description.replace(/<[^>]*>/g, '').length < 30 && (
-                      <span className="text-red-500 ml-2">(Minimum 30 required)</span>
+                      <span className="text-red-500 ml-2">
+                        (Minimum 30 required)
+                      </span>
                     )}
                   </div>
                   <div className="flex items-center gap-3">
@@ -1625,10 +1701,16 @@ export function EditProductModal({
                 <div className="bg-muted/20 rounded-lg p-4 border mt-2">
                   <h4 className="font-medium text-sm mb-2">Formatting Tips:</h4>
                   <ul className="text-xs text-muted-foreground space-y-1">
-                    <li>• Use toolbar buttons or keyboard shortcuts for formatting</li>
+                    <li>
+                      • Use toolbar buttons or keyboard shortcuts for formatting
+                    </li>
                     <li>• Headings help structure your content (H1, H2, H3)</li>
-                    <li>• Use lists (bullet or numbered) for better readability</li>
-                    <li>• Add blockquotes for important quotes or highlights</li>
+                    <li>
+                      • Use lists (bullet or numbered) for better readability
+                    </li>
+                    <li>
+                      • Add blockquotes for important quotes or highlights
+                    </li>
                     <li>• Use code blocks for technical content</li>
                   </ul>
                 </div>
@@ -2235,9 +2317,7 @@ export function EditProductModal({
                         )}
 
                         <div className="space-y-3">
-                          <h4 className="font-semibold text-sm mb-2">
-                            Colors
-                          </h4>
+                          <h4 className="font-semibold text-sm mb-2">Colors</h4>
                           {network.colors.map((color: any) => (
                             <div
                               key={color.id}
