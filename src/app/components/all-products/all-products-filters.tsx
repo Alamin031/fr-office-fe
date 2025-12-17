@@ -212,7 +212,7 @@ export function AllProductsFilters({
   return (
     <>
       {/* Desktop Filters */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block" suppressHydrationWarning>
         <div className="sticky top-24 rounded-xl border border-border bg-card p-6">
           <h2 className="mb-4 font-semibold">Filters</h2>
           <DesktopFilterContent />
@@ -220,7 +220,7 @@ export function AllProductsFilters({
       </div>
 
       {/* Mobile Filters - Horizontal Scrollable Rows */}
-      <div className="space-y-3 lg:hidden">
+      <div className="space-y-3 lg:hidden" suppressHydrationWarning>
         {/* Categories Row */}
         {categories && categories.length > 0 && (
           <div className="overflow-x-auto">
