@@ -1616,11 +1616,6 @@ export function EditProductModal({
       toast.success('Product updated successfully!');
       onSuccess?.(response);
       onOpenChange(false);
-
-      // Reload page to ensure images and all data are fresh
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
     } catch (err: any) {
       toast.error(
         `Error: ${
