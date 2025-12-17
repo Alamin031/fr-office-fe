@@ -46,24 +46,17 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
-    // Handle 401/403 - unauthorized or forbidden
     if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
       originalRequest._retry = true
       try {
         const authStore = useAuthStore.getState()
-
-        // Clear all auth state first
         authStore.logout()
 
-        // Wait a bit for state to clear
-        await new Promise(resolve => setTimeout(resolve, 100))
-
         if (typeof window !== "undefined") {
-          // Hard reload to clear all caches (cookies, middleware, etc)
+          // Force hard reload to clear middleware cache and trigger auth checks
           window.location.href = "/login?session-expired=true"
         }
       } catch (logoutError) {
-        console.error("Logout error during 401 handling:", logoutError)
         const authStore = useAuthStore.getState()
         authStore.logout()
         if (typeof window !== "undefined") {
@@ -73,18 +66,17 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Handle network errors and timeout
+    // Handle network errors and other API errors
     if (error.message === "Network Error" || !error.response) {
       console.error("Network or API error:", error)
-      // Don't redirect on network errors - let the caller handle it
-      // Only clear auth if we have a token to prevent stale state
+      // Still try to clear on network errors to be safe
       try {
         const authStore = useAuthStore.getState()
-        if (authStore.token && error.response?.status === 401) {
+        if (authStore.token) {
           authStore.logout()
         }
       } catch (e) {
-        console.error("Error during network error handling:", e)
+        console.error("Error clearing auth on network error:", e)
       }
     }
 
