@@ -1404,6 +1404,10 @@ function NewProductPage() {
           : productType === 'network'
           ? await productsService.createNetwork(formData)
           : await productsService.createRegion(formData);
+
+      // Invalidate product list caches so new product shows up immediately
+      ProductCacheUtils.invalidateProductLists();
+
       toast.success('Network product created successfully!');
       resetForm();
     } catch (err: any) {
@@ -1581,6 +1585,10 @@ function NewProductPage() {
           : productType === 'network'
           ? await productsService.createNetwork(formData)
           : await productsService.createRegion(formData);
+
+      // Invalidate product list caches so new product shows up immediately
+      ProductCacheUtils.invalidateProductLists();
+
       toast.success('Region product created successfully!');
       resetForm();
     } catch (err: any) {
