@@ -227,8 +227,8 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
 
       {/* Content */}
       <div className="flex flex-col gap-8 lg:flex-row">
-        {/* Sidebar Filters */}
-        <aside className="w-full lg:w-64 flex-shrink-0">
+        {/* Desktop Sidebar Filters */}
+        <aside className="hidden lg:block w-64 flex-shrink-0" suppressHydrationWarning>
           <AllProductsFilters
             categories={categories}
             brands={brands}
@@ -239,6 +239,16 @@ export default async function Page({ searchParams }: AllProductsPageProps) {
 
         {/* Products Grid */}
         <main className="flex-1 min-w-0">
+          {/* Mobile Filters - shown above products */}
+          <div className="lg:hidden mb-6" suppressHydrationWarning>
+            <AllProductsFilters
+              categories={categories}
+              brands={brands}
+              selectedCategories={selectedCategories}
+              selectedBrands={selectedBrands}
+            />
+          </div>
+
           <ProductsListClient
             initialProducts={filteredProducts.slice(0, 20)}
             totalProducts={filteredProducts.length}

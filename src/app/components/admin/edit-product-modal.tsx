@@ -1318,6 +1318,14 @@ export function EditProductModal({
       if (thumbnailFile) formData.append('thumbnail', thumbnailFile);
       galleryImageFiles.forEach(file => formData.append('galleryImages', file));
 
+      // Track existing image IDs to keep (so backend can delete any that were removed)
+      const existingImageIds = galleryImagePreviews
+        .filter(preview => preview.id) // Only existing images have IDs
+        .map(preview => preview.id) as string[];
+      if (existingImageIds.length > 0) {
+        formData.append('keepImageIds', JSON.stringify(existingImageIds));
+      }
+
       const payload: any = {
         name: productName,
         slug,

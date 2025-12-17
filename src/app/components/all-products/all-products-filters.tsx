@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "../ui/sheet";
+import { ChevronDown, X } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -30,7 +23,6 @@ export function AllProductsFilters({
 }: AllProductsFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isHydrated, setIsHydrated] = useState(false);
   const [activeCategories, setActiveCategories] =
     useState<string[]>(selectedCategories);
   const [activeBrands, setActiveBrands] = useState<string[]>(selectedBrands);
@@ -38,11 +30,6 @@ export function AllProductsFilters({
     categories: true,
     brands: true,
   });
-
-  // Ensure hydration happens on client side only
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -92,7 +79,7 @@ export function AllProductsFilters({
 
   const hasActiveFilters = activeCategories.length > 0 || activeBrands.length > 0;
 
-  const FilterContent = () => (
+  const DesktopFilterContent = () => (
     <div className="space-y-6">
       {/* Active Filters */}
       {hasActiveFilters && (
@@ -225,84 +212,72 @@ export function AllProductsFilters({
   return (
     <>
       {/* Desktop Filters */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block" suppressHydrationWarning>
         <div className="sticky top-24 rounded-xl border border-border bg-card p-6">
           <h2 className="mb-4 font-semibold">Filters</h2>
-          <FilterContent />
+          <DesktopFilterContent />
         </div>
       </div>
 
-      {/* Mobile Filters */}
-      <div className="space-y-4 lg:hidden">
-        {/* Active Filter Tags - Always render but hide when empty */}
-        <div className={cn("space-y-2", !hasActiveFilters && "hidden")}>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Active Filters</span>
+      {/* Mobile Filters - Horizontal Scrollable Rows */}
+      <div className="space-y-3 lg:hidden" suppressHydrationWarning>
+        {/* Categories Row */}
+        {categories && categories.length > 0 && (
+          <div className="overflow-x-auto">
+            <div className="flex gap-2 pb-2">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => toggleCategory(category.slug)}
+                  className={cn(
+                    "inline-flex items-center whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition-colors flex-shrink-0",
+                    activeCategories.includes(category.slug)
+                      ? "bg-foreground text-background"
+                      : "border border-border bg-background text-foreground hover:bg-muted"
+                  )}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Brands Row */}
+        {brands && brands.length > 0 && (
+          <div className="overflow-x-auto">
+            <div className="flex gap-2 pb-2">
+              {brands.map((brand) => (
+                <button
+                  key={brand.id}
+                  onClick={() => toggleBrand(brand.slug)}
+                  className={cn(
+                    "inline-flex items-center whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition-colors flex-shrink-0",
+                    activeBrands.includes(brand.slug)
+                      ? "bg-foreground text-background"
+                      : "border border-border bg-background text-foreground hover:bg-muted"
+                  )}
+                >
+                  {brand.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Clear All Button */}
+        {hasActiveFilters && (
+          <div className="flex justify-center pt-1">
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 text-xs text-muted-foreground hover:text-foreground"
+              className="text-xs text-muted-foreground hover:text-foreground"
               onClick={clearAllFilters}
             >
-              Clear All
+              Clear All Filters
             </Button>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {activeCategories.map((categorySlug) => {
-              const cat = categories.find((c) => c.slug === categorySlug);
-              return (
-                <Button
-                  key={categorySlug}
-                  variant="secondary"
-                  size="sm"
-                  className="h-7 gap-1 text-xs"
-                  onClick={() => toggleCategory(categorySlug)}
-                >
-                  {cat?.name}
-                  <X className="h-3 w-3" />
-                </Button>
-              );
-            })}
-            {activeBrands.map((brandSlug) => {
-              const brand = brands.find((b) => b.slug === brandSlug);
-              return (
-                <Button
-                  key={brandSlug}
-                  variant="secondary"
-                  size="sm"
-                  className="h-7 gap-1 text-xs"
-                  onClick={() => toggleBrand(brandSlug)}
-                >
-                  {brand?.name}
-                  <X className="h-3 w-3" />
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Filters Drawer */}
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" className="w-full gap-2 bg-transparent">
-              <SlidersHorizontal className="h-4 w-4" />
-              Filters
-              {hasActiveFilters && (
-                <span className="rounded-full bg-foreground px-2 py-0.5 text-xs text-background">
-                  {activeCategories.length + activeBrands.length}
-                </span>
-              )}
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>Filters</SheetTitle>
-            </SheetHeader>
-            <div className="mt-6">
-              <FilterContent />
-            </div>
-          </SheetContent>
-        </Sheet>
+        )}
       </div>
     </>
   );

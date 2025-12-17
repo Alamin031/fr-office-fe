@@ -588,6 +588,8 @@ function AdminProductsPage() {
               p.id === updatedProduct.id ? {...p, ...updatedProduct} : p,
             ),
           );
+          // Clear cache to ensure fresh data is fetched from API
+          cacheRef.current.clear();
         }}
       />
 
