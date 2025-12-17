@@ -209,133 +209,128 @@ function FlashSellDetailContent() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar initialCategories={[]} initialBrands={[]} />
-      <main className="flex-1 flex flex-col">
-        <div className="mx-auto w-full max-w-7xl px-4 py-8">
-          {/* Back Button */}
-          <Link href="/">
-            <Button variant="outline" className="gap-2 mb-6">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
+    <main className="flex-1 flex flex-col">
+      <div className="mx-auto w-full max-w-7xl px-4 py-8">
+        {/* Back Button */}
+        <Link href="/">
+          <Button variant="outline" className="gap-2 mb-6">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        </Link>
 
-          {/* Flash Sale Header Section */}
-          <div className="grid gap-6 mb-8 md:grid-cols-3">
-            {/* Banner and Title */}
-            <div className="md:col-span-2">
-              {flashsell.bannerImg && (
-                <div className="relative h-64 w-full overflow-hidden rounded-2xl bg-muted mb-6">
-                  <Image
-                    src={flashsell.bannerImg}
-                    alt={flashsell.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                </div>
-              )}
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <div>
-                  <h1 className="text-4xl font-bold tracking-tight">
-                    {flashsell.title}
-                  </h1>
-                  <div className="flex items-center gap-2 mt-3">
-                    <Zap className="h-5 w-5 text-orange-500" />
-                    <span className="text-2xl font-bold text-orange-600">
-                      {flashsell.discountpercentage}% OFF
-                    </span>
-                  </div>
-                </div>
-                {getStatusBadge()}
-              </div>
-            </div>
-
-            {/* Timer and Info Card */}
-            <div className="bg-card border border-border rounded-2xl p-6 h-fit">
-              {!timeLeft.isEnded && (
-                <div className="mb-6">
-                  <p className="text-sm font-semibold mb-3 text-muted-foreground">
-                    {timeLeft.isUpcoming ? "Starts in:" : "Ends in:"}
-                  </p>
-                  <div className="grid grid-cols-4 gap-2">
-                    {[
-                      { value: timeLeft.days, label: "Days" },
-                      { value: timeLeft.hours, label: "Hrs" },
-                      { value: timeLeft.minutes, label: "Min" },
-                      { value: timeLeft.seconds, label: "Sec" },
-                    ].map((item) => (
-                      <div key={item.label} className="text-center">
-                        <div className="bg-muted rounded p-2 mb-1">
-                          <p className="font-bold text-lg">
-                            {String(item.value).padStart(2, "0")}
-                          </p>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {item.label}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-3 border-t border-border pt-4">
-                <div>
-                  <p className="text-xs text-muted-foreground">Stock Available</p>
-                  <p className="text-lg font-semibold">{flashsell.stock} units</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Total Products</p>
-                  <p className="text-lg font-semibold">{flashsell.productIds.length}</p>
-                </div>
-              </div>
-
-              {/* Time Info */}
-              <div className="space-y-2 mt-4 pt-4 border-t border-border text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <div>
-                    <p>Start: {formatDateTime(flashsell.startTime)}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <div>
-                    <p>End: {formatDateTime(flashsell.endTime)}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Products Section */}
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight mb-6">
-              Featured Products
-            </h2>
-
-            {products.length === 0 ? (
-              <div className="text-center py-12 bg-muted rounded-2xl">
-                <Zap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground text-lg">
-                  No products available for this flash sale
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+        {/* Flash Sale Header Section */}
+        <div className="grid gap-6 mb-8 md:grid-cols-3">
+          {/* Banner and Title */}
+          <div className="md:col-span-2">
+            {flashsell.bannerImg && (
+              <div className="relative h-64 w-full overflow-hidden rounded-2xl bg-muted mb-6">
+                <Image
+                  src={flashsell.bannerImg}
+                  alt={flashsell.title}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               </div>
             )}
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h1 className="text-4xl font-bold tracking-tight">
+                  {flashsell.title}
+                </h1>
+                <div className="flex items-center gap-2 mt-3">
+                  <Zap className="h-5 w-5 text-orange-500" />
+                  <span className="text-2xl font-bold text-orange-600">
+                    {flashsell.discountpercentage}% OFF
+                  </span>
+                </div>
+              </div>
+              {getStatusBadge()}
+            </div>
+          </div>
+
+          {/* Timer and Info Card */}
+          <div className="bg-card border border-border rounded-2xl p-6 h-fit">
+            {!timeLeft.isEnded && (
+              <div className="mb-6">
+                <p className="text-sm font-semibold mb-3 text-muted-foreground">
+                  {timeLeft.isUpcoming ? "Starts in:" : "Ends in:"}
+                </p>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { value: timeLeft.days, label: "Days" },
+                    { value: timeLeft.hours, label: "Hrs" },
+                    { value: timeLeft.minutes, label: "Min" },
+                    { value: timeLeft.seconds, label: "Sec" },
+                  ].map((item) => (
+                    <div key={item.label} className="text-center">
+                      <div className="bg-muted rounded p-2 mb-1">
+                        <p className="font-bold text-lg">
+                          {String(item.value).padStart(2, "0")}
+                        </p>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {item.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-3 border-t border-border pt-4">
+              <div>
+                <p className="text-xs text-muted-foreground">Stock Available</p>
+                <p className="text-lg font-semibold">{flashsell.stock} units</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Total Products</p>
+                <p className="text-lg font-semibold">{flashsell.productIds.length}</p>
+              </div>
+            </div>
+
+            {/* Time Info */}
+            <div className="space-y-2 mt-4 pt-4 border-t border-border text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <div>
+                  <p>Start: {formatDateTime(flashsell.startTime)}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <div>
+                  <p>End: {formatDateTime(flashsell.endTime)}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </main>
-      <Footer />
-      <MobileBottomNav />
-    </div>
+
+        {/* Products Section */}
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight mb-6">
+            Featured Products
+          </h2>
+
+          {products.length === 0 ? (
+            <div className="text-center py-12 bg-muted rounded-2xl">
+              <Zap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground text-lg">
+                No products available for this flash sale
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
   )
 }
 
