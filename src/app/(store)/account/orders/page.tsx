@@ -131,25 +131,23 @@ function OrderCard({ order }: { order: OrderWithStatus }) {
             ))}
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
             <Link href={`/account/orders/${order.id}`}>
               <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                 View Details
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </Link>
-            {(order.status === "Shipped" || order.status === "Processing") && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1 bg-transparent"
-                onClick={handleTrackOrder}
-                disabled={trackingLoading}
-              >
-                <Map className="h-4 w-4" />
-                {trackingLoading ? "Loading..." : "Track Order"}
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1 bg-transparent"
+              onClick={handleTrackOrder}
+              disabled={trackingLoading}
+            >
+              <Map className="h-4 w-4" />
+              {trackingLoading ? "Loading..." : "Track Order"}
+            </Button>
           </div>
         </CardContent>
       </Card>
