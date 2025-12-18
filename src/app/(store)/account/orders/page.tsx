@@ -54,22 +54,26 @@ interface OrderWithStatus {
 function OrderCard({ order }: { order: OrderWithStatus }) {
   const [trackingModalOpen, setTrackingModalOpen] = useState(false);
   const [trackingData, setTrackingData] = useState<any>(null);
-  const [trackingLoading, setTrackingLoading] = useState(false);
-  const [trackingError, setTrackingError] = useState<string | null>(null);
 
-  const handleTrackOrder = async () => {
-    setTrackingLoading(true);
-    setTrackingError(null);
-    try {
-      // Use the new backend endpoint for tracking
-      const data = await ordersService.track(order.orderNumber || order.id);
-      setTrackingData(data);
-      setTrackingModalOpen(true);
-    } catch {
-      setTrackingError("Failed to load tracking info.");
-    } finally {
-      setTrackingLoading(false);
-    }
+  const handleTrackOrder = () => {
+    // Build tracking data from the order object we already have
+    const trackingData = {
+      orderId: order.id,
+      currentStatus: order.status.toLowerCase(),
+      estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+      trackingNumber: order.orderNumber || order.id,
+      carrier: "Standard Delivery",
+      statusHistory: [
+        {
+          status: order.status.toLowerCase(),
+          timestamp: order.date,
+          message: `Order is currently ${order.status.toLowerCase()}`,
+          location: "",
+        },
+      ],
+    };
+    setTrackingData(trackingData);
+    setTrackingModalOpen(true);
   };
 
   // Show first product's name and image at the top
@@ -143,10 +147,9 @@ function OrderCard({ order }: { order: OrderWithStatus }) {
               size="sm"
               className="gap-1 bg-transparent"
               onClick={handleTrackOrder}
-              disabled={trackingLoading}
             >
               <Map className="h-4 w-4" />
-              {trackingLoading ? "Loading..." : "Track Order"}
+              Track Order
             </Button>
           </div>
         </CardContent>
@@ -158,16 +161,13 @@ function OrderCard({ order }: { order: OrderWithStatus }) {
           <DialogHeader>
             <DialogTitle>Order Tracking</DialogTitle>
           </DialogHeader>
-          {trackingError && <div className="text-red-500 mb-2">{trackingError}</div>}
-          {trackingData ? (
+          {trackingData && (
             <OrderTrackingModal
               tracking={trackingData}
               productName={firstItem?.name}
               productImage={firstItem?.image}
             />
-          ) : trackingLoading ? (
-            <div>Loading...</div>
-          ) : null}
+          )}
         </DialogContent>
       </Dialog>
     </>
