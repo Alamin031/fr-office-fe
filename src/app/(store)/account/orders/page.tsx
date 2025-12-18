@@ -54,40 +54,26 @@ interface OrderWithStatus {
 function OrderCard({ order }: { order: OrderWithStatus }) {
   const [trackingModalOpen, setTrackingModalOpen] = useState(false);
   const [trackingData, setTrackingData] = useState<any>(null);
-  const [trackingLoading, setTrackingLoading] = useState(false);
-  const [trackingError, setTrackingError] = useState<string | null>(null);
 
-  const handleTrackOrder = async () => {
-    setTrackingLoading(true);
-    setTrackingError(null);
-    try {
-      const data = await ordersService.track(order.orderNumber || order.id);
-      setTrackingData(data);
-      setTrackingModalOpen(true);
-    } catch (error) {
-      console.error("Track order error:", error);
-      // Use fallback data with current order status
-      const fallbackData = {
-        orderId: order.id,
-        currentStatus: order.status.toLowerCase(),
-        estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-        trackingNumber: order.orderNumber || order.id,
-        carrier: "Standard Delivery",
-        statusHistory: [
-          {
-            status: order.status.toLowerCase(),
-            timestamp: order.date,
-            message: `Order is currently ${order.status.toLowerCase()}`,
-            location: "",
-          },
-        ],
-      };
-      setTrackingData(fallbackData);
-      setTrackingModalOpen(true);
-      setTrackingError(null);
-    } finally {
-      setTrackingLoading(false);
-    }
+  const handleTrackOrder = () => {
+    // Build tracking data from the order object we already have
+    const trackingData = {
+      orderId: order.id,
+      currentStatus: order.status.toLowerCase(),
+      estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+      trackingNumber: order.orderNumber || order.id,
+      carrier: "Standard Delivery",
+      statusHistory: [
+        {
+          status: order.status.toLowerCase(),
+          timestamp: order.date,
+          message: `Order is currently ${order.status.toLowerCase()}`,
+          location: "",
+        },
+      ],
+    };
+    setTrackingData(trackingData);
+    setTrackingModalOpen(true);
   };
 
   // Show first product's name and image at the top
