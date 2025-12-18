@@ -239,7 +239,7 @@ function UserWarrantyPage() {
                   <Calendar className="h-4 w-4" />
                   Start Date
                 </div>
-                <p className="mt-2 font-semibold">{new Date(warranty.startDate).toLocaleDateString()}</p>
+                <p className="mt-2 font-semibold">{formatDate(warranty.startDate)}</p>
               </div>
 
               <div className="rounded-lg bg-muted/50 p-4">
@@ -247,7 +247,7 @@ function UserWarrantyPage() {
                   <Calendar className="h-4 w-4" />
                   End Date
                 </div>
-                <p className="mt-2 font-semibold">{new Date(warranty.endDate).toLocaleDateString()}</p>
+                <p className="mt-2 font-semibold">{formatDate(warranty.endDate)}</p>
               </div>
             </div>
 
@@ -290,7 +290,7 @@ function UserWarrantyPage() {
                         <p className="text-sm font-medium">{log.action}</p>
                         {log.description && <p className="mt-1 text-xs text-muted-foreground">{log.description}</p>}
                         <p className="mt-1 text-xs text-muted-foreground">
-                          {new Date(log.createdAt).toLocaleDateString()} {new Date(log.createdAt).toLocaleTimeString()}
+                          {formatDate(log.createdAt)} {new Date(log.createdAt).toLocaleTimeString()}
                         </p>
                       </div>
                     </div>
@@ -314,9 +314,9 @@ function UserWarrantyPage() {
         <Card>
           <CardContent className="py-12 text-center">
             <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground" />
-            <p className="mt-4 text-muted-foreground">No warranty found for this IMEI.</p>
+            <p className="mt-4 text-muted-foreground">No warranty found.</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Please verify the IMEI number and try again.
+              Please verify the IMEI/Serial number and phone number, then try again.
             </p>
           </CardContent>
         </Card>
