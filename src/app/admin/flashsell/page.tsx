@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
+import { Card, CardContent } from "../../components/ui/card"
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
 import { Label } from "../../components/ui/label"
@@ -32,9 +32,7 @@ interface FormData {
   stock: number
 }
 
-interface ProductWithSelected extends Product {
-  selected?: boolean
-}
+
 
 function AdminFlashsellPage() {
   const [flashsells, setFlashsells] = useState<Flashsell[]>([])
@@ -67,7 +65,7 @@ function AdminFlashsellPage() {
     try {
       const data = await flashsellService.findAll()
       setFlashsells(data)
-    } catch (error) {
+    } catch {
       toast.error("Failed to load flashsell events")
     }
   }
@@ -77,7 +75,7 @@ function AdminFlashsellPage() {
       const response = await productsService.getAllLite({}, 1, 1000)
       const products = Array.isArray(response) ? response : response.data || []
       setAllProducts(products)
-    } catch (error) {
+    } catch {
       toast.error("Failed to load products")
     }
   }
@@ -94,7 +92,7 @@ function AdminFlashsellPage() {
       productIds: [],
       startTime: "",
       endTime: "",
-      discountPrice: 0,
+      discountpercentage: 0,
       stock: 0,
     })
   }
@@ -191,10 +189,16 @@ function AdminFlashsellPage() {
     setLoading(true)
     try {
       if (editMode && editingId) {
-        await flashsellService.update(editingId, form)
+        await flashsellService.update(editingId, {
+          ...form,
+          bannerImg: form.bannerImg === null ? undefined : form.bannerImg,
+        })
         toast.success("Flashsell updated successfully!")
       } else {
-        await flashsellService.create(form)
+        await flashsellService.create({
+          ...form,
+          bannerImg: form.bannerImg === null ? undefined : form.bannerImg,
+        })
         toast.success("Flashsell created successfully!")
       }
 
@@ -535,7 +539,7 @@ function AdminFlashsellPage() {
               Delete Flash Sell
             </DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{deleteTarget?.title}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{deleteTarget?.title}&quot;? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
 

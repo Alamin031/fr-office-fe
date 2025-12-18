@@ -1,31 +1,37 @@
-"use client"
+'use client';
 
-import { useState, useEffect, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/app/components/ui/button"
-import { Badge } from "@/app/components/ui/badge"
-import { ProductCard } from "@/app/components/product/product-card"
-import { Navbar } from "@/app/components/layout/navbar"
-import { Footer } from "@/app/components/layout/footer"
-import { MobileBottomNav } from "@/app/components/layout/mobile-bottom-nav"
-import { flashsellService, type Flashsell } from "@/app/lib/api/services/flashsell"
-import { productsService } from "@/app/lib/api/services"
-import { toast } from "sonner"
-import { ArrowLeft, Calendar, Zap } from "lucide-react"
-import type { Product } from "@/app/types"
+import {useState, useEffect, Suspense} from 'react';
+import {useSearchParams} from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
+import {Button} from '@/app/components/ui/button';
+import {Badge} from '@/app/components/ui/badge';
+import {ProductCard} from '@/app/components/product/product-card';
+import {Navbar} from '@/app/components/layout/navbar';
+import {Footer} from '@/app/components/layout/footer';
+import {MobileBottomNav} from '@/app/components/layout/mobile-bottom-nav';
+import {
+  flashsellService,
+  type Flashsell,
+} from '@/app/lib/api/services/flashsell';
+import {productsService} from '@/app/lib/api/services';
+import {toast} from 'sonner';
+import {ArrowLeft, Calendar, Zap} from 'lucide-react';
+import type {Product} from '@/app/types';
 
 interface TimeLeft {
-  days: number
-  hours: number
-  minutes: number
-  seconds: number
-  isEnded: boolean
-  isUpcoming: boolean
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  isEnded: boolean;
+  isUpcoming: boolean;
 }
 
-function useCountdown(startTime: string | null, endTime: string | null): TimeLeft {
+function useCountdown(
+  startTime: string | null,
+  endTime: string | null,
+): TimeLeft {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -33,18 +39,18 @@ function useCountdown(startTime: string | null, endTime: string | null): TimeLef
     seconds: 0,
     isEnded: false,
     isUpcoming: false,
-  })
+  });
 
   useEffect(() => {
-    if (!startTime || !endTime) return
+    if (!startTime || !endTime) return;
 
     const calculateTimeLeft = () => {
-      const now = new Date()
-      const start = new Date(startTime)
-      const end = new Date(endTime)
+      const now = new Date();
+      const start = new Date(startTime);
+      const end = new Date(endTime);
 
       if (now < start) {
-        const difference = start.getTime() - now.getTime()
+        const difference = start.getTime() - now.getTime();
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
@@ -52,7 +58,7 @@ function useCountdown(startTime: string | null, endTime: string | null): TimeLef
           seconds: Math.floor((difference / 1000) % 60),
           isEnded: false,
           isUpcoming: true,
-        })
+        });
       } else if (now > end) {
         setTimeLeft({
           days: 0,
@@ -61,9 +67,9 @@ function useCountdown(startTime: string | null, endTime: string | null): TimeLef
           seconds: 0,
           isEnded: true,
           isUpcoming: false,
-        })
+        });
       } else {
-        const difference = end.getTime() - now.getTime()
+        const difference = end.getTime() - now.getTime();
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
@@ -71,70 +77,71 @@ function useCountdown(startTime: string | null, endTime: string | null): TimeLef
           seconds: Math.floor((difference / 1000) % 60),
           isEnded: false,
           isUpcoming: false,
-        })
+        });
       }
-    }
+    };
 
-    calculateTimeLeft()
-    const timer = setInterval(calculateTimeLeft, 1000)
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
 
-    return () => clearInterval(timer)
-  }, [startTime, endTime])
+    return () => clearInterval(timer);
+  }, [startTime, endTime]);
 
-  return timeLeft
+  return timeLeft;
 }
 
 function FlashSellDetailContent() {
-  const searchParams = useSearchParams()
-  const flashsellId = searchParams.get("id")
+  const searchParams = useSearchParams();
+  const flashsellId = searchParams.get('id');
 
-  const [flashsell, setFlashsell] = useState<Flashsell | null>(null)
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [flashsell, setFlashsell] = useState<Flashsell | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const timeLeft = useCountdown(
     flashsell?.startTime ?? null,
-    flashsell?.endTime ?? null
-  )
+    flashsell?.endTime ?? null,
+  );
 
   useEffect(() => {
     const fetchFlashsellData = async () => {
       if (!flashsellId) {
-        setError("No flash sale selected")
-        setLoading(false)
-        return
+        setError('No flash sale selected');
+        setLoading(false);
+        return;
       }
 
       try {
-        setLoading(true)
-        setError(null)
+        setLoading(true);
+        setError(null);
 
-        const flashsellData = await flashsellService.findOne(flashsellId)
-        setFlashsell(flashsellData)
+        const flashsellData = await flashsellService.findOne(flashsellId);
+        setFlashsell(flashsellData);
 
         if (flashsellData.productIds && flashsellData.productIds.length > 0) {
           const productsData = await Promise.all(
-            flashsellData.productIds.map((id) =>
-              productsService.getById(id).catch(() => null)
-            )
-          )
+            flashsellData.productIds.map(id =>
+              productsService.getById(id).catch(() => null),
+            ),
+          );
           const validProducts = productsData.filter(
-            (p) => p !== null
-          ) as Product[]
-          setProducts(validProducts)
+            p => p !== null,
+          ) as Product[];
+          setProducts(validProducts);
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to load flash sale"
-        setError(message)
-        toast.error(message)
+        const message =
+          err instanceof Error ? err.message : 'Failed to load flash sale';
+        setError(message);
+        toast.error(message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchFlashsellData()
-  }, [flashsellId])
+    fetchFlashsellData();
+  }, [flashsellId]);
 
   if (loading) {
     return (
@@ -147,14 +154,17 @@ function FlashSellDetailContent() {
               <div className="h-4 w-60 bg-muted rounded animate-pulse" />
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-64 bg-muted rounded-2xl animate-pulse" />
+              {[1, 2, 3, 4].map(i => (
+                <div
+                  key={i}
+                  className="h-64 bg-muted rounded-2xl animate-pulse"
+                />
               ))}
             </div>
           </div>
         </div>
       </main>
-    )
+    );
   }
 
   if (error || !flashsell) {
@@ -178,13 +188,13 @@ function FlashSellDetailContent() {
           </div>
         </div>
       </main>
-    )
+    );
   }
 
   const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleString()
-  }
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  };
 
   const getStatusBadge = () => {
     if (timeLeft.isUpcoming) {
@@ -192,21 +202,21 @@ function FlashSellDetailContent() {
         <Badge className="bg-blue-500/10 text-blue-600 border-0 text-base">
           Upcoming
         </Badge>
-      )
+      );
     }
     if (timeLeft.isEnded) {
       return (
         <Badge className="bg-gray-500/10 text-gray-600 border-0 text-base">
           Ended
         </Badge>
-      )
+      );
     }
     return (
       <Badge className="bg-green-500/10 text-green-600 border-0 text-base">
         Active
       </Badge>
-    )
-  }
+    );
+  };
 
   return (
     <main className="flex-1 flex flex-col">
@@ -255,19 +265,19 @@ function FlashSellDetailContent() {
             {!timeLeft.isEnded && (
               <div className="mb-6">
                 <p className="text-sm font-semibold mb-3 text-muted-foreground">
-                  {timeLeft.isUpcoming ? "Starts in:" : "Ends in:"}
+                  {timeLeft.isUpcoming ? 'Starts in:' : 'Ends in:'}
                 </p>
                 <div className="grid grid-cols-4 gap-2">
                   {[
-                    { value: timeLeft.days, label: "Days" },
-                    { value: timeLeft.hours, label: "Hrs" },
-                    { value: timeLeft.minutes, label: "Min" },
-                    { value: timeLeft.seconds, label: "Sec" },
-                  ].map((item) => (
+                    {value: timeLeft.days, label: 'Days'},
+                    {value: timeLeft.hours, label: 'Hrs'},
+                    {value: timeLeft.minutes, label: 'Min'},
+                    {value: timeLeft.seconds, label: 'Sec'},
+                  ].map(item => (
                     <div key={item.label} className="text-center">
                       <div className="bg-muted rounded p-2 mb-1">
                         <p className="font-bold text-lg">
-                          {String(item.value).padStart(2, "0")}
+                          {String(item.value).padStart(2, '0')}
                         </p>
                       </div>
                       <p className="text-xs text-muted-foreground">
@@ -286,7 +296,9 @@ function FlashSellDetailContent() {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Total Products</p>
-                <p className="text-lg font-semibold">{flashsell.productIds.length}</p>
+                <p className="text-lg font-semibold">
+                  {flashsell.productIds.length}
+                </p>
               </div>
             </div>
 
@@ -323,7 +335,7 @@ function FlashSellDetailContent() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {products.map((product) => (
+              {products.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
@@ -331,13 +343,12 @@ function FlashSellDetailContent() {
         </div>
       </div>
     </main>
-  )
+  );
 }
 
 export default function FlashSellPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar initialCategories={[]} initialBrands={[]} />
       <Suspense
         fallback={
           <main className="flex-1 flex flex-col">
@@ -351,12 +362,10 @@ export default function FlashSellPage() {
               </div>
             </div>
           </main>
-        }
-      >
+        }>
         <FlashSellDetailContent />
       </Suspense>
-      <Footer />
       <MobileBottomNav />
     </div>
-  )
+  );
 }
