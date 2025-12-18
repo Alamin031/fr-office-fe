@@ -123,11 +123,12 @@ export const API_ENDPOINTS = {
   ORDERS_INVOICE: '/orders/{id}/invoice', // GET: Generate invoice for order
   ORDERS_CALCULATE_EMI: '/orders/calculate-emi', // POST: Calculate EMI for amount
 
-  // Warranty
-  WARRANTY_ACTIVATE: '/warranty/activate',
-  WARRANTY_LOOKUP: '/warranty/lookup',
-  WARRANTY_LOGS: '/warranty/{id}/logs',
-
+  WARRANTY_ACTIVATE: '/warranty/activate', // POST: Activate warranty (Admin/Management)
+  WARRANTY_LOOKUP: '/warranty/lookup', // POST: Lookup warranty by IMEI/Serial and Phone
+  WARRANTY_LOGS: '/warranty/{id}/logs', // GET: Get warranty logs (Admin/Management)
+  WARRANTY_ADD: '/warranty/add', // POST: Add warranty (Admin/Management)
+  WARRANTY_UPDATE: '/warranty/update/{id}', // POST: Update warranty (Admin/Management)
+  WARRANTY_DELETE: '/warranty/delete/{id}', // POST: Delete warranty (Admin/Management)
   // Giveaways
   GIVEAWAYS_CREATE: '/giveaways',
   GIVEAWAYS_GET: '/giveaways',
@@ -254,5 +255,4 @@ export const API_ENDPOINTS = {
   FLASHSELL_GET_ONE: '/flashsell/{id}',
   FLASHSELL_UPDATE: '/flashsell/{id}',
   FLASHSELL_DELETE: '/flashsell/{id}',
-
 };
