@@ -14,7 +14,7 @@ import { formatPrice } from "../../../lib/utils/format"
 // import { useOrderTrackingStore } from "../../../store/order-tracking-store"
 import { ordersService } from "../../../lib/api/services"
 import type { Order } from "../../../lib/api/types"
-import { OrderTrackingTimeline } from "../../../components/order/order-tracking-timeline"
+import { OrderTrackingModal } from "../../../components/order/order-tracking-modal"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog"
 import { withProtectedRoute } from "../../../lib/auth/protected-route"
 
@@ -162,7 +162,11 @@ function OrderCard({ order }: { order: OrderWithStatus }) {
           </DialogHeader>
           {trackingError && <div className="text-red-500 mb-2">{trackingError}</div>}
           {trackingData ? (
-            <OrderTrackingTimeline tracking={trackingData} />
+            <OrderTrackingModal
+              tracking={trackingData}
+              productName={firstItem?.name}
+              productImage={firstItem?.image}
+            />
           ) : trackingLoading ? (
             <div>Loading...</div>
           ) : null}
