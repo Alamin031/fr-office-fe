@@ -13,26 +13,67 @@ import { withProtectedRoute } from "../../../lib/auth/protected-route"
 import { toast } from "sonner"
 
 function UserWarrantyPage() {
-  const [imei, setImei] = useState("")
+  const [formData, setFormData] = useState({
+    imei: "",
+    serial: "",
+    phone: "",
+  })
   const [warranty, setWarranty] = useState<Warranty | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searched, setSearched] = useState(false)
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {}
+
+    if (!formData.imei.trim() && !formData.serial.trim()) {
+      errors.identifier = "Please enter either IMEI or Serial Number"
+    }
+
+    if (!formData.phone.trim()) {
+      errors.phone = "Phone number is required"
+    }
+
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: "" }))
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!validateForm()) {
+      return
+    }
+
     setLoading(true)
     setError(null)
     setSearched(true)
 
     try {
-      if (!imei.trim()) {
-        throw new Error("Please enter an IMEI number")
+      const lookupData: Record<string, string> = {}
+
+      if (formData.imei.trim()) {
+        lookupData.imei = formData.imei.trim()
+      }
+      if (formData.serial.trim()) {
+        lookupData.serial = formData.serial.trim()
+      }
+      if (formData.phone.trim()) {
+        lookupData.phone = formData.phone.trim()
       }
 
-      const response = await warrantyService.lookup(imei)
+      const response = await warrantyService.lookup(lookupData)
       setWarranty(response.warranty)
-      toast.success(`Warranty found for IMEI: ${imei}`)
+      toast.success(`Warranty found`)
     } catch (err) {
       const message = err instanceof Error ? err.message : "Warranty not found"
       setError(message)
@@ -64,12 +105,21 @@ function UserWarrantyPage() {
     return diffDays
   }
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    })
+  }
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Check Your Warranty</h1>
         <p className="text-muted-foreground">
-          Enter your device IMEI or serial number to check warranty status and coverage details.
+          Enter your device IMEI or serial number and phone number to check warranty status and coverage details.
         </p>
       </div>
 
@@ -82,18 +132,64 @@ function UserWarrantyPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="imei">IMEI Number</Label>
+                <Input
+                  id="imei"
+                  name="imei"
+                  placeholder="Enter IMEI number"
+                  value={formData.imei}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  className={formErrors.identifier ? "border-red-500" : ""}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Usually found under Settings &gt; About Phone &gt; IMEI
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="serial">Serial Number</Label>
+                <Input
+                  id="serial"
+                  name="serial"
+                  placeholder="Or enter Serial Number"
+                  value={formData.serial}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  className={formErrors.identifier ? "border-red-500" : ""}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Found on device packaging or receipt
+                </p>
+              </div>
+            </div>
+
+            {formErrors.identifier && (
+              <div className="flex gap-2 rounded-lg bg-red-500/10 p-3 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>{formErrors.identifier}</span>
+              </div>
+            )}
+
             <div className="space-y-2">
-              <Label htmlFor="imei">IMEI / Serial Number</Label>
+              <Label htmlFor="phone">Phone Number</Label>
               <Input
-                id="imei"
-                placeholder="Enter your device IMEI or serial number"
-                value={imei}
-                onChange={(e) => setImei(e.target.value)}
+                id="phone"
+                name="phone"
+                placeholder="Enter your phone number"
+                value={formData.phone}
+                onChange={handleInputChange}
                 disabled={loading}
+                className={formErrors.phone ? "border-red-500" : ""}
               />
-              <p className="text-xs text-muted-foreground">
-                Usually found on your device packaging, receipt, or under Settings &gt; About Phone &gt; IMEI
-              </p>
+              {formErrors.phone && (
+                <p className="text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {formErrors.phone}
+                </p>
+              )}
             </div>
 
             {error && (
