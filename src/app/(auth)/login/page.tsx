@@ -81,19 +81,30 @@ export default function LoginPage() {
       const token = res.token ?? res.access_token;
       if (!token) throw new Error("No token received from API");
 
-      // Clear any stale auth state before setting new token
+      // Step 1: Clear any stale auth state before setting new token
       useAuthStore.getState().logout();
 
-      // Wait a moment for clear to complete
-      await new Promise(resolve => setTimeout(resolve, 50));
+      // Step 2: Wait for localStorage to be cleared
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Now set new login state
+      // Step 3: Set tokens in both localStorage and cookies
+      // This is critical for production - ensures cookies are in sync
+      TokenManager.setTokens(token, res.refreshToken);
+
+      // Step 4: Update auth store with new token and user
       login(userToStore, token);
 
-      // Hydrate to fetch fresh user data from API
+      // Step 5: Wait for store to settle
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Step 6: Hydrate to fetch fresh user data from API
+      // This validates the token and ensures user data is current
       await useAuthStore.getState().hydrate();
 
       toast.success("Login successful");
+
+      // Step 7: Force a small delay before redirect to ensure cookies are set
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       if (fromParam && (fromParam.startsWith("/admin") || fromParam.startsWith("/account"))) {
         if (fromParam.startsWith("/admin") && (res.user.role === "admin" || res.user.role === "management")) {
