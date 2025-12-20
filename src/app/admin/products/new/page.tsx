@@ -46,6 +46,8 @@ function NewProductPage() {
   const [productCode, setProductCode] = useState('');
   const [sku, setSku] = useState('');
   const [warranty, setWarranty] = useState('');
+  const [imei, setImei] = useState('');
+  const [serial, setSerial] = useState('');
   const [delivery, setDelivery] = useState('');
   const [easyReturns, setEasyReturns] = useState('');
 
@@ -1144,6 +1146,8 @@ function NewProductPage() {
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
+        imei: imei || undefined,
+        serial: serial || undefined,
         isActive,
         isOnline,
         isPos,
@@ -1354,6 +1358,8 @@ function NewProductPage() {
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
+        imei: imei || undefined,
+        serial: serial || undefined,
         isActive,
         isOnline,
         isPos,
@@ -1535,6 +1541,8 @@ function NewProductPage() {
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
+        imei: imei || undefined,
+        serial: serial || undefined,
         isActive,
         isOnline,
         isPos,
