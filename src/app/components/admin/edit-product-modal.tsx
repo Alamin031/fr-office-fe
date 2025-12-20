@@ -1788,6 +1788,25 @@ export function EditProductModal({
                   />
                 </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>IMEI</Label>
+                  <Input
+                    value={imei}
+                    onChange={e => setImei(e.target.value)}
+                    placeholder="e.g., 352614040046446"
+                  />
+                </div>
+                <div>
+                  <Label>Serial Number</Label>
+                  <Input
+                    value={serial}
+                    onChange={e => setSerial(e.target.value)}
+                    placeholder="e.g., XL5H8Z2K9Q"
+                  />
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center justify-between">
                   <Label>Active</Label>
