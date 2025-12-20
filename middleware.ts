@@ -143,7 +143,10 @@ export async function middleware(request: NextRequest) {
   if ((isAdmin || isUserProtected) && !token) {
     const loginUrl = new URL("/login", request.url)
     loginUrl.searchParams.set("from", pathname)
-    return NextResponse.redirect(loginUrl)
+    const response = NextResponse.redirect(loginUrl)
+    // Prevent caching of redirects to login page
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+    return response
   }
   if (isAuth && token && !pathname.startsWith("/auth/callback")) {
     return NextResponse.redirect(new URL("/", request.url))
