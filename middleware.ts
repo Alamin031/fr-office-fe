@@ -76,32 +76,22 @@ function decodeTokenLocally(token: string): Record<string, unknown> | null {
   }
 }
 
-async function validateTokenWithBackend(token: string): Promise<Record<string, unknown> | null> {
+function isTokenExpired(token: string): boolean {
+  // Only do local JWT validation in middleware
+  // This prevents false logouts due to network issues or backend delays
+  // Backend will handle actual token validation via API interceptor (401/403 errors)
   try {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://friends-be-production.up.railway.app/api"
-    const response = await fetch(`${apiBaseUrl}/auth/decode/${token}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    if (response.ok) {
-      return await response.json()
-    }
-    return decodeTokenLocally(token)
-  } catch {
-    return decodeTokenLocally(token)
-  }
-}
-
-async function isTokenExpired(token: string): Promise<boolean> {
-  try {
-    const payload = await validateTokenWithBackend(token)
+    const payload = decodeTokenLocally(token)
     if (!payload || !payload.exp) return true
+
+    // Check if token has expired
     const expirationTime = (payload.exp as number) * 1000
-    return Date.now() >= expirationTime
+    const now = Date.now()
+
+    // Return true only if token is actually expired (not just about to expire)
+    return now >= expirationTime
   } catch {
+    // If we can't decode locally, treat as expired
     return true
   }
 }
@@ -116,19 +106,38 @@ export async function middleware(request: NextRequest) {
   const isUserProtected = isUserProtectedRoute(pathname)
   const isAuth = isAuthRoute(pathname)
   const isPublic = isPublicRoute(pathname)
-  if (token && await isTokenExpired(token)) {
+  if (token && isTokenExpired(token)) {
     const response = NextResponse.redirect(new URL("/login?token-expired=true", request.url))
+    // Properly delete cookies with explicit options to ensure they're cleared
+    // This must match the domain/path settings from tokenmanager.ts
     response.cookies.delete("access_token")
     response.cookies.delete("auth_token")
     response.cookies.delete("refresh_token")
-    // Clear localStorage as well
+
+    // Also set them to expire immediately with various options
+    const cookieOptions = {
+      httpOnly: false,
+      secure: request.nextUrl.protocol === "https:",
+      sameSite: "lax" as const,
+      path: "/",
+    }
+
+    response.cookies.set("access_token", "", { ...cookieOptions, maxAge: 0 })
+    response.cookies.set("auth_token", "", { ...cookieOptions, maxAge: 0 })
+    response.cookies.set("refresh_token", "", { ...cookieOptions, maxAge: 0 })
+
+    // Headers to clear browser cache and storage
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
     response.headers.set("Clear-Site-Data", '"cache", "cookies", "storage"')
     return response
   }
   if ((isAdmin || isUserProtected) && !token) {
     const loginUrl = new URL("/login", request.url)
     loginUrl.searchParams.set("from", pathname)
-    return NextResponse.redirect(loginUrl)
+    const response = NextResponse.redirect(loginUrl)
+    // Prevent caching of redirects to login page
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+    return response
   }
   if (isAuth && token && !pathname.startsWith("/auth/callback")) {
     return NextResponse.redirect(new URL("/", request.url))

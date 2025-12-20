@@ -21,6 +21,7 @@ export class TokenManager {
   /**
    * Set tokens in localStorage and cookies
    * Properly sets cookies with SameSite=Lax and Secure flags for production HTTPS
+   * Uses 30-minute expiry instead of 24 hours for better security with refresh logic
    */
   static setTokens(token: string, refreshToken?: string): void {
     if (typeof window === "undefined") return
@@ -31,18 +32,22 @@ export class TokenManager {
 
     // Set cookies with proper flags for production
     const isSecure = window.location.protocol === "https:"
-    const cookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}; Max-Age=86400`
+    // 30-minute expiry for access token
+    const cookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}; Max-Age=1800`
 
     document.cookie = `access_token=${token}; ${cookieOptions}`
     document.cookie = `auth_token=${token}; ${cookieOptions}`
     if (refreshToken) {
-      document.cookie = `refresh_token=${refreshToken}; ${cookieOptions}`
+      // Refresh token gets longer expiry (7 days)
+      const refreshCookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}; Max-Age=604800`
+      document.cookie = `refresh_token=${refreshToken}; ${refreshCookieOptions}`
     }
   }
 
   /**
    * Clear all tokens from localStorage and cookies
    * Properly removes cookies with matching SameSite and Secure flags
+   * Also attempts to clear cookies without domain/path restrictions
    */
   static clearTokens(): void {
     if (typeof window === "undefined") return
@@ -55,12 +60,20 @@ export class TokenManager {
 
     // Determine if we need Secure flag (production HTTPS)
     const isSecure = window.location.protocol === "https:"
-    const cookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}; Max-Age=0`
+    const baseCookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}`
 
-    // Remove cookies by setting Max-Age=0 with matching flags
-    document.cookie = `access_token=; ${cookieOptions}`
-    document.cookie = `refresh_token=; ${cookieOptions}`
-    document.cookie = `auth_token=; ${cookieOptions}`
+    // Cookie names to clear
+    const cookieNames = ["access_token", "refresh_token", "auth_token"]
+
+    // Clear cookies multiple ways to ensure they're removed in all scenarios
+    cookieNames.forEach((name) => {
+      // Method 1: Standard clear with Max-Age=0
+      document.cookie = `${name}=; ${baseCookieOptions}; Max-Age=0`
+      // Method 2: Set to empty string with past expiry date
+      document.cookie = `${name}=; ${baseCookieOptions}; expires=Thu, 01 Jan 1970 00:00:00 UTC`
+      // Method 3: Also try without path (in case cookies were set differently)
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC${isSecure ? "; Secure" : ""}`
+    })
   }
 
   /**
