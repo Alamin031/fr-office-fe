@@ -30,13 +30,15 @@ export default function AccountLayout({
   children: React.ReactNode
 }) {
   const router = useRouter()
-  const { isAuthenticated, user, logout } = useAuthStore()
+  const { isAuthenticated, user, logout, isInitialized, isHydrating } = useAuthStore()
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    // Wait for auth store to be initialized before checking authentication
+    // This prevents redirecting during hydration from localStorage
+    if (isInitialized && !isHydrating && !isAuthenticated) {
       router.push("/login")
     }
-  }, [isAuthenticated, router])
+  }, [isInitialized, isHydrating, isAuthenticated, router])
 
   const handleLogout = async () => {
     try {
