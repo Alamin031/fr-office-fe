@@ -106,7 +106,7 @@ export async function middleware(request: NextRequest) {
   const isUserProtected = isUserProtectedRoute(pathname)
   const isAuth = isAuthRoute(pathname)
   const isPublic = isPublicRoute(pathname)
-  if (token && await isTokenExpired(token)) {
+  if (token && isTokenExpired(token)) {
     const response = NextResponse.redirect(new URL("/login?token-expired=true", request.url))
     // Properly delete cookies with explicit options to ensure they're cleared
     // This must match the domain/path settings from tokenmanager.ts
