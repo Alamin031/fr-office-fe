@@ -46,6 +46,8 @@ function NewProductPage() {
   const [productCode, setProductCode] = useState('');
   const [sku, setSku] = useState('');
   const [warranty, setWarranty] = useState('');
+  const [imei, setImei] = useState('');
+  const [serial, setSerial] = useState('');
   const [delivery, setDelivery] = useState('');
   const [easyReturns, setEasyReturns] = useState('');
 
@@ -1049,6 +1051,8 @@ function NewProductPage() {
     setProductCode('');
     setSku('');
     setWarranty('');
+    setImei('');
+    setSerial('');
     setDelivery('');
     setEasyReturns('');
     setSelectedCategories([]);
@@ -1144,6 +1148,8 @@ function NewProductPage() {
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
+        imei: imei || undefined,
+        serial: serial || undefined,
         isActive,
         isOnline,
         isPos,
@@ -1354,6 +1360,8 @@ function NewProductPage() {
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
+        imei: imei || undefined,
+        serial: serial || undefined,
         isActive,
         isOnline,
         isPos,
@@ -1535,6 +1543,8 @@ function NewProductPage() {
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
+        imei: imei || undefined,
+        serial: serial || undefined,
         isActive,
         isOnline,
         isPos,
@@ -1805,6 +1815,27 @@ function NewProductPage() {
                     value={warranty}
                     onChange={e => setWarranty(e.target.value)}
                     placeholder="e.g., 1 year"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="imei">IMEI</Label>
+                  <Input
+                    id="imei"
+                    value={imei}
+                    onChange={e => setImei(e.target.value)}
+                    placeholder="e.g., 352614040046446"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="serial">Serial Number</Label>
+                  <Input
+                    id="serial"
+                    value={serial}
+                    onChange={e => setSerial(e.target.value)}
+                    placeholder="e.g., XL5H8Z2K9Q"
                   />
                 </div>
               </div>

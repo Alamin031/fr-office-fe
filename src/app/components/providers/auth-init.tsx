@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAuthStore } from "@/app/store/auth-store"
 
 /**
@@ -8,19 +8,24 @@ import { useAuthStore } from "@/app/store/auth-store"
  * Fetches current user from /users/me if token exists
  */
 export function AuthInit() {
+  const [isHydrated, setIsHydrated] = useState(false)
   const { token, isInitialized, hydrate } = useAuthStore()
 
+  // Phase 1: Hydrate from localStorage
   useEffect(() => {
-    // Ensure Zustand store is hydrated from localStorage
-    useAuthStore.persist.rehydrate()
+    const rehydrate = async () => {
+      await useAuthStore.persist.rehydrate()
+      setIsHydrated(true)
+    }
+    rehydrate()
   }, [])
 
+  // Phase 2: If hydrated and token exists, fetch user data
   useEffect(() => {
-    // If token exists and user data not yet loaded, fetch from /users/me
-    if (token && !isInitialized) {
+    if (isHydrated && token && !isInitialized) {
       hydrate()
     }
-  }, [token, isInitialized, hydrate])
+  }, [isHydrated, token, isInitialized, hydrate])
 
   return null
 }

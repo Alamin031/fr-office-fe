@@ -60,8 +60,17 @@ export const useAuthStore = create<AuthStore>()(
             addresses: userData.addresses ?? [],
           }
           set({ user: mappedUser, isAuthenticated: true, isInitialized: true })
-        } catch {
-          set({ user: null, isAuthenticated: false, isInitialized: true })
+        } catch (error: any) {
+          // Only logout on 401/403 (unauthorized) or token validation errors
+          // Don't logout on network errors or other transient failures
+          const status = error?.response?.status
+          if (status === 401 || status === 403) {
+            set({ user: null, isAuthenticated: false, isInitialized: true })
+          } else {
+            // For other errors, mark as initialized but authenticated (token exists)
+            // The middleware will handle actual token validation
+            set({ isInitialized: true })
+          }
         } finally {
           set({ isHydrating: false })
         }

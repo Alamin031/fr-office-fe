@@ -23,6 +23,8 @@ interface Product {
   description?: string;
   productCode?: string;
   warranty?: string;
+  imei?: string;
+  serial?: string;
   rewardPoints?: string | number;
   minBookingPrice?: number | string;
   
@@ -220,6 +222,14 @@ export function ViewProductModalRegion({
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground uppercase">Warranty</label>
                       <p className="mt-1 text-sm">{product.warranty || "N/A"}</p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">IMEI</label>
+                      <p className="mt-1 text-sm">{product.imei || "N/A"}</p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground uppercase">Serial Number</label>
+                      <p className="mt-1 text-sm">{product.serial || "N/A"}</p>
                     </div>
                   </div>
                   <div>
