@@ -118,10 +118,25 @@ export async function middleware(request: NextRequest) {
   const isPublic = isPublicRoute(pathname)
   if (token && await isTokenExpired(token)) {
     const response = NextResponse.redirect(new URL("/login?token-expired=true", request.url))
+    // Properly delete cookies with explicit options to ensure they're cleared
+    // This must match the domain/path settings from tokenmanager.ts
     response.cookies.delete("access_token")
     response.cookies.delete("auth_token")
     response.cookies.delete("refresh_token")
-    // Clear localStorage as well
+
+    // Also set them to expire immediately with various options
+    const cookieOptions = {
+      httpOnly: false,
+      secure: request.nextUrl.protocol === "https:",
+      sameSite: "lax" as const,
+      path: "/",
+    }
+
+    response.cookies.set("access_token", "", { ...cookieOptions, maxAge: 0 })
+    response.cookies.set("auth_token", "", { ...cookieOptions, maxAge: 0 })
+    response.cookies.set("refresh_token", "", { ...cookieOptions, maxAge: 0 })
+
+    // Header to clear browser storage
     response.headers.set("Clear-Site-Data", '"cache", "cookies", "storage"')
     return response
   }
