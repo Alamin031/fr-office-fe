@@ -89,20 +89,46 @@ export const ordersService = {
     const endpoint = API_ENDPOINTS.ORDERS_GET_ONE.replace("{id}", id);
     const response = await apiClient.get(endpoint);
 
-    // Transform backend response to match OrderTracking interface
+    // Return full order data for detail page
     const data = response.data;
     return {
-      orderId: data.id,
-      currentStatus: data.status?.toLowerCase() || "pending",
+      id: data.id,
+      orderNumber: data.orderNumber,
+      status: data.status,
+      paymentStatus: data.paymentStatus,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+
+      // Customer/Shipping address
+      customer: data.customer,
+      fullName: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      division: data.division,
+      district: data.district,
+      upzila: data.upzila,
+      postCode: data.postCode,
+      address: data.address,
+      shippingAddress: data.shippingAddress,
+
+      // Payment info
+      paymentMethod: data.paymentMethod,
+      deliveryMethod: data.deliveryMethod,
+      subtotal: data.subtotal,
+      discount: data.discount,
+      total: data.total,
+      paymentSummary: data.paymentSummary,
+
+      // Items
+      orderItems: data.orderItems,
+      items: data.items,
+
+      // Timeline/tracking
+      timeline: data.timeline,
+      statusHistory: data.statusHistory,
       estimatedDelivery: data.estimatedDelivery || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-      trackingNumber: data.trackingNumber || data.orderNumber || "",
+      trackingNumber: data.trackingNumber || data.orderNumber,
       carrier: data.carrier || "Standard Delivery",
-      statusHistory: (data.timeline || data.statusHistory || []).map((item: any, index: number) => ({
-        status: typeof item.status === "string" ? item.status.toLowerCase() : "pending",
-        timestamp: item.date || item.timestamp || new Date().toISOString(),
-        message: item.message || `Status updated to ${item.status || "pending"}`,
-        location: item.location || data.shippingAddress?.district || "",
-      })),
     };
   },
 }
