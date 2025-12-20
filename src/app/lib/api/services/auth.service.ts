@@ -117,6 +117,7 @@ export class AuthService {
 
   /**
    * Logout user - clears tokens and performs hard reload
+   * Extra clearance for production cookie reliability
    */
    async logout(): Promise<void> {
     try {
@@ -133,7 +134,7 @@ export class AuthService {
         // Give cookies time to be cleared by browser before reload
         setTimeout(() => {
           window.location.href = "/login"
-        }, 100)
+        }, 150)
       }
     }
   }
