@@ -1051,6 +1051,8 @@ function NewProductPage() {
     setProductCode('');
     setSku('');
     setWarranty('');
+    setImei('');
+    setSerial('');
     setDelivery('');
     setEasyReturns('');
     setSelectedCategories([]);
