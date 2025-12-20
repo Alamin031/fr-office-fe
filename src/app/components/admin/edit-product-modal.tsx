@@ -61,6 +61,8 @@ export function EditProductModal({
   const [productCode, setProductCode] = useState('');
   const [sku, setSku] = useState('');
   const [warranty, setWarranty] = useState('');
+  const [imei, setImei] = useState('');
+  const [serial, setSerial] = useState('');
 
   // Category and Brand
   const [categories, setCategories] = useState<{id: string; name: string}[]>(
@@ -825,6 +827,8 @@ export function EditProductModal({
       setProductCode(product.productCode || '');
       setSku(product.sku || '');
       setWarranty(product.warranty || '');
+      setImei(product.imei || '');
+      setSerial(product.serial || '');
 
       setSelectedCategories(
         product.categoryIds || (product.categoryId ? [product.categoryId] : []),
@@ -1413,6 +1417,8 @@ export function EditProductModal({
         productCode: productCode || undefined,
         sku: sku || undefined,
         warranty: warranty || undefined,
+        imei: imei || undefined,
+        serial: serial || undefined,
         isActive: !!isActive,
         isOnline: !!isOnline,
         isPos: !!isPos,
