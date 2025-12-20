@@ -23,6 +23,8 @@ interface Product {
   description?: string;
   productCode?: string;
   warranty?: string;
+  imei?: string;
+  serial?: string;
   rewardPoints?: string | number;
   minBookingPrice?: number | string;
   
