@@ -105,6 +105,7 @@ export default function RootLayout({
       <body className="font-sans antialiased" suppressHydrationWarning>
         <StoreProvider>
           <AuthInit />
+          {/* Main app content */}
           {children}
           <WhatsappChat />
         </StoreProvider>
