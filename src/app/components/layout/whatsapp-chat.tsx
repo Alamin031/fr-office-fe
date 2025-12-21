@@ -27,11 +27,11 @@ export function WhatsappChat() {
         setPosition(JSON.parse(saved));
       } catch (e) {
         // Reset to default if corrupted
-        setPosition({ x: 0, y: 0 });
+        setPosition({ x: window.innerWidth - 100, y: window.innerHeight - 150 });
       }
     } else {
       // Set default position (right: 1rem, bottom: 6rem)
-      setPosition({ x: 0, y: 0 });
+      setPosition({ x: window.innerWidth - 100, y: window.innerHeight - 150 });
     }
   }, []);
 
