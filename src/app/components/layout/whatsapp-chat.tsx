@@ -87,18 +87,14 @@ export function WhatsappChat() {
     return () => clearInterval(id);
   }, []);
 
-  if (!position) {
-    return null;
-  }
-
   return (
     <div
       ref={containerRef}
-      className="fixed z-40 flex flex-col items-end gap-3 select-none"
-      style={{
+      className="fixed bottom-24 right-4 z-40 flex flex-col items-end gap-3 select-none"
+      style={position ? {
         transform: `translate(${position.x}px, ${position.y}px)`,
         cursor: isDragging ? "grabbing" : "grab",
-      }}
+      } : undefined}
     >
       {showBubble && (
         <div
