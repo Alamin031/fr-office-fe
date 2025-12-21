@@ -435,45 +435,31 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
       {/* Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
-      {/* Sign In Sheet (when not authenticated) */}
-      <Sheet open={isSignInSheetOpen} onOpenChange={setIsSignInSheetOpen}>
-        <SheetContent side="right" className="w-full max-w-sm p-0 sm:max-w-sm">
-          <span style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }} id="signin-sheet-title">
-            Sign In
-          </span>
-          <div className="flex h-full flex-col" aria-labelledby="signin-sheet-title">
-            <div className="flex items-center justify-between border-b border-border p-4 bg-background sticky top-0 z-10">
-              <span className="text-lg font-semibold">Account</span>
-              <SheetClose asChild>
-                <Button variant="ghost" size="icon">
-                  <X className="h-5 w-5" />
-                </Button>
-              </SheetClose>
-            </div>
-            <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-4">
-              <User className="h-12 w-12 text-muted-foreground" />
-              <div className="text-center space-y-2">
-                <h3 className="text-lg font-semibold">Sign In to Your Account</h3>
-                <p className="text-sm text-muted-foreground">Access your orders, wishlist, and more</p>
-              </div>
-            </div>
-            <div className="border-t border-border p-4 bg-background sticky bottom-0 z-10 space-y-2">
-              <SheetClose asChild>
-                <Link href="/login">
-                  <Button className="w-full">Sign In</Button>
-                </Link>
-              </SheetClose>
-              <SheetClose asChild>
-                <Link href="/register">
-                  <Button variant="outline" className="w-full bg-transparent">
-                    Create Account
-                  </Button>
-                </Link>
-              </SheetClose>
+      {/* Sign In Modal (when not authenticated) */}
+      <Dialog open={isSignInSheetOpen} onOpenChange={setIsSignInSheetOpen}>
+        <DialogContent className="w-full max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Account</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center space-y-4 py-6">
+            <User className="h-12 w-12 text-muted-foreground" />
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-semibold">Sign In to Your Account</h3>
+              <p className="text-sm text-muted-foreground">Access your orders, wishlist, and more</p>
             </div>
           </div>
-        </SheetContent>
-      </Sheet>
+          <div className="space-y-2">
+            <Link href="/login" onClick={() => setIsSignInSheetOpen(false)}>
+              <Button className="w-full">Sign In</Button>
+            </Link>
+            <Link href="/register" onClick={() => setIsSignInSheetOpen(false)}>
+              <Button variant="outline" className="w-full bg-transparent">
+                Create Account
+              </Button>
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
