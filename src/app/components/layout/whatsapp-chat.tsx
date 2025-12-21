@@ -118,7 +118,7 @@ export function WhatsappChat() {
         target="_blank"
         rel="noreferrer"
         aria-label="Chat on WhatsApp"
-        className="relative inline-flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-r from-emerald-500 to-green-600 text-white shadow-lg transition-transform duration-200 hover:scale-[1.03] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+        className="relative inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg transition-transform duration-200 hover:scale-[1.03] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
       >
         <Image
           src={ICONS[iconIndex]}
