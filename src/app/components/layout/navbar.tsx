@@ -14,6 +14,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "../ui/sheet"
 import { useCartStore } from "@/app/store/cart-store"
 import { useWishlistStore } from "@/app/store/wishlist-store"
