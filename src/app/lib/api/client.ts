@@ -13,20 +13,20 @@ export const apiClient: AxiosInstance = axios.create({
 })
 
 // Configure automatic retry with exponential backoff
-// Retries up to 3 times on network errors, timeouts, or 5xx errors (not 4xx)
+// Only retry on network errors and 5xx errors (not timeouts, to fail fast)
 axiosRetry(apiClient, {
-  retries: 3,
+  retries: 2,
   retryDelay: (retryCount) => {
-    // Exponential backoff: 1s, 2s, 4s
+    // Exponential backoff: 1s, 2s
     return retryCount * 1000 * Math.pow(2, retryCount - 1)
   },
   retryCondition: (error) => {
-    // Retry on network errors, timeouts, and 5xx server errors
-    // Don't retry on 4xx client errors
+    // Retry on network errors and 5xx server errors
+    // Don't retry on timeouts or 4xx client errors
     const isTimeout = error.code === 'ECONNABORTED'
     const isNetworkError = axiosRetry.isNetworkOrIdempotentRequestError(error)
     const isServerError = !error.response || (error.response.status >= 500)
-    return isTimeout || (isNetworkError && isServerError)
+    return !isTimeout && isNetworkError && isServerError
   },
 })
 
