@@ -4,13 +4,9 @@ import axiosRetry from "axios-retry"
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || "  https://friends-be-production.up.railway.app/api").trim()
 
-// Use shorter timeout for server-side rendering, longer for client-side
-const isServer = typeof window === 'undefined'
-const timeout = isServer ? 10000 : 60000 // 10s for SSR, 60s for client
-
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: timeout,
+  timeout: 10000, // Use 10s timeout to fail fast and let error handling work
   headers: {
     "Content-Type": "application/json",
   },
