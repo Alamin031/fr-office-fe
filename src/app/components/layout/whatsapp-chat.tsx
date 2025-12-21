@@ -2,17 +2,79 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { X, GripHorizontal } from "lucide-react";
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801343159931";
 const DEFAULT_MESSAGE = "Hi! I need help with my order.";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(DEFAULT_MESSAGE)}`;
 const ICONS = ["/image/w1.png", "/image/w3.png"];
+const STORAGE_KEY = "whatsapp-chat-position";
 
 export function WhatsappChat() {
   const [iconIndex, setIconIndex] = useState(0);
   const [showBubble, setShowBubble] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Load saved position from localStorage
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setPosition(JSON.parse(saved));
+      } catch (e) {
+        // Reset to default if corrupted
+        setPosition({ x: 0, y: 0 });
+      }
+    } else {
+      // Set default position (right: 1rem, bottom: 6rem)
+      setPosition({ x: 0, y: 0 });
+    }
+  }, []);
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    });
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Constrain position to viewport
+      const maxX = window.innerWidth - 80;
+      const maxY = window.innerHeight - 80;
+
+      const constrainedX = Math.max(0, Math.min(newX, maxX));
+      const constrainedY = Math.max(0, Math.min(newY, maxY));
+
+      setPosition({ x: constrainedX, y: constrainedY });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      // Save position to localStorage
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(position));
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging, dragStart, position]);
 
   useEffect(() => {
     const id = setInterval(() => {
