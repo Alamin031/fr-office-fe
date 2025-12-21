@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiClient } from "../client"
-import { Warranty, ActivateWarrantyRequest, WarrantyLookupResponse, WarrantyLog } from "../types"
+import { Warranty, ActivateWarrantyRequest, WarrantyLog } from "../types"
 import { API_ENDPOINTS } from "../config"
 
 export const warrantyService = {
@@ -10,8 +11,8 @@ export const warrantyService = {
   },
 
 
-  lookup: async (data: { imei?: string; serial?: string; phone?: string }): Promise<WarrantyLookupResponse> => {
-    const response = await apiClient.post<WarrantyLookupResponse>(API_ENDPOINTS.WARRANTY_LOOKUP, data)
+  lookup: async (data: { imei?: string; serial?: string; phone?: string }): Promise<any> => {
+    const response = await apiClient.post<any>(API_ENDPOINTS.WARRANTY_LOOKUP, data)
     return response.data
   },
 

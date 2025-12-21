@@ -30,7 +30,10 @@ import {CarePlansDisplay} from './care-plans-display';
 import {NotifyProductDialog} from './notify-product-dialog';
 import {careService, type ProductCarePlan} from '@/app/lib/api/services/care';
 import {emiService, type EmiPlan} from '@/app/lib/api/services/emi';
-import {notificationService, productNotifyService} from '@/app/lib/api/services/notify';
+import {
+  notificationService,
+  productNotifyService,
+} from '@/app/lib/api/services/notify';
 import type {Product} from '@/app/types';
 
 type Region = {
@@ -487,10 +490,17 @@ export function ProductInfoRegion({
 
       // Ensure rewardPoints is present in the product object
       let rewardPoints = product.rewardPoints;
-      if (typeof rewardPoints === 'undefined' && product.rawProduct && typeof product.rawProduct.rewardPoints !== 'undefined') {
+      if (
+        typeof rewardPoints === 'undefined' &&
+        product.rawProduct &&
+        typeof product.rawProduct.rewardPoints !== 'undefined'
+      ) {
         rewardPoints = product.rawProduct.rewardPoints;
       }
-      const productWithReward = { ...product, rewardPoints };
+      // Add imei and serial if present
+      const imei = product.imei || (product.rawProduct && product.rawProduct.imei);
+      const serial = product.serial || (product.rawProduct && product.rawProduct.serial);
+      const productWithReward = { ...product, rewardPoints, imei, serial };
 
       addToCart(productWithReward, quantity, variants);
     }
@@ -524,10 +534,17 @@ export function ProductInfoRegion({
 
       // Ensure rewardPoints is present in the product object
       let rewardPoints = product.rewardPoints;
-      if (typeof rewardPoints === 'undefined' && product.rawProduct && typeof product.rawProduct.rewardPoints !== 'undefined') {
+      if (
+        typeof rewardPoints === 'undefined' &&
+        product.rawProduct &&
+        typeof product.rawProduct.rewardPoints !== 'undefined'
+      ) {
         rewardPoints = product.rawProduct.rewardPoints;
       }
-      const productWithReward = { ...product, rewardPoints };
+      // Add imei and serial if present
+      const imei = product.imei || (product.rawProduct && product.rawProduct.imei);
+      const serial = product.serial || (product.rawProduct && product.rawProduct.serial);
+      const productWithReward = { ...product, rewardPoints, imei, serial };
 
       addToCart(productWithReward, quantity, variants);
 
@@ -542,17 +559,19 @@ export function ProductInfoRegion({
     } else {
       // Ensure rewardPoints is present in the product object
       let rewardPoints = product.rewardPoints;
-      if (typeof rewardPoints === 'undefined' && product.rawProduct && typeof product.rawProduct.rewardPoints !== 'undefined') {
+      if (
+        typeof rewardPoints === 'undefined' &&
+        product.rawProduct &&
+        typeof product.rawProduct.rewardPoints !== 'undefined'
+      ) {
         rewardPoints = product.rawProduct.rewardPoints;
       }
-      const productWithReward = { ...product, rewardPoints };
+      // Add imei and serial if present
+      const imei = product.imei || (product.rawProduct && product.rawProduct.imei);
+      const serial = product.serial || (product.rawProduct && product.rawProduct.serial);
+      const productWithReward = { ...product, rewardPoints, imei, serial };
       addToWishlist(productWithReward);
     }
-  };
-
-  const handleAddToCompareAndNavigate = () => {
-    addToCompare(product);
-    router.push('/compare');
   };
 
   const handleNotifyMe = async () => {
@@ -560,7 +579,10 @@ export function ProductInfoRegion({
     try {
       setNotifyLoading(true);
       // Pass productId and userId as separate arguments
-      await notificationService.createStockOut(product.id, authStore.user?.id || undefined);
+      await notificationService.createStockOut(
+        product.id,
+        authStore.user?.id || undefined,
+      );
       setNotifySuccess(true);
       setTimeout(() => {
         setNotifySuccess(false);
@@ -573,8 +595,13 @@ export function ProductInfoRegion({
   };
 
   // Debug logging
-  useEffect(() => {
-  }, [selectedRegion, selectedColor, selectedStorage, colors, storages]);
+  useEffect(() => {}, [
+    selectedRegion,
+    selectedColor,
+    selectedStorage,
+    colors,
+    storages,
+  ]);
 
   return (
     <div className="flex flex-col space-y-5 w-full max-w-full overflow-hidden">
@@ -604,11 +631,13 @@ export function ProductInfoRegion({
       {/* Rating & Stock Status */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 text-sm text-foreground">
-          {(product.ratingPoint && product.ratingPoint > 0) || ((product.rating ?? 0) > 0) ? (
+          {(product.ratingPoint && product.ratingPoint > 0) ||
+          (product.rating ?? 0) > 0 ? (
             <div className="flex items-center gap-2">
               <div className="flex gap-1">
                 {Array.from({length: 5}).map((_, i) => {
-                  const ratingValue = product.ratingPoint || (product.rating ?? 0);
+                  const ratingValue =
+                    product.ratingPoint || (product.rating ?? 0);
                   return (
                     <svg
                       key={i}
@@ -624,10 +653,15 @@ export function ProductInfoRegion({
                   );
                 })}
               </div>
-              <span className="font-semibold">{(product.ratingPoint || (product.rating ?? 0)).toFixed(1)}</span>
-              {typeof product.reviewCount === 'number' && product.reviewCount > 0 && (
-                <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
-              )}
+              <span className="font-semibold">
+                {(product.ratingPoint || (product.rating ?? 0)).toFixed(1)}
+              </span>
+              {typeof product.reviewCount === 'number' &&
+                product.reviewCount > 0 && (
+                  <span className="text-xs text-muted-foreground">
+                    ({product.reviewCount})
+                  </span>
+                )}
             </div>
           ) : null}
         </div>
@@ -637,7 +671,9 @@ export function ProductInfoRegion({
 
       {/* Price Section */}
       <div className="space-y-3 rounded-2xl border border-border/80 bg-white/60 dark:bg-background/60 p-4 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price</div>
+        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Price
+        </div>
         <div className="flex items-end gap-4 flex-wrap">
           {(() => {
             const displayPrice = priceData.hasDiscount
@@ -646,8 +682,12 @@ export function ProductInfoRegion({
             const {symbol, amount} = formatPriceParts(displayPrice);
             return (
               <span className="flex items-baseline gap-2">
-                <span className="text-5xl font-black leading-none text-foreground tracking-tight">{symbol}</span>
-                <span className="text-5xl font-bold leading-none text-foreground tracking-tight">{amount}</span>
+                <span className="text-5xl font-black leading-none text-foreground tracking-tight">
+                  {symbol}
+                </span>
+                <span className="text-5xl font-bold leading-none text-foreground tracking-tight">
+                  {amount}
+                </span>
               </span>
             );
           })()}
@@ -672,7 +712,9 @@ export function ProductInfoRegion({
       </div>
 
       {/* Selections Card */}
-      {(regions.length > 1 && !isBasicProduct) || colors.length > 0 || (storages.length > 0 && colors.some(c => c.hasStorage === true)) ? (
+      {(regions.length > 1 && !isBasicProduct) ||
+      colors.length > 0 ||
+      (storages.length > 0 && colors.some(c => c.hasStorage === true)) ? (
         <div className="space-y-4 rounded-2xl border border-border/80 bg-white/60 dark:bg-background/60 p-4 shadow-sm">
           {/* Region/Network Selection */}
           {regions.length > 1 && !isBasicProduct && (
@@ -826,7 +868,9 @@ export function ProductInfoRegion({
       ) : null}
 
       {/* Quantity Selector & Action Buttons */}
-      <div className="space-y-3 rounded-2xl border border-border/80 bg-white/60 dark:bg-background/60 p-4 shadow-sm" suppressHydrationWarning>
+      <div
+        className="space-y-3 rounded-2xl border border-border/80 bg-white/60 dark:bg-background/60 p-4 shadow-sm"
+        suppressHydrationWarning>
         <div className="flex items-center gap-3 flex-wrap">
           {/* Quantity Control */}
           <div className="flex items-center border border-border rounded-xl shadow-sm bg-white/80">
@@ -944,7 +988,9 @@ export function ProductInfoRegion({
           className="w-full h-12 text-base font-semibold rounded-lg border-2 border-[#25D366] hover:border-[#20BA5A]"
           onClick={() => {
             const message = `I want to know more about *${product.name}* URL: ${window.location.origin}/product/${product.slug}`;
-            const whatsappUrl = `https://wa.me/8801343159931?text=${encodeURIComponent(message)}`;
+            const whatsappUrl = `https://wa.me/8801343159931?text=${encodeURIComponent(
+              message,
+            )}`;
             window.open(whatsappUrl, '_blank');
           }}>
           Order Via WhatsApp

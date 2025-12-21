@@ -72,7 +72,7 @@ function UserWarrantyPage() {
       }
 
       const response = await warrantyService.lookup(lookupData)
-      setWarranty(response.warranty)
+      setWarranty(response)
       toast.success(`Warranty found`)
     } catch (err) {
       const message = err instanceof Error ? err.message : "Warranty not found"
@@ -261,21 +261,11 @@ function UserWarrantyPage() {
               </div>
             )}
 
-            {/* Details */}
+            {/* Details (IMEI/Serial only) */}
             <div className="space-y-3 border-t border-border pt-4">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">IMEI / Serial Number</span>
                 <span className="font-mono font-medium">{warranty.imei}</span>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-border pt-3">
-                <span className="text-muted-foreground">Warranty ID</span>
-                <span className="font-mono text-sm">{warranty.id}</span>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-border pt-3">
-                <span className="text-muted-foreground">Product ID</span>
-                <span className="font-mono text-sm">{warranty.productId}</span>
               </div>
             </div>
 

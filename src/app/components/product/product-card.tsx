@@ -246,7 +246,11 @@ export function ProductCard({
 
         {/* Title */}
         <Link href={`/product/${product.slug}`}>
-          <h3 className="mt-1 line-clamp-2 text-sm font-medium transition-colors hover:text-muted-foreground">
+          <h3
+            className="mt-1 text-sm font-medium transition-colors hover:text-muted-foreground truncate"
+            style={{ maxWidth: '100%' }}
+            title={product.name}
+          >
             {product.name}
           </h3>
         </Link>
@@ -321,7 +325,7 @@ export function ProductCard({
           )}
           {!emiError && minEmiPerMonth !== null && (
             <div className="text-xs text-muted-foreground mt-1">
-              EMI as low as {formatPrice(minEmiPerMonth)}/mo
+              EMI {formatPrice(minEmiPerMonth)}/mo
             </div>
           )}
         </div>

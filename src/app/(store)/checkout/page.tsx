@@ -31,7 +31,6 @@ import {Separator} from '../../components/ui/separator';
 import {formatPrice} from '../../lib/utils/format';
 import {useCartStore} from '../../store/cart-store';
 import {useAuthStore} from '../../store/auth-store';
-import {useLoyaltyPointsStore} from '../../store/loyalty-points-store';
 import {getProductPriceWithType} from '../../lib/utils/product';
 import {toast} from 'sonner';
 
@@ -39,7 +38,6 @@ export default function CheckoutPage() {
   const router = useRouter();
   const {items, getTotal, clearCart} = useCartStore();
   const {user, isAuthenticated} = useAuthStore();
-  const {getUserPoints, updateUserPoints} = useLoyaltyPointsStore();
 
   // Form state
   const [paymentMethod, setPaymentMethod] = useState('cod');
@@ -214,6 +212,17 @@ export default function CheckoutPage() {
             selectedVariants: item.selectedVariants,
             // Add rewardPoints to each order item
             rewardPoints: Number(item.product.rewardPoints) || 0,
+            // Add imei and serial to each order item
+            imei:
+              item.product.imei ||
+              ((item.product as any).rawProduct &&
+                (item.product as any).rawProduct.imei) ||
+              undefined,
+            serial:
+              item.product.serial ||
+              ((item.product as any).rawProduct &&
+                (item.product as any).rawProduct.serial) ||
+              undefined,
           };
         }),
         total,

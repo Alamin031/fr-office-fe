@@ -39,6 +39,8 @@ export interface Product {
   isNew?: boolean
   createdAt: string
   updatedAt: string
+  imei?: string | null
+  serial?: string | null
 }
 
 export interface ProductVariant {

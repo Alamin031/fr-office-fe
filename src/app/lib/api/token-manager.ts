@@ -24,23 +24,44 @@ export class TokenManager {
    * Uses 30-minute expiry instead of 24 hours for better security with refresh logic
    */
   static setTokens(token: string, refreshToken?: string): void {
-    if (typeof window === "undefined") return
-    localStorage.setItem(STORAGE_KEYS.TOKEN, token)
+    if (typeof window === "undefined") return;
+    localStorage.setItem(STORAGE_KEYS.TOKEN, token);
     if (refreshToken) {
-      localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken)
+      localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
     }
 
-    // Set cookies with proper flags for production
-    const isSecure = window.location.protocol === "https:"
-    // 30-minute expiry for access token
-    const cookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}; Max-Age=1800`
+    // Dynamically set cookie expiry from token's exp claim and store expiry in localStorage
+    let maxAge = 1800; // fallback 30 min
+    let exp = null;
+    try {
+      const parts = token.split(".");
+      if (parts.length === 3) {
+        const payload = JSON.parse(atob(parts[1]));
+        if (payload.exp) {
+          exp = payload.exp;
+          const now = Math.floor(Date.now() / 1000);
+          maxAge = Math.max(0, exp - now);
+          localStorage.setItem("token_expiry", exp.toString());
+        } else {
+          localStorage.removeItem("token_expiry");
+        }
+      } else {
+        localStorage.removeItem("token_expiry");
+      }
+    } catch {
+      // fallback to default
+      localStorage.removeItem("token_expiry");
+    }
 
-    document.cookie = `access_token=${token}; ${cookieOptions}`
-    document.cookie = `auth_token=${token}; ${cookieOptions}`
+    const isSecure = window.location.protocol === "https:";
+    const cookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}; Max-Age=${maxAge}`;
+
+    document.cookie = `access_token=${token}; ${cookieOptions}`;
+    document.cookie = `auth_token=${token}; ${cookieOptions}`;
     if (refreshToken) {
       // Refresh token gets longer expiry (7 days)
-      const refreshCookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}; Max-Age=604800`
-      document.cookie = `refresh_token=${refreshToken}; ${refreshCookieOptions}`
+      const refreshCookieOptions = `path=/; SameSite=Lax${isSecure ? "; Secure" : ""}; Max-Age=604800`;
+      document.cookie = `refresh_token=${refreshToken}; ${refreshCookieOptions}`;
     }
   }
 

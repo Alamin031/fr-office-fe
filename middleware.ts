@@ -77,9 +77,6 @@ function decodeTokenLocally(token: string): Record<string, unknown> | null {
 }
 
 function isTokenExpired(token: string): boolean {
-  // Only do local JWT validation in middleware
-  // This prevents false logouts due to network issues or backend delays
-  // Backend will handle actual token validation via API interceptor (401/403 errors)
   try {
     const payload = decodeTokenLocally(token)
     if (!payload || !payload.exp) return true
@@ -107,29 +104,30 @@ export async function middleware(request: NextRequest) {
   const isAuth = isAuthRoute(pathname)
   const isPublic = isPublicRoute(pathname)
   if (token && isTokenExpired(token)) {
-    const response = NextResponse.redirect(new URL("/login?token-expired=true", request.url))
-    // Properly delete cookies with explicit options to ensure they're cleared
-    // This must match the domain/path settings from tokenmanager.ts
-    response.cookies.delete("access_token")
-    response.cookies.delete("auth_token")
-    response.cookies.delete("refresh_token")
-
-    // Also set them to expire immediately with various options
-    const cookieOptions = {
-      httpOnly: false,
-      secure: request.nextUrl.protocol === "https:",
-      sameSite: "lax" as const,
-      path: "/",
+    const response = NextResponse.redirect(new URL("/login?token-expired=true", request.url));
+    // Try to clear cookies with all possible options
+    const cookieNames = ["access_token", "auth_token", "refresh_token"];
+    const cookiePaths = ["/", request.nextUrl.pathname, ""];
+    const cookieDomains = [undefined, request.nextUrl.hostname];
+    for (const name of cookieNames) {
+      for (const path of cookiePaths) {
+        for (const domain of cookieDomains) {
+          response.cookies.set(name, "", {
+            path,
+            domain,
+            maxAge: 0,
+            httpOnly: false,
+            secure: request.nextUrl.protocol === "https:",
+            sameSite: "lax",
+          });
+        }
+      }
+      response.cookies.delete(name);
     }
-
-    response.cookies.set("access_token", "", { ...cookieOptions, maxAge: 0 })
-    response.cookies.set("auth_token", "", { ...cookieOptions, maxAge: 0 })
-    response.cookies.set("refresh_token", "", { ...cookieOptions, maxAge: 0 })
-
     // Headers to clear browser cache and storage
-    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
-    response.headers.set("Clear-Site-Data", '"cache", "cookies", "storage"')
-    return response
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    response.headers.set("Clear-Site-Data", '"cache", "cookies", "storage"');
+    return response;
   }
   if ((isAdmin || isUserProtected) && !token) {
     const loginUrl = new URL("/login", request.url)
