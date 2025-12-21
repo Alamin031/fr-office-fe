@@ -87,6 +87,10 @@ export function WhatsappChat() {
     return () => clearInterval(id);
   }, []);
 
+  if (!position) {
+    return null;
+  }
+
   return (
     <div
       ref={containerRef}
