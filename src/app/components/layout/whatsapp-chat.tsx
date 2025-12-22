@@ -80,6 +80,11 @@ export function WhatsappChat() {
       const constrainedX = Math.max(0, Math.min(newX, maxX));
       const constrainedY = Math.max(0, Math.min(newY, maxY));
 
+      // Mark that we actually dragged if position changed
+      if (positionRef.current.x !== constrainedX || positionRef.current.y !== constrainedY) {
+        didDragRef.current = true;
+      }
+
       setPosition({ x: constrainedX, y: constrainedY });
     };
 
