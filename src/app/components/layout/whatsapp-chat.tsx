@@ -131,27 +131,38 @@ export function WhatsappChat() {
         </div>
       )}
 
-      <Link
-        href={WHATSAPP_URL}
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Chat on WhatsApp"
-        className="relative inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg transition-transform duration-200 hover:scale-[1.03] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+      <div
+        onMouseDown={handleMouseDown}
+        className="relative inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg transition-transform duration-200 hover:scale-[1.03] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 cursor-grab hover:cursor-grab"
       >
-        <div className="relative w-full h-full flex items-center justify-center rounded-full">
-          <Image
-            src={ICONS[iconIndex]}
-            alt=""
-            width={74}
-            height={74}
-            className="h-full w-full rounded-full object-cover absolute"
-            priority
-          />
-          <MessageCircle className="h-8 w-8 relative z-10 text-white" strokeWidth={1.5} />
-        </div>
+        <Link
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Chat on WhatsApp"
+          className="absolute inset-0 flex items-center justify-center rounded-full"
+          onClick={(e) => {
+            // Prevent navigation if dragging
+            if (isDragging) {
+              e.preventDefault();
+            }
+          }}
+        >
+          <div className="relative w-full h-full flex items-center justify-center rounded-full pointer-events-none">
+            <Image
+              src={ICONS[iconIndex]}
+              alt=""
+              width={74}
+              height={74}
+              className="h-full w-full rounded-full object-cover absolute"
+              priority
+            />
+            <MessageCircle className="h-8 w-8 relative z-10 text-white" strokeWidth={1.5} />
+          </div>
+        </Link>
         <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-red-500 border-2 border-white" aria-hidden="true" />
         <span className="sr-only">Chat on WhatsApp</span>
-      </Link>
+      </div>
     </div>
   );
 }
