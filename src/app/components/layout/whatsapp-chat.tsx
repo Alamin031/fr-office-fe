@@ -112,8 +112,8 @@ export function WhatsappChat() {
       ref={containerRef}
       className="fixed z-40 flex flex-col items-end gap-3 select-none"
       style={position ? {
-        right: position ? `${window.innerWidth - position.x - 80}px` : "auto",
-        bottom: position ? `${window.innerHeight - position.y - 80}px` : "auto",
+        right: `${window.innerWidth - position.x - 80}px`,
+        bottom: `${window.innerHeight - position.y - 80}px`,
         cursor: isDragging ? "grabbing" : "grab",
       } : {
         right: "16px",
