@@ -43,11 +43,16 @@ export function WhatsappChat() {
 
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const positionRef = useRef<{ x: number; y: number } | null>(null);
+  const isDraggingRef = useRef(false);
 
   // Keep refs in sync with state
   useEffect(() => {
     positionRef.current = position;
   }, [position]);
+
+  useEffect(() => {
+    isDraggingRef.current = isDragging;
+  }, [isDragging]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!position) return;
