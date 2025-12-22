@@ -16,7 +16,6 @@ export function WhatsappChat() {
   const [showBubble, setShowBubble] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
