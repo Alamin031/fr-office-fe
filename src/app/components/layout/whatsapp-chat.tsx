@@ -161,9 +161,12 @@ export function WhatsappChat() {
       <div
         onMouseDown={handleMouseDown}
         onClick={() => {
-          if (!isDragging) {
+          // Only open if we didn't actually drag
+          if (!didDragRef.current) {
             window.open(WHATSAPP_URL, '_blank');
           }
+          // Reset for next interaction
+          didDragRef.current = false;
         }}
         className="relative inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg transition-transform duration-200 hover:scale-[1.03] hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 cursor-grab hover:cursor-grab"
       >
