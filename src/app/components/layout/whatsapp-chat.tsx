@@ -66,7 +66,7 @@ export function WhatsappChat() {
   // Setup global mouse move and mouse up handlers
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !dragStartRef.current || !positionRef.current) return;
+      if (!isDraggingRef.current || !dragStartRef.current || !positionRef.current) return;
 
       const newX = e.clientX - dragStartRef.current.x;
       const newY = e.clientY - dragStartRef.current.y;
@@ -81,9 +81,13 @@ export function WhatsappChat() {
       setPosition({ x: constrainedX, y: constrainedY });
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+
+      isDraggingRef.current = false;
       setIsDragging(false);
       dragStartRef.current = null;
+
       // Save position to localStorage
       if (positionRef.current) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(positionRef.current));
