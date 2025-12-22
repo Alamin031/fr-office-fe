@@ -56,6 +56,7 @@ export function WhatsappChat() {
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!position) return;
+    isDraggingRef.current = true;
     setIsDragging(true);
     dragStartRef.current = {
       x: e.clientX - position.x,
