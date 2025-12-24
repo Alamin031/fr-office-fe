@@ -156,7 +156,7 @@ export function ProductCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}>
       {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-muted flex items-center justify-center">
+      <div className="relative aspect-square overflow-hidden bg-white flex items-center justify-center">
         <Link href={`/product/${product.slug}`}>
           <Image
             src={primaryImage}

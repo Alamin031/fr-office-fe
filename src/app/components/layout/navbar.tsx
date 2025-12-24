@@ -200,24 +200,33 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
                   key={brand.id} 
                   className="relative"
                   onMouseEnter={() => setOpenBrandId(brand.id)}
-                  onMouseLeave={() => setOpenBrandId(null)}
                 >
                   <button
-                    className="flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
+                    className={cn(
+                      "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent",
+                      openBrandId === brand.id && "bg-accent",
+                    )}
                   >
                     {brand.name}
                     <ChevronDown className={cn("h-4 w-4 ml-1 transition-transform", openBrandId === brand.id && "rotate-180")} />
                   </button>
 
                   {openBrandId === brand.id && (
-                    <div className="absolute z-30 mt-2 w-48 rounded border bg-white shadow-sm">
+                    <div 
+                      className="absolute z-30 left-0 top-full translate-y-1 w-56 rounded-xl border border-border bg-background shadow-lg ring-1 ring-black/5"
+                      onMouseEnter={() => setOpenBrandId(brand.id)}
+                      onMouseLeave={() => setOpenBrandId(null)}
+                    >
                       <div className="flex flex-col p-2">
                         {(brandsCategories[brand.id] ?? []).length > 0 ? (
                           brandsCategories[brand.id].map((c) => (
                             <Link
                               key={c.id}
                               href={`/category/${c.slug}`}
-                              className="px-3 py-2 text-sm hover:bg-gray-50"
+                              className={cn(
+                                "rounded-md px-3 py-2.5 text-sm hover:bg-accent hover:text-foreground transition-colors",
+                                pathname === `/category/${c.slug}` && "bg-accent text-foreground font-medium",
+                              )}
                             >
                               {c.name}
                             </Link>
