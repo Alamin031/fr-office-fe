@@ -33,7 +33,7 @@ export function WhatsappChat() {
 
   return (
     <div
-      className="fixed z-40 right-4 bottom-24 flex flex-col items-end gap-3 select-none"
+      className="fixed z-40 right-4 bottom-6 pb-10 lg:pb-0 flex flex-col items-end gap-3 select-none"
     >
       {showBubble && (
         <div

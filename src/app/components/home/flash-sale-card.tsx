@@ -94,35 +94,35 @@ export function FlashSaleCard({ flashsale }: FlashSaleCardProps) {
       <div className="group relative overflow-hidden rounded-2xl bg-card border border-border transition-all duration-300 hover:shadow-lg cursor-pointer">
         {/* Banner Image */}
         {flashsale.bannerImg && (
-        <div className="relative w-full overflow-hidden bg-muted aspect-[16/9] sm:aspect-[1920/800]">
+        <div className="relative w-full overflow-hidden aspect-[21/9] sm:aspect-[1920/800]">
           <Image
             src={flashsale.bannerImg}
             alt={flashsale.title}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-300"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {/* Overlay with gradient */}
           <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
           {/* Countdown overlay - centered */}
-          <div className="absolute top-0 left-0 right-0 p-3 sm:p-6 z-10 flex justify-center">
-            <div className="inline-flex flex-col sm:flex-row items-center gap-2 sm:gap-4 rounded-xl sm:rounded-2xl bg-gradient-to-br from-black/15 to-black/5 text-white px-3 py-3 sm:px-6 sm:py-5 backdrop-blur-sm shadow-lg border border-white/5">
-              <span className="text-sm sm:text-lg font-bold tracking-wide">{getCountdownLabel()}</span>
+          <div className="absolute top-0 left-0 right-0 pt-0.5 px-1 pb-1 sm:pt-1 sm:px-6 sm:pb-6 z-10 flex justify-center">
+            <div className="inline-flex flex-row items-center gap-0.5 sm:gap-4 rounded-md sm:rounded-2xl bg-gradient-to-br from-black/15 to-black/5 text-white px-1 py-1 sm:px-6 sm:py-5 shadow-lg border border-white/5">
+              <span className="text-[9px] sm:text-lg font-bold tracking-wide whitespace-nowrap">{getCountdownLabel()}</span>
               {!timeLeft.isEnded && (
-                <div className="flex gap-1.5 sm:gap-2.5">
+                <div className="flex gap-0.5 sm:gap-2.5">
                   {[
                     { value: timeLeft.days, label: "Days" },
                     { value: timeLeft.hours, label: "Hours" },
                     { value: timeLeft.minutes, label: "Mins" },
                     { value: timeLeft.seconds, label: "Secs" },
                   ].map((item) => (
-                    <div key={item.label} className="flex flex-col items-center gap-0.5 sm:gap-1.5">
-                      <div className="h-10 w-10 sm:h-14 sm:w-14 bg-gradient-to-br from-white/70 to-white/50 rounded-full flex items-center justify-center shadow-md transform transition-transform hover:scale-105">
-                        <span className="text-base sm:text-2xl font-extrabold text-gray-900">
+                    <div key={item.label} className="flex flex-col items-center gap-0">
+                      <div className="h-5 w-5 sm:h-14 sm:w-14 bg-gradient-to-br from-white/70 to-white/50 rounded-full flex items-center justify-center shadow-md transform transition-transform hover:scale-105">
+                        <span className="text-[9px] sm:text-2xl font-extrabold text-gray-900">
                           {String(item.value).padStart(2, "0")}
                         </span>
                       </div>
-                      <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider opacity-95">{item.label}</span>
+                      <span className="text-[6px] sm:text-xs font-semibold uppercase tracking-wider opacity-95">{item.label}</span>
                     </div>
                   ))}
                 </div>

@@ -257,12 +257,12 @@ function AdminFlashsellPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Flash Sell Management</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Flash Sale Management</h1>
           <p className="text-muted-foreground">Create and manage flash sale events.</p>
         </div>
         <Button onClick={handleAddClick} className="gap-2">
           <Plus className="h-4 w-4" />
-          New Flash Sell
+          New Flash Sale
         </Button>
       </div>
 

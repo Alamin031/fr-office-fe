@@ -116,29 +116,29 @@ export function EmiOptionsModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[1400px] max-h-screen overflow-y-auto p-8 gap-8 rounded-2xl border border-border/60 shadow-2xl">
+      <DialogContent className="max-w-2xl max-h-screen overflow-y-auto p-6 gap-6 rounded-2xl border border-border/60 shadow-2xl">
         <DialogHeader className="flex flex-row items-center justify-between pr-2">
-          <DialogTitle className="text-3xl font-bold">EMI Options</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">EMI Options</DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Bank Selection */}
           <div className="lg:col-span-1">
-            <div className="flex flex-col h-full gap-3">
-              <div className="text-base font-semibold uppercase tracking-wide text-muted-foreground">Banks</div>
-              <div className="space-y-3 overflow-y-auto max-h-96 pr-1">
+            <div className="flex flex-col h-full gap-2">
+              <div className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Banks</div>
+              <div className="space-y-2 overflow-y-auto max-h-96 pr-1">
                 {bankIds.map((bankId, index) => (
                   <button
                     key={bankId}
                     onClick={() => setSelectedBankId(bankId)}
                     className={cn(
-                      "w-full flex items-center px-5 py-3.5 rounded-xl font-semibold transition-all text-base text-left border",
+                      "w-full flex items-center px-4 py-2.5 rounded-lg font-semibold transition-all text-sm text-left border",
                       selectedBank === bankId
                         ? "bg-foreground text-background border-foreground shadow-md"
                         : "bg-white/80 hover:bg-muted/60 border-border shadow-sm"
                     )}
                   >
-                    <span className="flex-1 text-base font-semibold leading-snug wrap-break-word whitespace-normal">
+                    <span className="flex-1 text-sm font-semibold leading-snug wrap-break-word whitespace-normal">
                       {plansByBank[bankId].bankName}
                     </span>
                   </button>
@@ -148,17 +148,17 @@ export function EmiOptionsModal({
           </div>
 
           {/* Amount and Plans */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-2">
             {/* Amount Input */}
-            <div className="mb-8">
-              <label className="text-base font-bold uppercase tracking-wide text-muted-foreground mb-3 block">
+            <div className="mb-6">
+              <label className="text-sm font-bold uppercase tracking-wide text-muted-foreground mb-2 block">
                 Enter Amount
               </label>
               <Input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="text-xl font-semibold p-4 rounded-lg border border-border"
+                className="text-base font-semibold p-3 rounded-lg border border-border"
                 placeholder={formatPrice(price)}
               />
             </div>
@@ -168,10 +168,10 @@ export function EmiOptionsModal({
               <Table>
                 <TableHeader>
                   <TableRow className="border-b-2 border-border">
-                    <TableHead className="text-left font-semibold text-base text-foreground">Plan (Monthly)</TableHead>
-                    <TableHead className="text-left font-semibold text-base text-foreground">EMI</TableHead>
-                    <TableHead className="text-left font-semibold text-base text-foreground">Charge</TableHead>
-                    <TableHead className="text-left font-semibold text-base text-foreground">Effective Cost</TableHead>
+                    <TableHead className="text-left font-semibold text-sm text-foreground">Plan</TableHead>
+                    <TableHead className="text-left font-semibold text-sm text-foreground">EMI</TableHead>
+                    <TableHead className="text-left font-semibold text-sm text-foreground">Charge</TableHead>
+                    <TableHead className="text-left font-semibold text-sm text-foreground">Cost</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -182,19 +182,19 @@ export function EmiOptionsModal({
 
                       return (
                         <TableRow key={plan.id} className="border-b border-border hover:bg-muted/40 odd:bg-muted/20">
-                          <TableCell className="font-semibold py-5 text-base">{plan.months}</TableCell>
-                          <TableCell className="py-5">
-                            <div className="text-[oklch(0.75_0.15_45)] font-semibold text-base">
+                          <TableCell className="font-semibold py-4 text-sm">{plan.months}</TableCell>
+                          <TableCell className="py-4">
+                            <div className="text-[oklch(0.75_0.15_45)] font-semibold text-sm">
                               {formatPrice(monthlyEmi)}
                             </div>
                           </TableCell>
-                          <TableCell className="py-5">
-                            <div className="text-foreground font-semibold text-base">
+                          <TableCell className="py-4">
+                            <div className="text-foreground font-semibold text-sm">
                               {plan.interestRate}%
                             </div>
                           </TableCell>
-                          <TableCell className="py-5">
-                            <div className="text-[oklch(0.75_0.15_45)] font-semibold text-base">
+                          <TableCell className="py-4">
+                            <div className="text-[oklch(0.75_0.15_45)] font-semibold text-sm">
                               {formatPrice(totalCost)}
                             </div>
                           </TableCell>

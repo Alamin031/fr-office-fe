@@ -698,8 +698,8 @@ export function ProductInfoRegion({
               </div>
               <Badge
                 variant="secondary"
-                className="bg-red-100/80 text-red-700 dark:bg-red-900/30 dark:text-red-400 font-semibold px-2 py-1 text-xs rounded-md">
-                {priceData.discount}%
+                className="bg-red-500 text-white dark:bg-red-600 font-bold px-3 py-1.5 text-sm rounded-lg">
+                {priceData.discount}% OFF
               </Badge>
             </div>
           )}
@@ -752,7 +752,7 @@ export function ProductInfoRegion({
 
           {/* Color Selection */}
           {colors.length > 0 && (
-            <div className="space-y-3 w-full overflow-hidden">
+            <div className="space-y-3 w-full overflow-visible">
               <div className="flex items-center justify-between gap-3 min-w-0">
                 <div className="min-w-0">
                   <label className="text-sm font-semibold uppercase tracking-wider text-foreground">
@@ -763,7 +763,7 @@ export function ProductInfoRegion({
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-3 w-full overflow-hidden">
+              <div className="flex flex-wrap gap-3 w-full overflow-visible">
                 {colors.map(color => (
                   <button
                     key={color.id}
@@ -774,14 +774,14 @@ export function ProductInfoRegion({
                       }
                     }}
                     className={cn(
-                      'flex flex-col items-center gap-2 rounded-xl p-2 transition-all duration-200 flex-shrink-0',
+                      'flex flex-col items-center gap-2 rounded-xl p-2 transition-all duration-200 flex-shrink-0 outline-none',
                       selectedColorId === color.id
                         ? 'ring-2 ring-foreground ring-offset-2'
                         : 'hover:ring-1 hover:ring-muted-foreground',
                     )}
                     title={color.name}>
                     {color.image ? (
-                      <div className="h-16 w-16 overflow-hidden rounded-lg bg-muted border border-border shrink-0">
+                      <div className="h-16 w-16 overflow-hidden rounded-lg bg-muted shrink-0">
                         <img
                           src={color.image}
                           alt={color.name}
@@ -792,7 +792,7 @@ export function ProductInfoRegion({
                         />
                       </div>
                     ) : (
-                      <div className="h-16 w-16 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0">
+                      <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center shrink-0">
                         <span className="text-xs text-muted-foreground">
                           No Image
                         </span>

@@ -26,7 +26,7 @@ interface NavItem {
   href?: string;
   icon: React.ComponentType<{className?: string}>;
   label: string;
-  action?: 'modal';
+  action?: 'modal' | 'whatsapp';
 }
 
 const navItems: NavItem[] = [
@@ -51,9 +51,9 @@ const navItems: NavItem[] = [
     label: 'Personalisation',
   },
   {
-    href: '/chat',
     icon: MessageCircle,
     label: 'Chat',
+    action: 'whatsapp',
   },
 ];
 
@@ -113,6 +113,25 @@ export function MobileBottomNav() {
                 <button
                   key={item.label}
                   onClick={() => setIsCategoriesOpen(true)}
+                  className={cn(
+                    'flex flex-1 flex-col items-center justify-center gap-1 px-2 py-3 font-medium transition-all duration-200 rounded-lg',
+                    'text-gray-600 hover:text-black hover:bg-gray-50',
+                  )}>
+                  <Icon className="h-5 w-5" />
+                  <span className="text-[10px] leading-tight">
+                    {item.label}
+                  </span>
+                </button>
+              );
+            }
+
+            if (item.action === 'whatsapp') {
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => {
+                    window.open('https://wa.me/8801343159931', '_blank');
+                  }}
                   className={cn(
                     'flex flex-1 flex-col items-center justify-center gap-1 px-2 py-3 font-medium transition-all duration-200 rounded-lg',
                     'text-gray-600 hover:text-black hover:bg-gray-50',
