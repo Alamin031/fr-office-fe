@@ -1,5 +1,5 @@
-import { apiClient } from '../client';
-import { API_ENDPOINTS } from '../config';
+import { apiClient } from "@/app/lib/api/client";
+import { API_ENDPOINTS } from "../config";
 
 // EMI Bank entity
 export interface EmiBank {
@@ -42,6 +42,34 @@ export interface UpdateEmiBankRequest {
   bankname?: string;
 }
 
+let emiPlansPromise: Promise<EmiPlan[]> | null = null;
+
+/** Returns a cached promise for EMI plans (dedupes concurrent requests). ttlMs controls how long the cache is kept. */
+export const getPlansCached = (ttlMs = 60000): Promise<EmiPlan[]> => {
+  if (emiPlansPromise) return emiPlansPromise;
+
+  emiPlansPromise = apiClient
+    .get(API_ENDPOINTS.EMI_PLANS_GET)
+    .then((r) => r.data)
+    .catch((err) => {
+      emiPlansPromise = null; // allow retry on next call
+      throw err;
+    });
+
+  // clear cache after ttlMs
+  emiPlansPromise
+    .then(() => {
+      setTimeout(() => {
+        emiPlansPromise = null;
+      }, ttlMs);
+    })
+    .catch(() => {
+      // already handled in catch above
+    });
+
+  return emiPlansPromise;
+};
+
 export const emiService = {
   // EMI Plan CRUD
   createPlan: async (data: CreateEmiPlanRequest): Promise<EmiPlan> => {
@@ -63,9 +91,10 @@ export const emiService = {
     await apiClient.delete(endpoint);
   },
   getPlans: async (): Promise<EmiPlan[]> => {
-    const response = await apiClient.get(API_ENDPOINTS.EMI_PLANS_GET);
-    return response.data;
+    // use cached/deduped request so multiple callers don't trigger parallel requests
+    return getPlansCached();
   },
+  getPlansCached,
 
   // EMI Bank CRUD
   createBank: async (data: CreateEmiBankRequest): Promise<EmiBank> => {
