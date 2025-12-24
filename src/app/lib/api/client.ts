@@ -1,34 +1,41 @@
-import { useAuthStore } from "@/app/store/auth-store";
-import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "axios"
-import axiosRetry from "axios-retry"
+import {useAuthStore} from '@/app/store/auth-store';
+import axios, {
+  AxiosInstance,
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from 'axios';
+import axiosRetry from 'axios-retry';
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || "  https://friends-be-production.up.railway.app/api").trim()
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  'https://backend-production-8aca.up.railway.app/api'
+).trim();
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000, // Use 10s timeout to fail fast and let error handling work
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
-})
+});
 
 // Configure automatic retry with exponential backoff
 // Only retry on network errors and 5xx errors (not timeouts, to fail fast)
 axiosRetry(apiClient, {
   retries: 2,
-  retryDelay: (retryCount) => {
+  retryDelay: retryCount => {
     // Exponential backoff: 1s, 2s
-    return retryCount * 1000 * Math.pow(2, retryCount - 1)
+    return retryCount * 1000 * Math.pow(2, retryCount - 1);
   },
-  retryCondition: (error) => {
+  retryCondition: error => {
     // Retry on network errors and 5xx server errors
     // Don't retry on timeouts or 4xx client errors
-    const isTimeout = error.code === 'ECONNABORTED'
-    const isNetworkError = axiosRetry.isNetworkOrIdempotentRequestError(error)
-    const isServerError = !error.response || (error.response.status >= 500)
-    return !isTimeout && isNetworkError && isServerError
+    const isTimeout = error.code === 'ECONNABORTED';
+    const isNetworkError = axiosRetry.isNetworkOrIdempotentRequestError(error);
+    const isServerError = !error.response || error.response.status >= 500;
+    return !isTimeout && isNetworkError && isServerError;
   },
-})
+});
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -38,52 +45,57 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  error => Promise.reject(error),
 );
 
 apiClient.interceptors.response.use(
-  (response) => {
-    return response
+  response => {
+    return response;
   },
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
-    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
-      originalRequest._retry = true
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
       try {
-        const authStore = useAuthStore.getState()
-        authStore.logout()
+        const authStore = useAuthStore.getState();
+        authStore.logout();
 
-        if (typeof window !== "undefined") {
+        if (typeof window !== 'undefined') {
           // Force hard reload to clear middleware cache and trigger auth checks
-          window.location.href = "/login?session-expired=true"
+          window.location.href = '/login?session-expired=true';
         }
       } catch (logoutError) {
-        const authStore = useAuthStore.getState()
-        authStore.logout()
-        if (typeof window !== "undefined") {
-          window.location.href = "/login?session-expired=true"
+        const authStore = useAuthStore.getState();
+        authStore.logout();
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login?session-expired=true';
         }
-        return Promise.reject(logoutError)
+        return Promise.reject(logoutError);
       }
     }
 
     // Handle network errors and other API errors
-    if (error.message === "Network Error" || !error.response) {
-      console.error("Network or API error:", error)
+    if (error.message === 'Network Error' || !error.response) {
+      console.error('Network or API error:', error);
       // Still try to clear on network errors to be safe
       try {
-        const authStore = useAuthStore.getState()
+        const authStore = useAuthStore.getState();
         if (authStore.token) {
-          authStore.logout()
+          authStore.logout();
         }
       } catch (e) {
-        console.error("Error clearing auth on network error:", e)
+        console.error('Error clearing auth on network error:', e);
       }
     }
 
-    return Promise.reject(error)
+    return Promise.reject(error);
   },
-)
+);
 
-export default apiClient
+export default apiClient;
