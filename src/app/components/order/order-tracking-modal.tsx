@@ -80,11 +80,11 @@ export function OrderTrackingModal({ tracking, productName, productImage }: Orde
   const lastStepDate = lastStep ? stepCompletion[lastStep.key]?.date : null;
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-5">
       {/* Product Header */}
-      <div className="flex gap-4">
+      <div className="flex gap-3 sm:gap-4 pb-4 border-b">
         {productImage && (
-          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-muted">
+          <div className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 overflow-hidden rounded-md bg-gray-100 border border-gray-200">
             <img
               src={productImage}
               alt={productName || "Product"}
@@ -92,16 +92,16 @@ export function OrderTrackingModal({ tracking, productName, productImage }: Orde
             />
           </div>
         )}
-        <div className="flex flex-1 flex-col justify-between">
+        <div className="flex flex-1 flex-col justify-between py-0.5">
           <div>
-            <p className="font-semibold text-lg">{productName || "Order Details"}</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="font-semibold text-sm sm:text-base text-gray-900 mb-1">{productName || "Order Details"}</p>
+            <p className="text-xs sm:text-sm text-gray-500">
               Order #{tracking.trackingNumber}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">
+          <div className="flex items-center gap-1.5 sm:gap-2 mt-2">
+            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+            <span className="text-xs sm:text-sm text-gray-600 font-medium">
               Arrives {formatDate(tracking.estimatedDelivery)}
             </span>
           </div>
@@ -109,55 +109,83 @@ export function OrderTrackingModal({ tracking, productName, productImage }: Orde
       </div>
 
       {/* Track Shipment Link */}
-      <div>
-        <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
+      <div className="-mt-1">
+        <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-0.5 hover:underline transition-colors">
           Track shipment
-          <span>›</span>
+          <span className="text-lg">›</span>
         </button>
       </div>
 
       {/* Custom Progress Bar with Steps */}
-      <div className="mt-4">
-        <div className="flex items-center justify-between relative">
-          {/* Progress line */}
-          <div className="absolute left-0 right-0 top-1/2 h-1 bg-gray-200 z-0" style={{transform: 'translateY(-50%)'}} />
-          <div className="absolute left-0 top-1/2 h-1 bg-green-500 z-10" style={{width: `${STATUS_STEPS.length > 1 ? (lastCompletedIndex/(STATUS_STEPS.length-1))*100 : 0}%`, transform: 'translateY(-50%)', transition: 'width 0.3s'}} />
+      <div className="mt-5 sm:mt-6 mb-6 sm:mb-8 py-2">
+        <div className="relative px-1">
+          {/* Progress line background */}
+          <div className="absolute left-[12%] right-[12%] sm:left-[10%] sm:right-[10%] top-4 sm:top-5 h-[2px] bg-gray-200 z-0" />
+          {/* Progress line filled */}
+          <div 
+            className="absolute left-[12%] sm:left-[10%] top-4 sm:top-5 h-[2px] bg-green-500 z-10 transition-all duration-500" 
+            style={{
+              width: STATUS_STEPS.length > 1 
+                ? `${((lastCompletedIndex / (STATUS_STEPS.length - 1)) * 76)}%` 
+                : '0%'
+            }}
+          />
+          
           {/* Steps */}
-          {STATUS_STEPS.map((step, index) => {
-            const completed = !!stepCompletion[step.key]?.completed;
-            const date = stepCompletion[step.key]?.date;
-            return (
-              <div key={step.key} className="flex flex-col items-center z-20 flex-1">
-                <div className={cn(
-                  "flex items-center justify-center w-7 h-7 rounded-full border-2 mb-1",
-                  completed ? "border-green-500 bg-green-500 text-white" : getStatusColor(step.key)
-                )}>
-                  {completed ? <CheckCircle2 className="h-5 w-5" /> : index+1}
+          <div className="relative flex items-start justify-between">
+            {STATUS_STEPS.map((step, index) => {
+              const completed = !!stepCompletion[step.key]?.completed;
+              const isCurrent = index === lastCompletedIndex && completed;
+              const date = stepCompletion[step.key]?.date;
+              
+              return (
+                <div key={step.key} className="flex flex-col items-center z-20 flex-1">
+                  <div className={cn(
+                    "flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 sm:border-[3px] mb-1.5 sm:mb-2.5 font-semibold transition-all shadow-sm",
+                    completed 
+                      ? "border-green-500 bg-green-500 text-white shadow-green-200" 
+                      : "border-gray-300 bg-white text-gray-400"
+                  )}>
+                    {completed ? (
+                      <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 fill-current" strokeWidth={0} />
+                    ) : (
+                      <span className="text-xs sm:text-sm">{index + 1}</span>
+                    )}
+                  </div>
+                  
+                  <span className={cn(
+                    "text-[9px] sm:text-xs text-center leading-tight px-0.5 max-w-[55px] sm:max-w-[80px]", 
+                    completed ? "text-gray-900 font-medium" : "text-gray-500"
+                  )}>
+                    {step.label}
+                  </span>
+                  
+                  {isCurrent && date && (
+                    <span className="text-[9px] sm:text-xs text-green-600 font-semibold mt-0.5 sm:mt-1.5">
+                      {formatDate(date)}
+                    </span>
+                  )}
                 </div>
-                <span className={cn("text-xs mt-1", completed ? "text-green-700 font-semibold" : "")}>{step.label}</span>
-                {completed && date && (
-                  <span className="text-[10px] text-green-700 mt-0.5">{formatDate(date)}</span>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* Status Message (current step) */}
       {lastStep && (
-        <div className="mt-6">
-          <p className="font-medium text-base mb-1">{lastStep.label}</p>
+        <div className="pt-5 sm:pt-6 border-t">
+          <p className="font-bold text-lg sm:text-xl text-gray-900 mb-1.5">{lastStep.label}</p>
           {lastStepDate && (
-            <p className="text-xs text-muted-foreground">{formatDate(lastStepDate)}</p>
+            <p className="text-xs sm:text-sm text-gray-500">{formatDate(lastStepDate)}</p>
           )}
         </div>
       )}
 
       {/* Carrier Information */}
-      <div className="rounded-lg bg-muted p-4">
-        <p className="text-sm font-medium">Carrier: {tracking.carrier}</p>
-        <p className="text-xs text-muted-foreground mt-2">
+      <div className="rounded-lg bg-gray-50/80 border border-gray-200 p-3.5 sm:p-4 mt-5">
+        <p className="text-xs sm:text-sm font-semibold text-gray-900 mb-2">Carrier: {tracking.carrier}</p>
+        <p className="text-xs sm:text-sm text-gray-600 break-all font-mono">
           Tracking #: {tracking.trackingNumber}
         </p>
       </div>
