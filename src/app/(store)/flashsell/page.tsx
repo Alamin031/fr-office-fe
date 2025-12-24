@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import {useState, useEffect, Suspense} from 'react';
@@ -99,6 +100,18 @@ function FlashSellDetailContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getProductIdsArray = (input: any): string[] => {
+    if (Array.isArray(input)) return input;
+    if (typeof input === 'string') {
+      try {
+        const parsed = JSON.parse(input);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {}
+      return input.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+    return [];
+  };
+
   const timeLeft = useCountdown(
     flashsell?.startTime ?? null,
     flashsell?.endTime ?? null,
@@ -119,15 +132,27 @@ function FlashSellDetailContent() {
         const flashsellData = await flashsellService.findOne(flashsellId);
         setFlashsell(flashsellData);
 
-        if (flashsellData.productIds && flashsellData.productIds.length > 0) {
+        // Ensure productIds is treated as an array. Some API responses may return
+        // productIds as a JSON string or comma-separated string — normalize both.
+        const rawProductIds = (flashsellData as any).productIds;
+        let productIds: string[] = [];
+        if (Array.isArray(rawProductIds)) {
+          productIds = rawProductIds;
+        } else if (typeof rawProductIds === 'string') {
+          try {
+            const parsed = JSON.parse(rawProductIds);
+            if (Array.isArray(parsed)) productIds = parsed;
+            else productIds = rawProductIds.split(',').map((s: string) => s.trim()).filter(Boolean);
+          } catch (e) {
+            productIds = rawProductIds.split(',').map((s: string) => s.trim()).filter(Boolean);
+          }
+        }
+
+        if (productIds.length > 0) {
           const productsData = await Promise.all(
-            flashsellData.productIds.map(id =>
-              productsService.getById(id).catch(() => null),
-            ),
+            productIds.map(id => productsService.getById(id).catch(() => null)),
           );
-          const validProducts = productsData.filter(
-            p => p !== null,
-          ) as Product[];
+          const validProducts = productsData.filter(p => p !== null) as Product[];
           setProducts(validProducts);
         }
       } catch (err) {
@@ -297,7 +322,7 @@ function FlashSellDetailContent() {
               <div>
                 <p className="text-xs text-muted-foreground">Total Products</p>
                 <p className="text-lg font-semibold">
-                  {flashsell.productIds.length}
+                  {getProductIdsArray(flashsell.productIds).length}
                 </p>
               </div>
             </div>
