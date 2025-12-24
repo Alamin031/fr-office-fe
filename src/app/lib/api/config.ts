@@ -45,6 +45,7 @@ export const API_ENDPOINTS = {
   USERS_REWARD_POINTS: '/users/reward-points',
   CATEGORIES_CREATE: '/categories',
   CATEGORIES_GET: '/categories',
+  CATEGORIES_BY_BRAND: '/categories/brand/{brandsId}',
   CATEGORIES_FEATURED: '/categories/featured',
   CATEGORIES_SLUG: '/categories/{slug}',
   CATEGORIES_PRODUCTS: '/categories/{slug}/products',

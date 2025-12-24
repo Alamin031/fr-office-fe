@@ -33,6 +33,7 @@ import {
   AlertDialogTitle,
 } from "../../components/ui/alert-dialog";
 import categoriesService from "../../lib/api/services/categories";
+import brandsService from "../../lib/api/services/brands";
 import { withProtectedRoute } from "../../lib/auth/protected-route";
 
 // ===== TYPES =====
@@ -40,6 +41,11 @@ interface Subcategory {
   id: string;
   name: string;
   categoryId?: string;
+}
+
+interface Brand {
+  id: string;
+  name: string;
 }
 
 interface Category {
@@ -62,7 +68,6 @@ interface AppelCategory extends Category {
 type AddFormData = {
   name: string;
   slug: string;
-  priority: string;
   subcategories: Subcategory[];
   banner: string | File;
   brandsId?: string;
@@ -70,6 +75,7 @@ type AddFormData = {
 
 function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]); // <-- added
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -83,7 +89,6 @@ function AdminCategoriesPage() {
   const [addFormData, setAddFormData] = useState<AddFormData>({
     name: "",
     slug: "",
-    priority: "",
     subcategories: [],
     banner: "",
     brandsId: "",
@@ -99,9 +104,18 @@ function AdminCategoriesPage() {
     }
   };
 
+  const fetchBrands = async () => {
+    try {
+      const res = await brandsService.findAll(); // assumes findAll exists
+      setBrands(Array.isArray(res) ? res : []);
+    } catch {
+      setBrands([]);
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
-      await fetchCategories();
+      await Promise.all([fetchCategories(), fetchBrands()]);
     };
     load();
   }, []);
@@ -124,7 +138,6 @@ function AdminCategoriesPage() {
       const newCat = await categoriesService.createAppelCategory({
         name: addFormData.name,
         slug: addFormData.slug,
-        priority: Number(addFormData.priority),
         banner: addFormData.banner,
         brandsId: addFormData.brandsId,
       });
@@ -136,9 +149,8 @@ function AdminCategoriesPage() {
       setAddFormData({
         name: "",
         slug: "",
-        banner: "",
-        priority: "",
         subcategories: [],
+        banner: "",
         brandsId: "",
       });
 
@@ -272,30 +284,24 @@ function AdminCategoriesPage() {
                     />
                   )}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
-                <Input
-                  id="priority"
-                  type="number"
-                  value={addFormData.priority}
-                  onChange={(e) =>
-                    setAddFormData((f) => ({
-                      ...f,
-                      priority: e.target.value,
-                    }))
-                  }
-                />
-              </div>
 
               <div className="space-y-2">
-                <Label htmlFor="brandsId">Brands ID (optional)</Label>
-                <Input
+                <Label htmlFor="brandsId">Brands (optional)</Label>
+                <select
                   id="brandsId"
                   value={addFormData.brandsId || ""}
                   onChange={(e) =>
                     setAddFormData((f) => ({ ...f, brandsId: e.target.value }))
                   }
-                />
+                  className="w-full rounded border px-2 py-2"
+                >
+                  <option value="">-- Select brand (optional) --</option>
+                  {brands.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <Button type="submit" className="w-full">
@@ -514,20 +520,7 @@ function AdminCategoriesPage() {
                     />
                   )}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-priority">Priority</Label>
-                <Input
-                  id="edit-priority"
-                  type="number"
-                  value={editFormData.priority ?? ""}
-                  onChange={(e) =>
-                    setEditFormData({
-                      ...editFormData,
-                      priority: Number(e.target.value),
-                    })
-                  }
-                />
-              </div>
+
               <Button type="submit" className="w-full">
                 Save
               </Button>

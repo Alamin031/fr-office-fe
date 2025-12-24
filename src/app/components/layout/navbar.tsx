@@ -39,6 +39,8 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [categories, setCategories] = useState<Category[]>(initialCategories ?? [])
   const [brands, setBrands] = useState<Brand[]>(initialBrands ?? [])
+  const [brandsCategories, setBrandsCategories] = useState<Record<string, Category[]>>({})
+  const [openBrandId, setOpenBrandId] = useState<string | null>(null)
   const [isLoadingCategories, setIsLoadingCategories] = useState(!initialCategories)
   const [isLoadingBrands, setIsLoadingBrands] = useState(!initialBrands)
   const [isHydrated, setIsHydrated] = useState(false)
@@ -88,15 +90,13 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
 
   useEffect(() => {
     // Skip fetching if initial brands were provided
-    if (initialBrands) {
-      return
-    }
+    if (initialBrands) return
 
     async function fetchBrands() {
       try {
         setIsLoadingBrands(true)
         const data = await brandsService.findAll()
-        setBrands(data)
+        setBrands(Array.isArray(data) ? data : [])
       } catch (error) {
         console.error("Error fetching brands:", error)
         setBrands([])
@@ -106,6 +106,33 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
     }
     fetchBrands()
   }, [initialBrands])
+
+  // choose brand by indexNumber === "1" (not array index)
+  const featuredBrand = brands.find((b) => String(b.indexNumber) === "1") ?? null
+
+  // When brands load, fetch categories for the brand at index 1 (if exists)
+  useEffect(() => {
+    const target = featuredBrand
+    if (!target) return
+    let mounted = true
+    ;(async () => {
+      try {
+        const cats = await categoriesService.getByBrand(target.id)
+        if (mounted) {
+          const normalized = (Array.isArray(cats) ? cats : []).map((c) => ({
+            ...c,
+            slug: c.slug ?? "",
+          })) as Category[]
+          setBrandsCategories((s) => ({ ...s, [target.id]: normalized }))
+        }
+      } catch (err) {
+        if (mounted) setBrandsCategories((s) => ({ ...s, [target.id]: [] }))
+      }
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [featuredBrand])
 
   const handleLogout = async () => {
     const authService = new AuthService()
@@ -154,6 +181,43 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-1 lg:flex">
+            {/* Show only the brand whose indexNumber === "1" - moved up to appear first */}
+            {featuredBrand && (() => {
+              const brand = featuredBrand
+              return (
+                <div key={brand.id} className="relative">
+                  <button
+                    onClick={() => setOpenBrandId((id) => (id === brand.id ? null : brand.id))}
+                    className="flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
+                  >
+                    {brand.name}
+                    <ChevronDown className={cn("h-4 w-4 ml-1 transition-transform", openBrandId === brand.id && "rotate-180")} />
+                  </button>
+
+                  {openBrandId === brand.id && (
+                    <div className="absolute z-30 mt-2 w-48 rounded border bg-white shadow-sm">
+                      <div className="flex flex-col p-2">
+                        {(brandsCategories[brand.id] ?? []).length > 0 ? (
+                          brandsCategories[brand.id].map((c) => (
+                            <Link
+                              key={c.id}
+                              href={`/category/${c.slug}`}
+                              className="px-3 py-2 text-sm hover:bg-gray-50"
+                              onClick={() => setOpenBrandId(null)}
+                            >
+                              {c.name}
+                            </Link>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-sm text-muted-foreground">No categories</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+
             <button
               onMouseEnter={() => setIsMegaMenuOpen(true)}
               className={cn(
@@ -164,6 +228,7 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
               Categories
               <ChevronDown className={cn("h-4 w-4 transition-transform", isMegaMenuOpen && "rotate-180")} />
             </button>
+
             {categories
               .sort((a, b) => {
                 const priorityA = a.priority ? Number(a.priority) : Infinity
@@ -188,11 +253,11 @@ export function Navbar({ initialCategories, initialBrands }: NavbarProps = {}) {
                 All Products
               </Button>
             </Link>
-              <Link href="/giveaway" className="hidden sm:inline-flex">
-                <Button variant="orangetransparent" size="sm" className="text-sm font-medium">
-                  Giveaway
-                </Button>
-              </Link>
+            <Link href="/giveaway" className="hidden sm:inline-flex">
+              <Button variant="orangetransparent" size="sm" className="text-sm font-medium">
+                Giveaway
+              </Button>
+            </Link>
           </nav>
 
           {/* Search - Desktop */}

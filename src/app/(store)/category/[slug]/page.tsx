@@ -173,9 +173,9 @@ export default async function Page({ params }: CategoryPageProps) {
       </div>
 
       {/* FAQ Section */}
-      <div className="mt-16">
+      {/* <div className="mt-16">
         <CategoryFAQ categoryId={category.id} />
-      </div>
+      </div> */}
     </div>
   );
 }

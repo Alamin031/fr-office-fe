@@ -71,7 +71,7 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar initialCategories={normalizedCategories} initialBrands={brands} />
+      <Navbar initialCategories={normalizedCategories} />
       <main className="flex-1 flex flex-col">
         {/* Hero Banner */}
         <section className="mx-auto w-full max-w-7xl px-4 py-6">

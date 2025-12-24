@@ -147,6 +147,19 @@ export const categoriesService = {
   },
 
   /**
+   * Get all categories for a brand
+   */
+  getByBrand: async (brandsId: string): Promise<Category[]> => {
+    const endpoint = API_ENDPOINTS.CATEGORIES_BY_BRAND.replace(
+      '{brandsId}',
+      brandsId,
+    );
+    const response = await apiClient.get<Category[]>(endpoint);
+    const data = response.data;
+    return Array.isArray(data) ? data.map(normalizeCategory) : [];
+  },
+
+  /**
    * ✅ Get featured categories
    */
   getFeatured: async (): Promise<Category[]> => {
