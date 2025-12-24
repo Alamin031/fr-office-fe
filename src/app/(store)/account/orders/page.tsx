@@ -146,7 +146,7 @@ function OrderCard({ order }: { order: OrderWithStatus }) {
             ))}
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <div className="mt-4 flex flex-wrap items-center gap-2">
             <Link href={`/account/orders/${order.id}`}>
               <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                 View Details
@@ -154,7 +154,7 @@ function OrderCard({ order }: { order: OrderWithStatus }) {
               </Button>
             </Link>
             <Button
-              variant="outline"
+              variant="black"
               size="sm"
               className="gap-1 bg-transparent"
               onClick={handleTrackOrder}

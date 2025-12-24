@@ -29,6 +29,7 @@ const buttonVariants = cva(
         info: 'bg-sky-500 text-white hover:bg-sky-600 focus-visible:ring-sky-200 dark:bg-sky-400',
         muted: 'bg-muted text-muted-foreground hover:bg-muted/90 dark:bg-muted/80',
         buyNow: 'bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 focus-visible:ring-blue-300',
+        black: 'bg-black text-white hover:bg-black/90 focus-visible:ring-black/20 dark:bg-black dark:hover:bg-black/80',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
