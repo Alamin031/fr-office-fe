@@ -28,7 +28,7 @@ const buttonVariants = cva(
         warning: 'bg-yellow-500 text-black hover:bg-yellow-600 focus-visible:ring-yellow-200 dark:bg-yellow-500',
         info: 'bg-sky-500 text-white hover:bg-sky-600 focus-visible:ring-sky-200 dark:bg-sky-400',
         muted: 'bg-muted text-muted-foreground hover:bg-muted/90 dark:bg-muted/80',
-        buyNow: 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold shadow-md hover:from-blue-600 hover:to-indigo-700 focus-visible:ring-blue-300',
+        buyNow: 'bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 focus-visible:ring-blue-300',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

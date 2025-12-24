@@ -682,10 +682,10 @@ export function ProductInfoRegion({
             const {symbol, amount} = formatPriceParts(displayPrice);
             return (
               <span className="flex items-baseline gap-2">
-                <span className="text-5xl font-black leading-none text-foreground tracking-tight">
+                <span className="text-3xl sm:text-5xl font-black leading-none text-foreground tracking-tight">
                   {symbol}
                 </span>
-                <span className="text-5xl font-bold leading-none text-foreground tracking-tight">
+                <span className="text-3xl sm:text-5xl font-bold leading-none text-foreground tracking-tight">
                   {amount}
                 </span>
               </span>
@@ -693,12 +693,12 @@ export function ProductInfoRegion({
           })()}
           {priceData.hasDiscount && (
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="text-base text-muted-foreground line-through">
+              <div className="text-sm sm:text-base text-muted-foreground line-through">
                 {formatPrice(priceData.regularPrice)}
               </div>
               <Badge
                 variant="secondary"
-                className="bg-red-500 text-white dark:bg-red-600 font-bold px-3 py-1.5 text-sm rounded-lg">
+                className="bg-red-500 text-white dark:bg-red-600 font-bold px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-lg">
                 {priceData.discount}% OFF
               </Badge>
             </div>
@@ -781,7 +781,7 @@ export function ProductInfoRegion({
                     )}
                     title={color.name}>
                     {color.image ? (
-                      <div className="h-16 w-16 overflow-hidden rounded-lg bg-muted shrink-0">
+                      <div className="h-12 w-12 sm:h-14 sm:w-14 overflow-hidden rounded-lg bg-muted shrink-0">
                         <img
                           src={color.image}
                           alt={color.name}
@@ -792,7 +792,7 @@ export function ProductInfoRegion({
                         />
                       </div>
                     ) : (
-                      <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                      <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg bg-muted flex items-center justify-center shrink-0">
                         <span className="text-xs text-muted-foreground">
                           No Image
                         </span>
@@ -932,83 +932,85 @@ export function ProductInfoRegion({
           )}
         </div>
 
-        {/* Add to Cart or Notify Button */}
-        {isOutOfStock ? (
+        {/* Add to Cart/Notify + Buy Now: equal sizes */}
+        <div className="grid grid-cols-2 gap-3">
+          {isOutOfStock ? (
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full h-12 text-base font-semibold rounded-lg transition-all duration-200 border-2 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+              disabled={notifyLoading || notifySuccess}
+              onClick={handleNotifyMe}>
+              {notifyLoading ? (
+                <>
+                  <span className="animate-spin mr-2">⏳</span>
+                  Notifying...
+                </>
+              ) : notifySuccess ? (
+                <>
+                  <Check className="h-5 w-5 mr-2 text-green-600" />
+                  Notification Sent!
+                </>
+              ) : (
+                <>
+                  <Bell className="h-5 w-5 mr-2" />
+                  Notify Me When Available
+                </>
+              )}
+            </Button>
+          ) : (
+            <Button
+              size="lg"
+              className={cn(
+                'w-full h-12 text-base font-semibold rounded-lg transition-all duration-200 border-2 border-transparent',
+                isOutOfStock && 'opacity-60 cursor-not-allowed',
+              )}
+              disabled={isOutOfStock}
+              onClick={handleAddToCart}>
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              Add to Cart
+            </Button>
+          )}
+
           <Button
+            variant="buyNow"
             size="lg"
-            variant="outline"
-            className="w-full h-12 text-base font-semibold rounded-lg transition-all duration-200 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20"
-            disabled={notifyLoading || notifySuccess}
-            onClick={handleNotifyMe}>
-            {notifyLoading ? (
-              <>
-                <span className="animate-spin mr-2">⏳</span>
-                Notifying...
-              </>
-            ) : notifySuccess ? (
-              <>
-                <Check className="h-5 w-5 mr-2 text-green-600" />
-                Notification Sent!
-              </>
-            ) : (
-              <>
-                <Bell className="h-5 w-5 mr-2" />
-                Notify Me When Available
-              </>
-            )}
-          </Button>
-        ) : (
-          <Button
-            size="lg"
-            className={cn(
-              'w-full h-12 text-base font-semibold rounded-lg transition-all duration-200',
-              isOutOfStock && 'opacity-60 cursor-not-allowed',
-            )}
+            className="w-full h-12 text-base font-semibold rounded-lg border-2 border-transparent"
             disabled={isOutOfStock}
-            onClick={handleAddToCart}>
-            <ShoppingCart className="h-5 w-5 mr-2" />
-            Add to Cart
+            onClick={handleBuyNow}>
+            Buy Now
           </Button>
-        )}
+        </div>
 
-        {/* Buy Now Button */}
-        <Button
-          variant="buyNow"
-          size="lg"
-          className="w-full h-12 text-base font-semibold rounded-lg"
-          disabled={isOutOfStock}
-          onClick={handleBuyNow}>
-          Buy Now
-        </Button>
+        {/* WhatsApp + Company Deal: equal sizes */}
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            variant="greentransparent"
+            size="lg"
+            className="w-full h-12 text-base font-semibold rounded-lg border-2 border-[#25D366] hover:border-[#20BA5A]"
+            onClick={() => {
+              const message = `I want to know more about *${product.name}* URL: ${window.location.origin}/product/${product.slug}`;
+              const whatsappUrl = `https://wa.me/8801343159931?text=${encodeURIComponent(
+                message,
+              )}`;
+              window.open(whatsappUrl, '_blank');
+            }}>
+            Order Via WhatsApp
+          </Button>
 
-        {/* Order Via WhatsApp Button */}
-        <Button
-          variant="greentransparent"
-          size="lg"
-          className="w-full h-12 text-base font-semibold rounded-lg border-2 border-[#25D366] hover:border-[#20BA5A]"
-          onClick={() => {
-            const message = `I want to know more about *${product.name}* URL: ${window.location.origin}/product/${product.slug}`;
-            const whatsappUrl = `https://wa.me/8801343159931?text=${encodeURIComponent(
-              message,
-            )}`;
-            window.open(whatsappUrl, '_blank');
-          }}>
-          Order Via WhatsApp
-        </Button>
-
-        {/* Company Deal Button */}
-        <Button
-          variant="orange"
-          size="lg"
-          className="w-full h-12 text-base font-semibold rounded-lg"
-          onClick={() => router.push('/corporate-deals')}>
-          <span className="font-semibold">Company Deal</span>
-        </Button>
+          <Button
+            variant="orange"
+            size="lg"
+            className="w-full h-12 text-base font-semibold rounded-lg border-2 border-transparent"
+            onClick={() => router.push('/corporate-deals')}>
+            <span className="font-semibold">Company Deal</span>
+          </Button>
+        </div>
       </div>
 
       {/* Delivery & Support Info */}
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="flex gap-3 rounded-xl border border-border p-3.5 hover:bg-muted/40 transition-colors bg-white/60 shadow-sm">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="flex gap-3 rounded-xl border border-border p-3 sm:p-4 hover:bg-muted/40 transition-colors bg-white/60 shadow-sm">
           <Truck className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -1019,7 +1021,7 @@ export function ProductInfoRegion({
             </p>
           </div>
         </div>
-        <div className="flex gap-3 rounded-xl border border-border p-3.5 hover:bg-muted/40 transition-colors bg-white/60 shadow-sm">
+        <div className="flex gap-3 rounded-xl border border-border p-3 sm:p-4 hover:bg-muted/40 transition-colors bg-white/60 shadow-sm">
           <RotateCcw className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -1030,7 +1032,7 @@ export function ProductInfoRegion({
             </p>
           </div>
         </div>
-        <div className="flex gap-3 rounded-xl border border-border p-3.5 hover:bg-muted/40 transition-colors bg-white/60 shadow-sm">
+        <div className="flex gap-3 rounded-xl border border-border p-3 sm:p-4 hover:bg-muted/40 transition-colors bg-white/60 shadow-sm">
           <Shield className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">

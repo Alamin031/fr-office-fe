@@ -195,48 +195,65 @@ export function CartContent() {
 
       {/* Order Summary */}
       <div>
-        <div className="sticky top-24 rounded-xl border border-border bg-card p-6">
-          <h2 className="text-lg font-semibold">Order Summary</h2>
+        <div className="sticky top-24 rounded-2xl border border-border/80 bg-gradient-to-br from-card to-card/50 p-6 shadow-lg dark:border-border">
+          <h2 className="text-xl font-bold">Order Summary</h2>
 
-          <div className="mt-4 space-y-3">
+          <div className="mt-6 space-y-4">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Subtotal</span>
-              <span>{formatPrice(subtotal)}</span>
+              <span className="text-muted-foreground font-medium">Subtotal</span>
+              <span className="font-semibold text-foreground">{formatPrice(subtotal)}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Shipping</span>
-              <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
+              <span className="text-muted-foreground font-medium">Shipping</span>
+              <span className={`font-semibold ${shipping === 0 ? 'text-emerald-600' : 'text-foreground'}`}>
+                {shipping === 0 ? "Free" : formatPrice(shipping)}
+              </span>
             </div>
             {shipping > 0 && (
-              <p className="text-xs text-muted-foreground">Free shipping on orders over {formatPrice(5000)}</p>
+              <p className="text-xs text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg px-3 py-2">
+                ✓ Free shipping on orders over {formatPrice(5000)}
+              </p>
             )}
           </div>
 
-          <Separator className="my-4" />
+          <div className="my-5 h-px bg-gradient-to-r from-border via-border to-transparent" />
 
-          <div className="flex items-center justify-between font-semibold">
-            <span>Total</span>
-            <span className="text-xl">{formatPrice(total)}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-base font-semibold text-muted-foreground">Total</span>
+            <span className="text-3xl font-black text-foreground">{formatPrice(total)}</span>
           </div>
 
-          <Button className="mt-6 w-full" size="lg" onClick={handleProceedToCheckout}>
+          <Button 
+            className="mt-6 w-full h-12 text-base font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200" 
+            size="lg" 
+            onClick={handleProceedToCheckout}
+          >
             Proceed to Checkout
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
 
           <div className="mt-4 text-center">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-              Continue Shopping
+            <Link href="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              ← Continue Shopping
             </Link>
           </div>
 
           {/* Payment Methods */}
-          <div className="mt-6 border-t border-border pt-4">
-            <p className="mb-2 text-xs text-muted-foreground">We Accept</p>
-            <div className="flex gap-2">
-              <div className="rounded border border-border bg-muted px-2 py-1 text-xs font-medium">bKash</div>
-              <div className="rounded border border-border bg-muted px-2 py-1 text-xs font-medium">Nagad</div>
-              <div className="rounded border border-border bg-muted px-2 py-1 text-xs font-medium">VISA</div>
-              <div className="rounded border border-border bg-muted px-2 py-1 text-xs font-medium">COD</div>
+          <div className="mt-6 border-t border-border/50 pt-5">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">We Accept</p>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-lg border border-border/60 bg-muted/40 px-3 py-2.5 text-xs font-semibold text-center hover:bg-muted/60 transition-colors cursor-default">
+                Bkash
+              </div>
+              <div className="rounded-lg border border-border/60 bg-muted/40 px-3 py-2.5 text-xs font-semibold text-center hover:bg-muted/60 transition-colors cursor-default">
+                Nagad
+              </div>
+              <div className="rounded-lg border border-border/60 bg-muted/40 px-3 py-2.5 text-xs font-semibold text-center hover:bg-muted/60 transition-colors cursor-default">
+                VISA Card
+              </div>
+              <div className="rounded-lg border border-border/60 bg-muted/40 px-3 py-2.5 text-xs font-semibold text-center hover:bg-muted/60 transition-colors cursor-default">
+                Master Card
+              </div>
             </div>
           </div>
         </div>
