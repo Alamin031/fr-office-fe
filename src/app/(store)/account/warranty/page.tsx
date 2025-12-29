@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState } from "react"
@@ -75,7 +76,20 @@ function UserWarrantyPage() {
       setWarranty(response)
       toast.success(`Warranty found`)
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Warranty not found"
+      const getErrorMessage = (error: unknown) => {
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "response" in error &&
+          (error as any).response?.data?.message
+        ) {
+          return (error as any).response.data.message as string
+        }
+        if (error instanceof Error) return error.message
+        return "Warranty not found"
+      }
+
+      const message = getErrorMessage(err)
       setError(message)
       toast.error(message)
       setWarranty(null)

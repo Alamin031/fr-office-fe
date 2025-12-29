@@ -8,12 +8,12 @@ import axiosRetry from 'axios-retry';
 
 const API_BASE_URL = (
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  'https://backend-production-8aca.up.railway.app/api'
+  'http://localhost:8080/api'
 ).trim();
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 60000, // Use 1m timeout to fail fast and let error handling work
+  timeout: 600000, // Use 10m timeout to allow longer operations
   headers: {
     'Content-Type': 'application/json',
   },

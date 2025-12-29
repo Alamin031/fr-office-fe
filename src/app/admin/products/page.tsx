@@ -8,14 +8,7 @@ import {ViewProductModalRegion} from '../../components/admin/view-product-modal-
 import {useState, useEffect, useRef} from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  Plus,
-  Search,
-  MoreVertical,
-  Edit,
-  Trash2,
-  Eye,
-} from 'lucide-react';
+import {Plus, Search, MoreVertical, Edit, Trash2, Eye} from 'lucide-react';
 import {withProtectedRoute} from '../../lib/auth/protected-route';
 import {Card, CardContent} from '../../components/ui/card';
 import {Button} from '../../components/ui/button';
@@ -142,10 +135,11 @@ function AdminProductsPage() {
             ? res.length
             : apiProducts.length;
 
-
         // Find missing category IDs (from categoryIds array)
         const allCategoryIds = apiProducts
-          .flatMap((p: any) => Array.isArray(p.categoryIds) ? p.categoryIds : [])
+          .flatMap((p: any) =>
+            Array.isArray(p.categoryIds) ? p.categoryIds : [],
+          )
           .filter((id: string) => !!id);
         const missingCategoryIds = [
           ...new Set(
@@ -176,7 +170,6 @@ function AdminProductsPage() {
             return deduped;
           });
         }
-
 
         const mapped: UIProduct[] = apiProducts.map((p: any) => {
           // Handle images - they should come from API response
@@ -231,7 +224,14 @@ function AdminProductsPage() {
     };
 
     fetchProducts();
-  }, [selectedCategory, currentPage, activeTab, pageSize, categories, refreshKey]);
+  }, [
+    selectedCategory,
+    currentPage,
+    activeTab,
+    pageSize,
+    categories,
+    refreshKey,
+  ]);
 
   const handleViewClick = async (product: UIProduct) => {
     try {
@@ -287,9 +287,10 @@ function AdminProductsPage() {
   // Filter products by selectedCategory using categoryIds array
   let filteredProducts =
     selectedCategory && selectedCategory !== 'all'
-      ? products.filter(p =>
-          Array.isArray((p as any).categoryIds) &&
-          (p as any).categoryIds.includes(selectedCategory),
+      ? products.filter(
+          p =>
+            Array.isArray((p as any).categoryIds) &&
+            (p as any).categoryIds.includes(selectedCategory),
         )
       : products;
 
@@ -299,7 +300,7 @@ function AdminProductsPage() {
     filteredProducts = filteredProducts.filter(
       p =>
         p.name.toLowerCase().includes(lower) ||
-        (p.sku && p.sku.toLowerCase().includes(lower))
+        (p.sku && p.sku.toLowerCase().includes(lower)),
     );
   }
 
@@ -402,8 +403,7 @@ function AdminProductsPage() {
                   setSelectedCategory('all');
                   setSearchTerm('');
                   setCurrentPage(1);
-                }}
-              >
+                }}>
                 Reset Filters
               </Button>
               {/*
@@ -587,7 +587,6 @@ function AdminProductsPage() {
         onOpenChange={setEditOpen}
         product={selectedProduct}
         onSuccess={updatedProduct => {
-          // Clear cache and trigger re-fetch of current tab without full page reload
           cacheRef.current.clear();
           setRefreshKey(prev => prev + 1);
         }}

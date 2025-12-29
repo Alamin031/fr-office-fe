@@ -43,11 +43,7 @@ function NewProductPage() {
   const [description, setDescription] = useState('');
   const [shortDescription, setShortDescription] = useState('');
   const shortDescriptionRef = useRef<HTMLDivElement>(null);
-  const [productCode, setProductCode] = useState('');
-  const [sku, setSku] = useState('');
   const [warranty, setWarranty] = useState('');
-  const [imei, setImei] = useState('');
-  const [serial, setSerial] = useState('');
   const [delivery, setDelivery] = useState('');
   const [easyReturns, setEasyReturns] = useState('');
 
@@ -1048,11 +1044,7 @@ function NewProductPage() {
     if (shortDescriptionRef.current) {
       shortDescriptionRef.current.innerHTML = '';
     }
-    setProductCode('');
-    setSku('');
     setWarranty('');
-    setImei('');
-    setSerial('');
     setDelivery('');
     setEasyReturns('');
     setSelectedCategories([]);
@@ -1145,11 +1137,7 @@ function NewProductPage() {
         categoryIds:
           selectedCategories.length > 0 ? selectedCategories : undefined,
         brandIds: selectedBrands.length > 0 ? selectedBrands : undefined,
-        productCode: productCode || undefined,
-        sku: sku || undefined,
         warranty: warranty || undefined,
-        imei: imei || undefined,
-        serial: serial || undefined,
         isActive,
         isOnline,
         isPos,
@@ -1357,11 +1345,7 @@ function NewProductPage() {
         categoryIds:
           selectedCategories.length > 0 ? selectedCategories : undefined,
         brandIds: selectedBrands.length > 0 ? selectedBrands : undefined,
-        productCode: productCode || undefined,
-        sku: sku || undefined,
         warranty: warranty || undefined,
-        imei: imei || undefined,
-        serial: serial || undefined,
         isActive,
         isOnline,
         isPos,
@@ -1540,11 +1524,7 @@ function NewProductPage() {
         categoryIds:
           selectedCategories.length > 0 ? selectedCategories : undefined,
         brandIds: selectedBrands.length > 0 ? selectedBrands : undefined,
-        productCode: productCode || undefined,
-        sku: sku || undefined,
         warranty: warranty || undefined,
-        imei: imei || undefined,
-        serial: serial || undefined,
         isActive,
         isOnline,
         isPos,
@@ -1796,25 +1776,7 @@ function NewProductPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="productCode">Product Code</Label>
-                  <Input
-                    id="productCode"
-                    value={productCode}
-                    onChange={e => setProductCode(e.target.value)}
-                    placeholder="e.g., SKU-001"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="sku">SKU</Label>
-                  <Input
-                    id="sku"
-                    value={sku}
-                    onChange={e => setSku(e.target.value)}
-                    placeholder="e.g., SKU123"
-                  />
-                </div>
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <Label htmlFor="warranty">Warranty</Label>
                   <Input
@@ -1826,26 +1788,7 @@ function NewProductPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="imei">IMEI</Label>
-                  <Input
-                    id="imei"
-                    value={imei}
-                    onChange={e => setImei(e.target.value)}
-                    placeholder="e.g., 352614040046446"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="serial">Serial Number</Label>
-                  <Input
-                    id="serial"
-                    value={serial}
-                    onChange={e => setSerial(e.target.value)}
-                    placeholder="e.g., XL5H8Z2K9Q"
-                  />
-                </div>
-              </div>
+              
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
