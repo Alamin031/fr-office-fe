@@ -131,83 +131,92 @@ export function AssignUnitsModal({
           </DialogDescription>
         </DialogHeader>
 
-        {order && Array.isArray(order.items) && order.items.length > 0 ? (
+        {order && (() => {
+          const items = (order as any).orderItems || (order as any).items || [];
+          return Array.isArray(items) && items.length > 0;
+        })() ? (
           <div className="space-y-6">
-            {order.items.map((item) => {
-              const itemUnits = unitsByItem[(item as any).id] || [];
-              return (
-                <Card key={(item as any).id} className="p-4">
-                  <div className="mb-4">
-                    <h3 className="font-semibold">
-                      {item.product?.name || 'Product'}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Quantity: {item.quantity} | Price:{' '}
-                      {item.price.toLocaleString('en-BD', {
-                        currency: 'BDT',
-                        style: 'currency',
-                      })}
-                    </p>
-                  </div>
+            {(() => {
+              const items = (order as any).orderItems || (order as any).items || [];
+              return items.map((item: any, index: number) => {
+                const itemId = item.id && item.id !== 'undefined'
+                  ? item.id
+                  : `item-${index}`;
+                const itemUnits = unitsByItem[itemId] || [];
+                return (
+                  <Card key={itemId} className="p-4">
+                    <div className="mb-4">
+                      <h3 className="font-semibold">
+                        {item.product?.name || item.productName || 'Product'}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Quantity: {item.quantity} | Price:{' '}
+                        {item.price.toLocaleString('en-BD', {
+                          currency: 'BDT',
+                          style: 'currency',
+                        })}
+                      </p>
+                    </div>
 
-                  <div className="space-y-4">
-                    {itemUnits.map((unit, unitIdx) => (
-                      <div
-                        key={`${(item as any).id}-${unitIdx}`}
-                        className="grid gap-4 p-3 bg-muted/50 rounded border border-border"
-                      >
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-medium">
-                            Unit {unitIdx + 1} of {item.quantity}
-                          </h4>
-                        </div>
+                    <div className="space-y-4">
+                      {itemUnits.map((unit, unitIdx) => (
+                        <div
+                          key={`${itemId}-${unitIdx}`}
+                          className="grid gap-4 p-3 bg-muted/50 rounded border border-border"
+                        >
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-medium">
+                              Unit {unitIdx + 1} of {item.quantity}
+                            </h4>
+                          </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <Label htmlFor={`imei-${(item as any).id}-${unitIdx}`}>
-                              IMEI (Optional)
-                            </Label>
-                            <Input
-                              id={`imei-${(item as any).id}-${unitIdx}`}
-                              placeholder="e.g., 356789..."
-                              value={unit.imei}
-                              onChange={(e) =>
-                                handleUnitChange(
-                                  (item as any).id,
-                                  unitIdx,
-                                  'imei',
-                                  e.target.value,
-                                )
-                              }
-                              disabled={isLoading}
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor={`serial-${(item as any).id}-${unitIdx}`}>
-                              Serial (Optional)
-                            </Label>
-                            <Input
-                              id={`serial-${(item as any).id}-${unitIdx}`}
-                              placeholder="e.g., SN001"
-                              value={unit.serial}
-                              onChange={(e) =>
-                                handleUnitChange(
-                                  (item as any).id,
-                                  unitIdx,
-                                  'serial',
-                                  e.target.value,
-                                )
-                              }
-                              disabled={isLoading}
-                            />
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor={`imei-${itemId}-${unitIdx}`}>
+                                IMEI (Optional)
+                              </Label>
+                              <Input
+                                id={`imei-${itemId}-${unitIdx}`}
+                                placeholder="e.g., 356789..."
+                                value={unit.imei}
+                                onChange={(e) =>
+                                  handleUnitChange(
+                                    itemId,
+                                    unitIdx,
+                                    'imei',
+                                    e.target.value,
+                                  )
+                                }
+                                disabled={isLoading}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`serial-${itemId}-${unitIdx}`}>
+                                Serial (Optional)
+                              </Label>
+                              <Input
+                                id={`serial-${itemId}-${unitIdx}`}
+                                placeholder="e.g., SN001"
+                                value={unit.serial}
+                                onChange={(e) =>
+                                  handleUnitChange(
+                                    itemId,
+                                    unitIdx,
+                                    'serial',
+                                    e.target.value,
+                                  )
+                                }
+                                disabled={isLoading}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              );
-            })}
+                      ))}
+                    </div>
+                  </Card>
+                );
+              });
+            })()}
           </div>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
