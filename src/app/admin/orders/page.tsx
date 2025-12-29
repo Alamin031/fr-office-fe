@@ -127,6 +127,8 @@ function AdminOrdersPage() {
   const [statusUpdateOpen, setStatusUpdateOpen] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [assignUnitsModalOpen, setAssignUnitsModalOpen] = useState(false);
+  const [selectedOrderForUnits, setSelectedOrderForUnits] = useState<ApiOrder | null>(null);
   const [statusUpdateData, setStatusUpdateData] = useState({
     orderId: '',
     newStatus: '',
