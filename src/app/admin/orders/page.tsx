@@ -59,6 +59,8 @@ import {Label} from '../../components/ui/label';
 import {Textarea} from '../../components/ui/textarea';
 import {formatPrice} from '../../lib/utils/format';
 import {ordersService} from '../../lib/api/services';
+import {AssignUnitsModal} from '../../components/admin/assign-units-modal';
+import type {Order as ApiOrder} from '../../types/index';
 
 interface OrderItem {
   id: string;
@@ -125,6 +127,8 @@ function AdminOrdersPage() {
   const [statusUpdateOpen, setStatusUpdateOpen] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [assignUnitsModalOpen, setAssignUnitsModalOpen] = useState(false);
+  const [selectedOrderForUnits, setSelectedOrderForUnits] = useState<ApiOrder | null>(null);
   const [statusUpdateData, setStatusUpdateData] = useState({
     orderId: '',
     newStatus: '',
@@ -429,6 +433,22 @@ function AdminOrdersPage() {
     setFormErrors({});
   };
 
+  const openAssignUnitsModal = async (order: Order) => {
+    try {
+      // Fetch full order details from API
+      const fullOrder = await ordersService.getById(order.id);
+      setSelectedOrderForUnits(fullOrder as any);
+      setAssignUnitsModalOpen(true);
+    } catch (err) {
+      console.error('Error fetching order details:', err);
+    }
+  };
+
+  const handleAssignUnitsSuccess = () => {
+    // Refresh orders list after successful unit assignment
+    // Trigger refetch (you can call the fetch function or use a different approach)
+  };
+
   const handleAddOrder = async () => {
     if (!validateForm()) {
       return;
@@ -714,6 +734,13 @@ function AdminOrdersPage() {
                                     Update Status
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
+                                    onClick={() =>
+                                      openAssignUnitsModal(order)
+                                    }>
+                                    <span className="mr-2">🔐</span>
+                                    Assign Units (IMEI/Serial)
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
                                     onClick={() => handlePrintInvoice(order)}>
                                     <Printer className="mr-2 h-4 w-4" />
                                     Print Invoice
@@ -944,6 +971,13 @@ function AdminOrdersPage() {
                                       Status
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
+                                      onClick={() =>
+                                        openAssignUnitsModal(order)
+                                      }>
+                                      <span className="mr-2">🔐</span>
+                                      Assign Units (IMEI/Serial)
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
                                       onClick={() => handlePrintInvoice(order)}>
                                       <Printer className="mr-2 h-4 w-4" />
                                       Print Invoice
@@ -1058,6 +1092,13 @@ function AdminOrdersPage() {
                                       Status
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
+                                      onClick={() =>
+                                        openAssignUnitsModal(order)
+                                      }>
+                                      <span className="mr-2">🔐</span>
+                                      Assign Units (IMEI/Serial)
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
                                       onClick={() => handlePrintInvoice(order)}>
                                       <Printer className="mr-2 h-4 w-4" />
                                       Print Invoice
@@ -1170,6 +1211,13 @@ function AdminOrdersPage() {
                                       }>
                                       <span className="mr-2">📊</span>Update
                                       Status
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        openAssignUnitsModal(order)
+                                      }>
+                                      <span className="mr-2">🔐</span>
+                                      Assign Units (IMEI/Serial)
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                       onClick={() => handlePrintInvoice(order)}>
@@ -1802,6 +1850,17 @@ function AdminOrdersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Assign Units Modal */}
+      <AssignUnitsModal
+        open={assignUnitsModalOpen}
+        order={selectedOrderForUnits}
+        onClose={() => {
+          setAssignUnitsModalOpen(false);
+          setSelectedOrderForUnits(null);
+        }}
+        onSuccess={handleAssignUnitsSuccess}
+      />
     </div>
   );
 }

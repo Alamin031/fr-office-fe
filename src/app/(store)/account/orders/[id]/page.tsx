@@ -436,6 +436,34 @@ function OrderDetailPage() {
                                     {formatPrice((item.price || 0) * (item.quantity || 0))}
                                   </span>
                                 </div>
+
+                                {/* Display assigned units (IMEI/Serial) if available */}
+                                {item.orderItemUnits && item.orderItemUnits.length > 0 && (
+                                  <div className="mt-3 pt-3 border-t border-gray-200">
+                                    <p className="text-xs font-semibold text-gray-700 mb-2">Assigned Units:</p>
+                                    <div className="space-y-2">
+                                      {item.orderItemUnits.map((unit: any, unitIdx: number) => (
+                                        <div key={unitIdx} className="text-xs bg-gray-50 border border-gray-200 rounded p-2">
+                                          {unit.imei && (
+                                            <div className="text-gray-600">
+                                              <span className="text-gray-500">IMEI:</span> <span className="font-mono">{unit.imei}</span>
+                                            </div>
+                                          )}
+                                          {unit.serial && (
+                                            <div className="text-gray-600">
+                                              <span className="text-gray-500">Serial:</span> <span className="font-mono">{unit.serial}</span>
+                                            </div>
+                                          )}
+                                          {unit.status && (
+                                            <div className="text-gray-600">
+                                              <span className="text-gray-500">Status:</span> <span className="capitalize">{unit.status}</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}
