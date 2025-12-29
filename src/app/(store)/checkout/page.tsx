@@ -212,17 +212,6 @@ export default function CheckoutPage() {
             selectedVariants: item.selectedVariants,
             // Add rewardPoints to each order item
             rewardPoints: Number(item.product.rewardPoints) || 0,
-            // Add imei and serial to each order item
-            imei:
-              item.product.imei ||
-              ((item.product as any).rawProduct &&
-                (item.product as any).rawProduct.imei) ||
-              undefined,
-            serial:
-              item.product.serial ||
-              ((item.product as any).rawProduct &&
-                (item.product as any).rawProduct.serial) ||
-              undefined,
           };
         }),
         total,
