@@ -971,6 +971,13 @@ function AdminOrdersPage() {
                                       Status
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
+                                      onClick={() =>
+                                        openAssignUnitsModal(order)
+                                      }>
+                                      <span className="mr-2">🔐</span>
+                                      Assign Units (IMEI/Serial)
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
                                       onClick={() => handlePrintInvoice(order)}>
                                       <Printer className="mr-2 h-4 w-4" />
                                       Print Invoice
