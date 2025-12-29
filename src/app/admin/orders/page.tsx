@@ -1829,6 +1829,17 @@ function AdminOrdersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Assign Units Modal */}
+      <AssignUnitsModal
+        open={assignUnitsModalOpen}
+        order={selectedOrderForUnits}
+        onClose={() => {
+          setAssignUnitsModalOpen(false);
+          setSelectedOrderForUnits(null);
+        }}
+        onSuccess={handleAssignUnitsSuccess}
+      />
     </div>
   );
 }
