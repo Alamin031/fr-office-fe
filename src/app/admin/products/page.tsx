@@ -42,6 +42,7 @@ import productsService from '../../lib/api/services/products';
 import categoriesService from '../../lib/api/services/categories';
 import {EditProductModal} from '@/app/components/admin/edit-product-modal';
 import {ProductCacheUtils} from '@/app/lib/api/cache-utils';
+import {toast} from 'sonner';
 
 type UIProduct = {
   id: string;
@@ -276,10 +277,11 @@ function AdminProductsPage() {
         setProducts(products.filter(p => p.id !== selectedProduct.id));
         // Invalidate caches after deletion
         ProductCacheUtils.invalidateProductLists();
+        toast.success('Product deleted successfully!');
         setDeleteOpen(false);
         setSelectedProduct(null);
       } catch {
-        // You might want to add a toast notification here
+        toast.error('Failed to delete product. Please try again.');
       }
     }
   };
@@ -589,6 +591,7 @@ function AdminProductsPage() {
         onSuccess={updatedProduct => {
           cacheRef.current.clear();
           setRefreshKey(prev => prev + 1);
+          toast.success('Product updated successfully!');
         }}
       />
 
