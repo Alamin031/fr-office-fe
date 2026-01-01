@@ -295,7 +295,7 @@ export function ProductCard({
 
         {/* Price */}
         <div className="mt-auto pt-3">
-          <div className="flex items-baseline gap-2">
+          <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
             {/* sale price with larger bold symbol */}
             {(() => {
               const {symbol, amount} = formatPriceParts(salePrice);
@@ -312,7 +312,7 @@ export function ProductCard({
             })()}
 
             {hasDiscount && (
-              <span className="text-sm text-muted-foreground line-through">
+              <span className="text-xs sm:text-sm text-muted-foreground line-through">
                 {formatPrice(regularPrice)}
               </span>
             )}
