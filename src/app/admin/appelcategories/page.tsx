@@ -35,6 +35,7 @@ import {
 import categoriesService from "../../lib/api/services/categories";
 import brandsService from "../../lib/api/services/brands";
 import { withProtectedRoute } from "../../lib/auth/protected-route";
+import { toast } from "sonner";
 
 // ===== TYPES =====
 interface Subcategory {
@@ -80,6 +81,8 @@ function AdminCategoriesPage() {
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
@@ -134,17 +137,17 @@ function AdminCategoriesPage() {
 
   // ===== CREATE =====
   const handleCreateCategory = async () => {
+    setIsCreating(true);
     try {
-      const newCat = await categoriesService.createAppelCategory({
+      await categoriesService.createAppelCategory({
         name: addFormData.name,
         slug: addFormData.slug,
         banner: addFormData.banner,
         brandsId: addFormData.brandsId,
       });
 
-      setCategories((prev) =>
-        Array.isArray(prev) ? [newCat, ...prev] : [newCat]
-      );
+      // Refresh categories to get updated data from server
+      await fetchCategories();
 
       setAddFormData({
         name: "",
@@ -154,29 +157,36 @@ function AdminCategoriesPage() {
         brandsId: "",
       });
 
+      toast.success("Category created successfully!");
       setIsAddDialogOpen(false);
-    } catch (err) {}
+    } catch (err) {
+      toast.error("Failed to create category. Please try again.");
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   // ===== UPDATE =====
   const handleSaveEdit = async () => {
     if (!editFormData) return;
-
+    setIsUpdating(true);
     try {
-      const updated = await categoriesService.update(editFormData.id, {
+      await categoriesService.update(editFormData.id, {
         name: editFormData.name,
         slug: editFormData.slug,
         priority: editFormData.priority,
         banner: editFormData.banner,
       });
-
-      setCategories((cats) =>
-        cats.map((c) => (c.id === updated.id ? updated : c))
-      );
-    } catch (err) {}
-
-    setEditOpen(false);
-    setEditFormData(null);
+      // Refresh from server so table updates immediately
+      await fetchCategories();
+      toast.success("Category updated successfully!");
+      setEditOpen(false);
+      setEditFormData(null);
+    } catch (err) {
+      toast.error("Failed to update category. Please try again.");
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   // ===== DELETE =====
@@ -194,13 +204,15 @@ function AdminCategoriesPage() {
 
   // ===== SUBCATEGORY =====
 
-  // Sort categories by priority (ascending)
+  // Filter and sort categories: only show priority === 0
   const sortedCategories = Array.isArray(categories)
-    ? [...categories].sort((a, b) => {
-        const pa = typeof a.priority === 'number' ? a.priority : Infinity;
-        const pb = typeof b.priority === 'number' ? b.priority : Infinity;
-        return pa - pb;
-      })
+    ? [...categories]
+        .filter((cat) => cat.priority === 0)
+        .sort((a, b) => {
+          const pa = typeof a.priority === 'number' ? a.priority : Infinity;
+          const pb = typeof b.priority === 'number' ? b.priority : Infinity;
+          return pa - pb;
+        })
     : [];
 
   return (
@@ -304,8 +316,8 @@ function AdminCategoriesPage() {
                 </select>
               </div>
 
-              <Button type="submit" className="w-full">
-                Create
+              <Button type="submit" className="w-full" disabled={isCreating}>
+                {isCreating ? "Creating..." : "Create"}
               </Button>
             </form>
           </DialogContent>
@@ -521,8 +533,8 @@ function AdminCategoriesPage() {
                   )}
               </div>
 
-              <Button type="submit" className="w-full">
-                Save
+              <Button type="submit" className="w-full" disabled={isUpdating}>
+                {isUpdating ? "Saving..." : "Save"}
               </Button>
             </form>
           )}
